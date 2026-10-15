@@ -1,4 +1,4 @@
-# Company Brain
+# Node & Nerve
 
 [![CI](https://github.com/harshedabdulla/node-and-nerve/actions/workflows/ci.yml/badge.svg)](https://github.com/harshedabdulla/node-and-nerve/actions/workflows/ci.yml)
 
