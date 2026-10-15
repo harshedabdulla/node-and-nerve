@@ -1,6 +1,6 @@
 # Company Brain
 
-[![CI](https://github.com/harshedabdulla/company-brain/actions/workflows/ci.yml/badge.svg)](https://github.com/harshedabdulla/company-brain/actions/workflows/ci.yml)
+[![CI](https://github.com/harshedabdulla/node-and-nerve/actions/workflows/ci.yml/badge.svg)](https://github.com/harshedabdulla/node-and-nerve/actions/workflows/ci.yml)
 
 An open-source, graph-powered organizational context service for AI agents. Connect company knowledge, discover relationships, trace decisions, and retrieve evidence with [FalkorDB](https://www.falkordb.com/).
 
@@ -84,7 +84,7 @@ Details: [docs/graph-model.md](docs/graph-model.md).
 Requirements: Docker, [uv](https://docs.astral.sh/uv/), Python 3.12+.
 
 ```sh
-git clone https://github.com/harshedabdulla/company-brain && cd company-brain
+git clone https://github.com/harshedabdulla/node-and-nerve && cd node-and-nerve
 docker compose up -d falkordb        # FalkorDB on :6379, FalkorDB Browser on :3000
 uv sync
 uv run company-brain seed            # load the synthetic Northstar Systems graph
