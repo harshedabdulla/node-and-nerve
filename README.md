@@ -1,5 +1,7 @@
 # Company Brain
 
+[![CI](https://github.com/harshedabdulla/company-brain/actions/workflows/ci.yml/badge.svg)](https://github.com/harshedabdulla/company-brain/actions/workflows/ci.yml)
+
 An open-source, graph-powered organizational context service for AI agents. Connect company knowledge, discover relationships, trace decisions, and retrieve evidence with [FalkorDB](https://www.falkordb.com/).
 
 > Give any AI agent a connected understanding of how an organization works.
