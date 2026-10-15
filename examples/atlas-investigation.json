@@ -1,0 +1,898 @@
+{
+  "investigation_id": "inv_example",
+  "company_id": "northstar",
+  "question": "Why is Project Atlas behind schedule, who owns the blockers, which previous decisions are relevant, and what evidence supports the findings?",
+  "as_of": "2026-10-16",
+  "matched_entities": [
+    {
+      "id": "project:atlas",
+      "kind": "project",
+      "name": "Project Atlas: self-serve customer onboarding portal",
+      "match_reason": "name or id matches 'atlas'"
+    }
+  ],
+  "findings": [
+    {
+      "id": "finding-1",
+      "category": "overdue_work",
+      "statement": "ticket:atlas-142 'Connect onboarding checkout to Billing Gateway v2' is blocked and overdue (due 2026-10-01, as of 2026-10-16); status: blocked",
+      "entity_ids": [
+        "ticket:atlas-142"
+      ],
+      "path_ids": [
+        "path-1"
+      ],
+      "source_ids": [
+        "source:jira-atlas-142"
+      ],
+      "supported": true
+    },
+    {
+      "id": "finding-2",
+      "category": "blocker_dependency",
+      "statement": "ticket:atlas-142 is blocked by ticket:int-88 'Enable v2 webhook signing in production' (status: blocked)",
+      "entity_ids": [
+        "ticket:atlas-142",
+        "ticket:int-88"
+      ],
+      "path_ids": [
+        "path-2"
+      ],
+      "source_ids": [
+        "source:jira-atlas-142"
+      ],
+      "supported": true
+    },
+    {
+      "id": "finding-3",
+      "category": "ownership",
+      "statement": "ticket:atlas-142 is currently owned by person:dev-patel (Dev Patel); owner team membership: team:platform",
+      "entity_ids": [
+        "ticket:atlas-142",
+        "person:dev-patel"
+      ],
+      "path_ids": [],
+      "source_ids": [
+        "source:jira-atlas-142"
+      ],
+      "supported": true
+    },
+    {
+      "id": "finding-4",
+      "category": "ownership",
+      "statement": "ticket:int-88 is currently owned by person:sam-okafor (Sam Okafor); owner team membership: team:integrations",
+      "entity_ids": [
+        "ticket:int-88",
+        "person:sam-okafor"
+      ],
+      "path_ids": [],
+      "source_ids": [
+        "source:jira-int-88"
+      ],
+      "supported": true
+    },
+    {
+      "id": "finding-5",
+      "category": "overdue_work",
+      "statement": "ticket:atlas-147 'Localized onboarding email templates' is overdue (due 2026-10-10, as of 2026-10-16); status: in_progress",
+      "entity_ids": [
+        "ticket:atlas-147"
+      ],
+      "path_ids": [
+        "path-3"
+      ],
+      "source_ids": [],
+      "supported": false
+    },
+    {
+      "id": "finding-6",
+      "category": "incident",
+      "statement": "incident:inc-009 'Billing Gateway v2 webhook signature verification failures' (mitigated, sev2) affects the blocker chain of ticket:atlas-142",
+      "entity_ids": [
+        "incident:inc-009",
+        "ticket:atlas-142"
+      ],
+      "path_ids": [
+        "path-4",
+        "path-5"
+      ],
+      "source_ids": [
+        "source:chat-inc-009",
+        "source:postmortem-009"
+      ],
+      "supported": true
+    },
+    {
+      "id": "finding-7",
+      "category": "incident",
+      "statement": "incident:inc-007 'Billing Gateway v1 timeout cascade during month-end invoicing' (resolved) occurred in the same component as ticket:atlas-142's blocker chain; resolved by person:lena-ortiz",
+      "entity_ids": [
+        "incident:inc-007",
+        "ticket:atlas-142",
+        "person:lena-ortiz"
+      ],
+      "path_ids": [
+        "path-6"
+      ],
+      "source_ids": [
+        "source:postmortem-007"
+      ],
+      "supported": true
+    },
+    {
+      "id": "finding-8",
+      "category": "ownership",
+      "statement": "project:atlas is currently owned by person:maya-chen (Maya Chen), team:platform (Platform); owner team membership: team:platform",
+      "entity_ids": [
+        "project:atlas",
+        "person:maya-chen",
+        "team:platform"
+      ],
+      "path_ids": [],
+      "source_ids": [
+        "source:atlas-plan-q4"
+      ],
+      "supported": true
+    },
+    {
+      "id": "finding-9",
+      "category": "current_decision",
+      "statement": "decision:dec-005 'Atlas launch date is fixed at 2026-11-01 for the Q4 customer cohort' (decided 2026-08-01 by person:omar-haddad) is current guidance for project:atlas",
+      "entity_ids": [
+        "decision:dec-005",
+        "project:atlas"
+      ],
+      "path_ids": [
+        "path-7"
+      ],
+      "source_ids": [
+        "source:atlas-plan-q4"
+      ],
+      "supported": true
+    },
+    {
+      "id": "finding-10",
+      "category": "current_decision",
+      "statement": "decision:dec-004 'New integrations use Billing Gateway v2 only; the v1 fallback is retired' (decided 2026-07-15 by person:priya-nair) is current guidance for component:billing-gateway, project:atlas; it supersedes decision:dec-002",
+      "entity_ids": [
+        "decision:dec-004",
+        "component:billing-gateway",
+        "project:atlas"
+      ],
+      "path_ids": [
+        "path-8"
+      ],
+      "source_ids": [
+        "source:arch-review-2026-07"
+      ],
+      "supported": true
+    },
+    {
+      "id": "finding-11",
+      "category": "superseded_decision",
+      "statement": "decision:dec-002 'Keep Billing Gateway v1 as a fallback for new integrations until v2 is certified' is superseded by decision:dec-004; excluded from current guidance",
+      "entity_ids": [
+        "decision:dec-002",
+        "decision:dec-004"
+      ],
+      "path_ids": [
+        "path-9"
+      ],
+      "source_ids": [
+        "source:memo-dec-002"
+      ],
+      "supported": true
+    },
+    {
+      "id": "finding-12",
+      "category": "expertise",
+      "statement": "person:lena-ortiz (Lena Ortiz) has recorded experience with resolved_incident incident:inc-007, authored_incident_source source:postmortem-007",
+      "entity_ids": [
+        "person:lena-ortiz",
+        "component:billing-gateway"
+      ],
+      "path_ids": [],
+      "source_ids": [
+        "source:postmortem-007"
+      ],
+      "supported": true
+    },
+    {
+      "id": "finding-13",
+      "category": "expertise",
+      "statement": "person:sam-okafor (Sam Okafor) has recorded experience with owns_component component:billing-gateway, authored_incident_source source:postmortem-009, member_of_owning_team team:integrations",
+      "entity_ids": [
+        "person:sam-okafor",
+        "component:billing-gateway"
+      ],
+      "path_ids": [],
+      "source_ids": [
+        "source:postmortem-009"
+      ],
+      "supported": true
+    },
+    {
+      "id": "finding-14",
+      "category": "expertise",
+      "statement": "person:dev-patel (Dev Patel) has recorded experience with authored_incident_source source:chat-inc-009, member_of_owning_team team:platform",
+      "entity_ids": [
+        "person:dev-patel",
+        "component:billing-gateway",
+        "component:onboarding-api"
+      ],
+      "path_ids": [],
+      "source_ids": [
+        "source:chat-inc-009"
+      ],
+      "supported": true
+    }
+  ],
+  "evidence_paths": [
+    {
+      "id": "path-1",
+      "description": "ticket:atlas-142 is in scope",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "ticket:atlas-142",
+          "to": "project:atlas",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-2",
+      "description": "ticket:atlas-142 is blocked by ticket:int-88",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "ticket:atlas-142",
+          "to": "project:atlas",
+          "source_id": null
+        },
+        {
+          "type": "BLOCKED_BY",
+          "from": "ticket:atlas-142",
+          "to": "ticket:int-88",
+          "source_id": "source:jira-atlas-142"
+        }
+      ]
+    },
+    {
+      "id": "path-3",
+      "description": "ticket:atlas-147 is in scope",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "ticket:atlas-147",
+          "to": "project:atlas",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-4",
+      "description": "ticket:atlas-142 connects to incident:inc-009 (affects_blocker_chain)",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "ticket:atlas-142",
+          "to": "project:atlas",
+          "source_id": null
+        },
+        {
+          "type": "BLOCKED_BY",
+          "from": "ticket:atlas-142",
+          "to": "ticket:int-88",
+          "source_id": "source:jira-atlas-142"
+        },
+        {
+          "type": "AFFECTS",
+          "from": "incident:inc-009",
+          "to": "ticket:int-88",
+          "source_id": "source:postmortem-009"
+        }
+      ]
+    },
+    {
+      "id": "path-5",
+      "description": "evidence chain from ticket:atlas-142 to decision:dec-004",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "ticket:atlas-142",
+          "to": "project:atlas",
+          "source_id": null
+        },
+        {
+          "type": "BLOCKED_BY",
+          "from": "ticket:atlas-142",
+          "to": "ticket:int-88",
+          "source_id": "source:jira-atlas-142"
+        },
+        {
+          "type": "AFFECTS",
+          "from": "incident:inc-009",
+          "to": "ticket:int-88",
+          "source_id": "source:postmortem-009"
+        },
+        {
+          "type": "SUPPORTED_BY",
+          "from": "incident:inc-009",
+          "to": "source:postmortem-009",
+          "source_id": null
+        },
+        {
+          "type": "MENTIONS",
+          "from": "source:postmortem-009",
+          "to": "decision:dec-004",
+          "source_id": null
+        },
+        {
+          "type": "DECIDED_BY",
+          "from": "decision:dec-004",
+          "to": "person:priya-nair",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-6",
+      "description": "ticket:atlas-142 connects to incident:inc-007 (same_component)",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "ticket:atlas-142",
+          "to": "project:atlas",
+          "source_id": null
+        },
+        {
+          "type": "BLOCKED_BY",
+          "from": "ticket:atlas-142",
+          "to": "ticket:int-88",
+          "source_id": "source:jira-atlas-142"
+        },
+        {
+          "type": "IN_COMPONENT",
+          "from": "ticket:int-88",
+          "to": "component:billing-gateway",
+          "source_id": null
+        },
+        {
+          "type": "IN_COMPONENT",
+          "from": "incident:inc-007",
+          "to": "component:billing-gateway",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-7",
+      "description": "decision:dec-005 affects project:atlas",
+      "edges": [
+        {
+          "type": "AFFECTS",
+          "from": "decision:dec-005",
+          "to": "project:atlas",
+          "source_id": null
+        },
+        {
+          "type": "DECIDED_BY",
+          "from": "decision:dec-005",
+          "to": "person:omar-haddad",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-8",
+      "description": "decision:dec-004 affects component:billing-gateway, project:atlas",
+      "edges": [
+        {
+          "type": "AFFECTS",
+          "from": "decision:dec-004",
+          "to": "component:billing-gateway",
+          "source_id": null
+        },
+        {
+          "type": "AFFECTS",
+          "from": "decision:dec-004",
+          "to": "project:atlas",
+          "source_id": null
+        },
+        {
+          "type": "DECIDED_BY",
+          "from": "decision:dec-004",
+          "to": "person:priya-nair",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-9",
+      "description": "decision:dec-002 affects component:billing-gateway",
+      "edges": [
+        {
+          "type": "AFFECTS",
+          "from": "decision:dec-002",
+          "to": "component:billing-gateway",
+          "source_id": null
+        },
+        {
+          "type": "DECIDED_BY",
+          "from": "decision:dec-002",
+          "to": "person:priya-nair",
+          "source_id": null
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "source:arch-review-2026-07",
+      "name": "Architecture review notes, July 2026",
+      "uri": "https://docs.northstar.example/meetings/arch-review-2026-07",
+      "source_type": "meeting_notes",
+      "status": "active",
+      "excerpt": "Decision DEC-004: retire the v1 fallback for new integrations; v2 is the only supported path. Supersedes DEC-002.",
+      "source_system": "docs",
+      "source_record_id": "AR-2026-07",
+      "authors": [
+        "person:priya-nair"
+      ],
+      "relation": "mentions",
+      "about": "decision:dec-002"
+    },
+    {
+      "id": "source:memo-dec-002",
+      "name": "Memo: gateway v1 fallback policy",
+      "uri": "https://docs.northstar.example/decisions/dec-002",
+      "source_type": "document",
+      "status": "active",
+      "excerpt": null,
+      "source_system": "docs",
+      "source_record_id": "DEC-002",
+      "authors": [
+        "person:priya-nair"
+      ],
+      "relation": "supports",
+      "about": "decision:dec-002"
+    },
+    {
+      "id": "source:postmortem-009",
+      "name": "Postmortem: INC-009 webhook signature failures",
+      "uri": "https://docs.northstar.example/postmortems/inc-009",
+      "source_type": "postmortem",
+      "status": "active",
+      "excerpt": "Signature verification failed for 38% of v2 webhooks after the vendor rotated signing keys. Production enablement of webhook signing (INT-88) is paused until key rotation is automated. Falling back to v1 is not an option under DEC-004.",
+      "source_system": "docs",
+      "source_record_id": "PM-009",
+      "authors": [
+        "person:sam-okafor"
+      ],
+      "relation": "mentions",
+      "about": "decision:dec-004"
+    },
+    {
+      "id": "source:arch-review-2026-07",
+      "name": "Architecture review notes, July 2026",
+      "uri": "https://docs.northstar.example/meetings/arch-review-2026-07",
+      "source_type": "meeting_notes",
+      "status": "active",
+      "excerpt": "Decision DEC-004: retire the v1 fallback for new integrations; v2 is the only supported path. Supersedes DEC-002.",
+      "source_system": "docs",
+      "source_record_id": "AR-2026-07",
+      "authors": [
+        "person:priya-nair"
+      ],
+      "relation": "supports",
+      "about": "decision:dec-004"
+    },
+    {
+      "id": "source:atlas-plan-q4",
+      "name": "Atlas Q4 launch plan",
+      "uri": "https://docs.northstar.example/plans/atlas-q4",
+      "source_type": "document",
+      "status": "active",
+      "excerpt": "Launch is fixed at 2026-11-01 to onboard the Q4 customer cohort. Checkout integration (ATLAS-142) is on the critical path.",
+      "source_system": "docs",
+      "source_record_id": "PLAN-ATLAS-Q4",
+      "authors": [
+        "person:omar-haddad"
+      ],
+      "relation": "supports",
+      "about": "decision:dec-005"
+    },
+    {
+      "id": "source:postmortem-007",
+      "name": "Postmortem: INC-007 v1 timeout cascade",
+      "uri": "https://docs.northstar.example/postmortems/inc-007",
+      "source_type": "postmortem",
+      "status": "active",
+      "excerpt": "Connection pool exhaustion in the v1 gateway client caused cascading timeouts. Fixed by bounded pools and retries with jitter.",
+      "source_system": "docs",
+      "source_record_id": "PM-007",
+      "authors": [
+        "person:lena-ortiz"
+      ],
+      "relation": "supports",
+      "about": "incident:inc-007"
+    },
+    {
+      "id": "source:vendor-status-0922",
+      "name": "LedgerPay status page snapshot, 2026-09-22",
+      "uri": "https://status.ledgerpay.example/history/2026-09-22",
+      "source_type": "document",
+      "status": "active",
+      "excerpt": "All systems operational. No webhook delivery issues reported.",
+      "source_system": "vendor",
+      "source_record_id": null,
+      "authors": [],
+      "relation": "contradicts",
+      "about": "incident:inc-009"
+    },
+    {
+      "id": "source:jira-int-88",
+      "name": "INT-88 ticket record",
+      "uri": "https://tracker.northstar.example/browse/INT-88",
+      "source_type": "ticket_record",
+      "status": "active",
+      "excerpt": "Paused: production signing enablement on hold while INC-009 key-rotation follow-ups are completed.",
+      "source_system": "tracker",
+      "source_record_id": "INT-88",
+      "authors": [
+        "person:sam-okafor"
+      ],
+      "relation": "mentions",
+      "about": "incident:inc-009"
+    },
+    {
+      "id": "source:chat-inc-009",
+      "name": "#inc-009 incident channel thread",
+      "uri": "https://chat.northstar.example/archives/inc-009",
+      "source_type": "conversation",
+      "status": "active",
+      "excerpt": "Dev: ATLAS-142 is stuck until signing works in prod. Sam: rotation automation lands after the vendor confirms the new key schedule.",
+      "source_system": "chat",
+      "source_record_id": "inc-009-thread",
+      "authors": [
+        "person:dev-patel"
+      ],
+      "relation": "supports",
+      "about": "incident:inc-009"
+    },
+    {
+      "id": "source:postmortem-009",
+      "name": "Postmortem: INC-009 webhook signature failures",
+      "uri": "https://docs.northstar.example/postmortems/inc-009",
+      "source_type": "postmortem",
+      "status": "active",
+      "excerpt": "Signature verification failed for 38% of v2 webhooks after the vendor rotated signing keys. Production enablement of webhook signing (INT-88) is paused until key rotation is automated. Falling back to v1 is not an option under DEC-004.",
+      "source_system": "docs",
+      "source_record_id": "PM-009",
+      "authors": [
+        "person:sam-okafor"
+      ],
+      "relation": "supports",
+      "about": "incident:inc-009"
+    },
+    {
+      "id": "source:atlas-plan-q4",
+      "name": "Atlas Q4 launch plan",
+      "uri": "https://docs.northstar.example/plans/atlas-q4",
+      "source_type": "document",
+      "status": "active",
+      "excerpt": "Launch is fixed at 2026-11-01 to onboard the Q4 customer cohort. Checkout integration (ATLAS-142) is on the critical path.",
+      "source_system": "docs",
+      "source_record_id": "PLAN-ATLAS-Q4",
+      "authors": [
+        "person:omar-haddad"
+      ],
+      "relation": "mentions",
+      "about": "ticket:atlas-142"
+    },
+    {
+      "id": "source:chat-inc-009",
+      "name": "#inc-009 incident channel thread",
+      "uri": "https://chat.northstar.example/archives/inc-009",
+      "source_type": "conversation",
+      "status": "active",
+      "excerpt": "Dev: ATLAS-142 is stuck until signing works in prod. Sam: rotation automation lands after the vendor confirms the new key schedule.",
+      "source_system": "chat",
+      "source_record_id": "inc-009-thread",
+      "authors": [
+        "person:dev-patel"
+      ],
+      "relation": "mentions",
+      "about": "ticket:atlas-142"
+    },
+    {
+      "id": "source:jira-atlas-142",
+      "name": "ATLAS-142 ticket record",
+      "uri": "https://tracker.northstar.example/browse/ATLAS-142",
+      "source_type": "ticket_record",
+      "status": "active",
+      "excerpt": "Blocked: checkout integration cannot be completed until INT-88 enables v2 webhook signing in production.",
+      "source_system": "tracker",
+      "source_record_id": "ATLAS-142",
+      "authors": [
+        "person:dev-patel"
+      ],
+      "relation": "supports",
+      "about": "ticket:atlas-142"
+    },
+    {
+      "id": "source:jira-atlas-142",
+      "name": "ATLAS-142 ticket record",
+      "uri": "https://tracker.northstar.example/browse/ATLAS-142",
+      "source_type": "ticket_record",
+      "status": "active",
+      "excerpt": "Blocked: checkout integration cannot be completed until INT-88 enables v2 webhook signing in production.",
+      "source_system": "tracker",
+      "source_record_id": "ATLAS-142",
+      "authors": [
+        "person:dev-patel"
+      ],
+      "relation": "mentions",
+      "about": "ticket:int-88"
+    },
+    {
+      "id": "source:postmortem-009",
+      "name": "Postmortem: INC-009 webhook signature failures",
+      "uri": "https://docs.northstar.example/postmortems/inc-009",
+      "source_type": "postmortem",
+      "status": "active",
+      "excerpt": "Signature verification failed for 38% of v2 webhooks after the vendor rotated signing keys. Production enablement of webhook signing (INT-88) is paused until key rotation is automated. Falling back to v1 is not an option under DEC-004.",
+      "source_system": "docs",
+      "source_record_id": "PM-009",
+      "authors": [
+        "person:sam-okafor"
+      ],
+      "relation": "mentions",
+      "about": "ticket:int-88"
+    },
+    {
+      "id": "source:jira-int-88",
+      "name": "INT-88 ticket record",
+      "uri": "https://tracker.northstar.example/browse/INT-88",
+      "source_type": "ticket_record",
+      "status": "active",
+      "excerpt": "Paused: production signing enablement on hold while INC-009 key-rotation follow-ups are completed.",
+      "source_system": "tracker",
+      "source_record_id": "INT-88",
+      "authors": [
+        "person:sam-okafor"
+      ],
+      "relation": "supports",
+      "about": "ticket:int-88"
+    }
+  ],
+  "current_owners": [
+    {
+      "entity_id": "component:billing-gateway",
+      "owner_id": "person:sam-okafor",
+      "owner_kind": "person",
+      "owner_name": "Sam Okafor",
+      "owner_teams": [
+        "team:integrations"
+      ],
+      "source_id": null
+    },
+    {
+      "entity_id": "component:billing-gateway",
+      "owner_id": "team:integrations",
+      "owner_kind": "team",
+      "owner_name": "Integrations",
+      "owner_teams": [],
+      "source_id": null
+    },
+    {
+      "entity_id": "component:onboarding-api",
+      "owner_id": "team:platform",
+      "owner_kind": "team",
+      "owner_name": "Platform",
+      "owner_teams": [],
+      "source_id": null
+    },
+    {
+      "entity_id": "project:atlas",
+      "owner_id": "person:maya-chen",
+      "owner_kind": "person",
+      "owner_name": "Maya Chen",
+      "owner_teams": [
+        "team:platform"
+      ],
+      "source_id": "source:atlas-plan-q4"
+    },
+    {
+      "entity_id": "project:atlas",
+      "owner_id": "team:platform",
+      "owner_kind": "team",
+      "owner_name": "Platform",
+      "owner_teams": [],
+      "source_id": null
+    },
+    {
+      "entity_id": "ticket:atlas-142",
+      "owner_id": "person:dev-patel",
+      "owner_kind": "person",
+      "owner_name": "Dev Patel",
+      "owner_teams": [
+        "team:platform"
+      ],
+      "source_id": "source:jira-atlas-142"
+    },
+    {
+      "entity_id": "ticket:int-88",
+      "owner_id": "person:sam-okafor",
+      "owner_kind": "person",
+      "owner_name": "Sam Okafor",
+      "owner_teams": [
+        "team:integrations"
+      ],
+      "source_id": "source:jira-int-88"
+    }
+  ],
+  "experts": [
+    {
+      "person_id": "person:lena-ortiz",
+      "name": "Lena Ortiz",
+      "score": 4,
+      "basis": [
+        {
+          "basis": "resolved_incident",
+          "component_id": "component:billing-gateway",
+          "evidence_id": "incident:inc-007"
+        },
+        {
+          "basis": "authored_incident_source",
+          "component_id": "component:billing-gateway",
+          "evidence_id": "source:postmortem-007"
+        }
+      ]
+    },
+    {
+      "person_id": "person:sam-okafor",
+      "name": "Sam Okafor",
+      "score": 4,
+      "basis": [
+        {
+          "basis": "owns_component",
+          "component_id": "component:billing-gateway",
+          "evidence_id": "component:billing-gateway"
+        },
+        {
+          "basis": "authored_incident_source",
+          "component_id": "component:billing-gateway",
+          "evidence_id": "source:postmortem-009"
+        },
+        {
+          "basis": "member_of_owning_team",
+          "component_id": "component:billing-gateway",
+          "evidence_id": "team:integrations"
+        }
+      ]
+    },
+    {
+      "person_id": "person:dev-patel",
+      "name": "Dev Patel",
+      "score": 2,
+      "basis": [
+        {
+          "basis": "authored_incident_source",
+          "component_id": "component:billing-gateway",
+          "evidence_id": "source:chat-inc-009"
+        },
+        {
+          "basis": "member_of_owning_team",
+          "component_id": "component:onboarding-api",
+          "evidence_id": "team:platform"
+        }
+      ]
+    },
+    {
+      "person_id": "person:maya-chen",
+      "name": "Maya Chen",
+      "score": 1,
+      "basis": [
+        {
+          "basis": "member_of_owning_team",
+          "component_id": "component:onboarding-api",
+          "evidence_id": "team:platform"
+        }
+      ]
+    },
+    {
+      "person_id": "person:noor-ali",
+      "name": "Noor Ali",
+      "score": 1,
+      "basis": [
+        {
+          "basis": "member_of_owning_team",
+          "component_id": "component:onboarding-api",
+          "evidence_id": "team:platform"
+        }
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "decision:dec-005",
+      "name": "Atlas launch date is fixed at 2026-11-01 for the Q4 customer cohort",
+      "status": "accepted",
+      "decided_at": "2026-08-01",
+      "decided_by": [
+        {
+          "id": "person:omar-haddad",
+          "name": "Omar Haddad"
+        }
+      ],
+      "affects": [
+        "project:atlas"
+      ],
+      "supersedes": [],
+      "superseded_by": [],
+      "current": true
+    },
+    {
+      "id": "decision:dec-004",
+      "name": "New integrations use Billing Gateway v2 only; the v1 fallback is retired",
+      "status": "accepted",
+      "decided_at": "2026-07-15",
+      "decided_by": [
+        {
+          "id": "person:priya-nair",
+          "name": "Priya Nair"
+        }
+      ],
+      "affects": [
+        "component:billing-gateway",
+        "project:atlas"
+      ],
+      "supersedes": [
+        "decision:dec-002"
+      ],
+      "superseded_by": [],
+      "current": true
+    },
+    {
+      "id": "decision:dec-002",
+      "name": "Keep Billing Gateway v1 as a fallback for new integrations until v2 is certified",
+      "status": "accepted",
+      "decided_at": "2026-03-10",
+      "decided_by": [
+        {
+          "id": "person:priya-nair",
+          "name": "Priya Nair"
+        }
+      ],
+      "affects": [
+        "component:billing-gateway"
+      ],
+      "supersedes": [],
+      "superseded_by": [
+        "decision:dec-004"
+      ],
+      "current": false
+    }
+  ],
+  "missing_information": [
+    "ticket:atlas-147 is overdue but the graph records no blocker, incident or status explaining the delay.",
+    "No current owner is recorded for ticket:atlas-147."
+  ],
+  "warnings": [
+    "source:vendor-status-0922 contradicts incident:inc-009; review before relying on it"
+  ],
+  "queries_executed": [
+    "resolve_entities",
+    "tickets_in_scope",
+    "ticket_status",
+    "ticket_incident_paths",
+    "incidents",
+    "decisions_affecting",
+    "current_decisions",
+    "experts_for_components",
+    "current_owners",
+    "sources_for"
+  ]
+}

@@ -1,0 +1,37 @@
+services:
+  falkordb:
+    # Bundles FalkorDB server (6379) and FalkorDB Browser (3000) for local development.
+    # Pinned to an exact, tested version.
+    image: falkordb/falkordb:v4.20.7
+    ports:
+      - "${FALKORDB_PORT:-6379}:6379"
+      - "${FALKORDB_BROWSER_PORT:-3000}:3000"
+    environment:
+      # TIMEOUT_MAX caps any query, even if a client asks for more (milliseconds).
+      - FALKORDB_ARGS=TIMEOUT_MAX 30000 TIMEOUT_DEFAULT 10000
+      # Uncomment to require a password (then set FALKORDB_PASSWORD for the API).
+      # - REDIS_ARGS=--requirepass ${FALKORDB_PASSWORD}
+    volumes:
+      - falkordb_data:/var/lib/falkordb/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "GRAPH.LIST"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  api:
+    build: .
+    profiles: ["api"]
+    depends_on:
+      falkordb:
+        condition: service_healthy
+    environment:
+      - FALKORDB_HOST=falkordb
+      - FALKORDB_PORT=6379
+      - FALKORDB_PASSWORD=${FALKORDB_PASSWORD:-}
+      - COMPANY_BRAIN_API_KEYS=${COMPANY_BRAIN_API_KEYS:-}
+    ports:
+      - "${API_PORT:-8000}:8000"
+
+volumes:
+  falkordb_data:

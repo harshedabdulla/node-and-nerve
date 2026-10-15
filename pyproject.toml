@@ -1,0 +1,62 @@
+[project]
+name = "company-brain"
+version = "0.1.0"
+description = "An open-source, graph-powered organizational context service for AI agents, built on FalkorDB."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Harshed Abdulla" }]
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3.12",
+    "Framework :: FastAPI",
+    "Topic :: Database",
+]
+dependencies = [
+    "falkordb>=1.8,<2",
+    "fastapi>=0.115",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.6",
+    "uvicorn>=0.32",
+]
+
+[project.scripts]
+company-brain = "company_brain.cli:main"
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "mypy>=2.4.0",
+    "pytest>=9.1.1",
+    "ruff>=0.17.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.11.26,<0.12.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "SIM", "RUF"]
+ignore = ["S101", "S311", "SIM905"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S105", "S106"]
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+packages = ["company_brain"]
+mypy_path = "src"
+
+[[tool.mypy.overrides]]
+module = ["falkordb", "falkordb.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["integration: requires a running FalkorDB (set FALKORDB_HOST/FALKORDB_PORT)"]
+filterwarnings = ["ignore:Using `httpx` with `starlette.testclient`"]

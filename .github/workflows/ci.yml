@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      falkordb:
+        image: falkordb/falkordb-server:v4.20.7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli GRAPH.LIST"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.11.26"
+      - run: uv sync --locked
+      - run: uv run ruff format --check src tests
+      - run: uv run ruff check src tests
+      - run: uv run mypy
+      - name: Unit tests (no database)
+        run: uv run pytest -m "not integration"
+      - name: Integration tests (real FalkorDB)
+        run: uv run pytest -m integration
+        env:
+          FALKORDB_HOST: localhost
+          FALKORDB_PORT: "6379"
+      - name: Evaluation
+        run: uv run company-brain eval
