@@ -207,17 +207,44 @@ The prototype loads synthetic seed data. In order of simplicity, the next input 
 
 None of these are implemented. Google Sheets, WhatsApp, Telegram, OCR and a frontend are out of scope for this milestone.
 
-## Using it from an AI agent
+## AI agent, Telegram bot and evidence-graph trace links
 
-[examples/agent/contract_tools.json](../examples/agent/contract_tools.json) defines four tools in Anthropic tool-use format, each mapped to one endpoint above. A unit test keeps their schemas in sync with the API. [examples/agent/system_prompt.md](../examples/agent/system_prompt.md) gives the grounding rules:
+These are optional layers on top of the deterministic engine. The investigations work without them.
 
-- every figure comes from a tool result;
-- profit is always called provisional;
-- cite `source_ids`;
-- report decisions, unknowns and inconsistencies without resolving them;
-- never split a cost, assign labour or assume a payment.
+**Agent** ([`agent.py`](../src/company_brain/agent.py)): a small tool-calling loop against any OpenAI-compatible endpoint, by default OpenRouter with `anthropic/claude-sonnet-5.5`. It uses only the standard library. The model gets four tools that run the investigator in-process: `investigate_contract`, `list_contracts`, `list_unallocated_costs`, `list_changes_since`. It never sees the database and never computes a figure itself. The system prompt requires it to:
 
-**Not tested with a live model**: no LLM API key was available in this environment, and the engine itself needs none.
+- cite book pages (`[MPB p.16]`),
+- keep "provisional",
+- report decisions, unknowns and inconsistencies without resolving them.
+
+```sh
+# .env: OPEN_ROUTER_API_KEY=..., optionally OPENROUTER_MODEL=...
+uv run company-brain ask "Which bills on CT-104 are still unpaid, and which are unclear?"
+```
+
+**Telegram** ([`telegram_bot.py`](../src/company_brain/telegram_bot.py)): long polling, so no public URL is needed. Commands:
+
+- `/contracts`, `/contract CT-104` and `/unallocated` answer straight from the graph, with no AI.
+- Any other text goes to the agent.
+
+Replies use Telegram HTML: bold sections, bullets and italic citations. Only chat ids in `TELEGRAM_ALLOWED_CHAT_IDS` get answers; others are told their chat id and nothing else. The bot only replies in the chat that asked. It never messages customers or suppliers and never changes records.
+
+```sh
+# .env: TELEGRAM_BOT_TOKEN=... (from @BotFather), TELEGRAM_ALLOWED_CHAT_IDS=<your chat id>
+uv run company-brain telegram
+```
+
+**Trace links** ([`trace.py`](../src/company_brain/trace.py)): each answer that involves a contract ends with "Evidence graph for CT-104". The link opens `/trace/{company}/contracts/{contract}` on the API. That page re-runs the investigation live against FalkorDB and draws:
+
+- the traversed records and links,
+- book pages,
+- dashed links for shared or unsplit costs,
+- rings on decision, unknown and inconsistency items,
+- the items named in the answer, highlighted.
+
+Tapping a node shows its links and which page asserted each. Links open without an API key, so they are HMAC-signed over company, contract and expiry (7 days) with `TRACE_LINK_SECRET`. A forged, extended or re-targeted link gets 403. Run the API (`uv run uvicorn --factory company_brain.api:app`) where `PUBLIC_BASE_URL` points. `localhost` works when Telegram runs on the same computer; for a phone, expose the API through a tunnel.
+
+Tested live during development: the agent against OpenRouter, the bot against Telegram with one allowed chat, and the trace page rendered in Chrome. Automated tests use fake model and Telegram transports and a real FalkorDB.
 
 ## Limitations
 

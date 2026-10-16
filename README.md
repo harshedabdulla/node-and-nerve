@@ -193,7 +193,16 @@ Inconsistencies between books
   - PUR-2058 (Sri Balaji Steels, ₹58,000): the purchase book says 'paid', but the supplier payment book shows ₹0 [...]
 ```
 
-Full JSON: [examples/contract-investigation.json](examples/contract-investigation.json). Tool definitions and a grounding prompt for an AI agent are in [examples/agent](examples/agent). They are not tested with a live model.
+Full JSON: [examples/contract-investigation.json](examples/contract-investigation.json).
+
+Ask in plain language, from the terminal or Telegram. An LLM (via OpenRouter) calls the investigations as tools, cites book pages and keeps figures provisional. Each answer links to a signed **evidence-graph trace page**, drawn live from FalkorDB, with the items in the answer highlighted:
+
+```sh
+uv run company-brain ask "Which bills on CT-104 are still unpaid, and which are unclear?"
+uv run company-brain telegram     # private bot: /contracts, /contract CT-104, /unallocated, or ask
+```
+
+Setup and safety rules are in [docs/contract-costing.md](docs/contract-costing.md#ai-agent-telegram-bot-and-evidence-graph-trace-links).
 
 ## Cashflow Radar
 

@@ -21,6 +21,19 @@ class Settings(BaseSettings):
     # Empty disables authentication (local development only).
     company_brain_api_keys: SecretStr = SecretStr("")
 
+    # Optional AI agent (OpenRouter, OpenAI-compatible) and Telegram bot. The engine
+    # itself never needs these.
+    open_router_api_key: SecretStr = SecretStr("")
+    openrouter_model: str = "anthropic/claude-sonnet-5.5"
+    telegram_bot_token: SecretStr = SecretStr("")
+    # Comma-separated Telegram chat ids allowed to talk to the bot. Empty = nobody.
+    telegram_allowed_chat_ids: str = ""
+    agent_company_id: str = "kaveri-body-works"
+    # Trace links: where the API is reachable from the reader's browser, and the secret
+    # used to sign links (they open without an API key, so they are signed and expire).
+    public_base_url: str = "http://localhost:8000"
+    trace_link_secret: SecretStr = SecretStr("")
+
 
 @lru_cache
 def get_settings() -> Settings:

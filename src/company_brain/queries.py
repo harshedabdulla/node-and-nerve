@@ -398,6 +398,17 @@ RETURN iid AS invoice_id, k.id AS commitment_id, properties(k) AS commitment,
 ORDER BY invoice_id, commitment_id""",
 )
 
+# M9: display labels for a set of entities (trace pages).
+MF_LABELS = Query(
+    name="mf_labels",
+    cypher="""
+UNWIND $ids AS eid
+MATCH (n:Entity {id: eid})
+RETURN n.id AS id, n.kind AS kind, coalesce(n.source_record_id, n.id) AS ref, n.name AS name,
+       n.status AS status, n.amount_paise AS amount_paise""",
+)
+
+
 # Note (FalkorDB v4.20.7): a variable name reused across pattern comprehensions in one
 # RETURN can make later comprehensions come back empty, so each uses its own names.
 
@@ -613,5 +624,6 @@ def all_queries() -> list[Query]:
         MF_UNAPPLIED_PAYMENTS,
         MF_CONTRACTS_OVERVIEW,
         MF_CHANGED_SINCE,
+        MF_LABELS,
     ]
     return queries

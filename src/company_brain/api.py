@@ -2,11 +2,11 @@
 
 import logging
 from collections.abc import Callable
-from datetime import datetime
+from datetime import date, datetime
 from typing import Annotated, Any
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Path, Query, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 from company_brain import __version__
@@ -45,6 +45,7 @@ from company_brain.models import (
     iso,
 )
 from company_brain.schema import COMPANY_ID_RE, KIND_PROPERTIES, RELATIONSHIP_RULES, Kind
+from company_brain.trace import render_trace_page, verify
 
 log = logging.getLogger("company_brain")
 
@@ -267,6 +268,30 @@ def create_app(
         since: Annotated[datetime, Query(description="ISO timestamp, e.g. 2026-10-15T18:00:00Z")],
     ) -> list[dict[str, Any]]:
         return ContractCostInvestigator(s, company_id).changed_since(iso(since))
+
+    @app.get(
+        "/trace/{company_id}/contracts/{contract}",
+        tags=["contracts"],
+        response_class=HTMLResponse,
+        summary="Signed, expiring page showing the evidence graph behind a contract investigation",
+    )
+    def contract_trace(
+        company_id: CompanyId,
+        contract: str,
+        s: Store,
+        exp: int,
+        sig: str,
+        as_of: date | None = None,
+        focus: str = "",
+    ) -> HTMLResponse:
+        secret = settings.trace_link_secret.get_secret_value()
+        if not verify(secret, company_id, contract, exp, sig):
+            raise HTTPException(status_code=403, detail="trace link is invalid or has expired")
+        response = ContractCostInvestigator(s, company_id).investigate(
+            ContractCostRequest(contract=contract, as_of=as_of)
+        )
+        refs = [part for part in focus.split(",") if part][:50]
+        return HTMLResponse(render_trace_page(s, company_id, response, refs))
 
     @app.get(
         "/v1/companies/{company_id}/entities/{entity_id}",

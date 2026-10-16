@@ -8,10 +8,12 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from collections.abc import Callable
 from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any
 
+from company_brain.agent import AgentError, ContractAgent, ToolBox
 from company_brain.cashflow import (
     CashflowInvestigator,
     CashflowRequest,
@@ -615,6 +617,87 @@ def cmd_ct_demo(args: argparse.Namespace) -> None:
     _print_diff(_ct_summary(first), _ct_summary(after))
 
 
+# ---------------------------------------------------------------- agent
+
+
+def make_agent(company: str | None = None) -> ContractAgent:
+    settings = get_settings()
+    investigator = ContractCostInvestigator(_store(), company or settings.agent_company_id)
+    return ContractAgent(
+        tools=ToolBox(investigator, as_of=CASHFLOW_AS_OF),
+        api_key=settings.open_router_api_key.get_secret_value(),
+        model=settings.openrouter_model,
+    )
+
+
+def make_trace_url(company: str) -> Callable[[str, list[str]], str] | None:
+    """Signed trace-link factory, or None when TRACE_LINK_SECRET is not set."""
+    from company_brain.trace import trace_link
+
+    settings = get_settings()
+    secret = settings.trace_link_secret.get_secret_value()
+    if not secret:
+        return None
+
+    def url(contract: str, focus: list[str]) -> str:
+        return trace_link(
+            settings.public_base_url, secret, company, contract, as_of=CASHFLOW_AS_OF, focus=focus
+        )
+
+    return url
+
+
+def cmd_telegram(args: argparse.Namespace) -> int:
+    import logging
+
+    from company_brain.telegram_bot import Bot, parse_chat_ids, telegram_call
+
+    settings = get_settings()
+    token = settings.telegram_bot_token.get_secret_value()
+    if not token:
+        print("error: set TELEGRAM_BOT_TOKEN in .env (create a bot with @BotFather)")
+        return 2
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
+    call = telegram_call(token)
+    me = call("getMe", {})
+    allowed = parse_chat_ids(settings.telegram_allowed_chat_ids)
+    agent = make_agent(args.company) if settings.open_router_api_key.get_secret_value() else None
+    company = args.company or settings.agent_company_id
+    print(
+        f"bot @{me['username']} serving company {company}; AI agent: "
+        f"{settings.openrouter_model if agent else 'off'}; allowed chats: "
+        f"{sorted(allowed) or 'none yet (send /start to see your chat id)'}"
+    )
+    trace_url = make_trace_url(company)
+    if trace_url is None:
+        print("note: set TRACE_LINK_SECRET to add evidence-graph links to replies")
+    bot = Bot(call, ContractCostInvestigator(_store(), company), agent, allowed, trace_url)
+    try:
+        bot.run_forever()
+    except KeyboardInterrupt:
+        print("stopped")
+    return 0
+
+
+def cmd_ask(args: argparse.Namespace) -> int:
+    try:
+        answer = make_agent(args.company).ask(args.question)
+    except AgentError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+    print(answer.text)
+    used = ", ".join(f"{c['tool']}({json.dumps(c['arguments'])})" for c in answer.tool_calls)
+    print(f"\n[{answer.model}; Node & Nerve tools called: {used or 'none'}]")
+    trace_url = make_trace_url(args.company or get_settings().agent_company_id)
+    if trace_url:
+        from company_brain.trace import refs_in
+
+        focus = [r for r in refs_in(answer.text) if not r.startswith("CT-")]
+        for ref in answer.contracts:
+            print(f"Evidence graph for {ref}: {trace_url(ref, focus)}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="company-brain")
     parser.add_argument(
@@ -664,6 +747,12 @@ def main(argv: list[str] | None = None) -> int:
     c_demo = cf.add_parser("demo", help="import, investigate, update and compare")
     c_demo.set_defaults(func=cmd_cf_demo)
 
+    p_ask = sub.add_parser("ask", help="ask the AI agent (needs OPEN_ROUTER_API_KEY)")
+    p_ask.add_argument("question")
+    p_ask.set_defaults(func=cmd_ask)
+    p_tg = sub.add_parser("telegram", help="run the Telegram bot (needs TELEGRAM_BOT_TOKEN)")
+    p_tg.set_defaults(func=cmd_telegram)
+
     p_ct = sub.add_parser("contracts", help="contract cost investigation for a manufacturer")
     ct = p_ct.add_subparsers(dest="contracts_command", required=True)
     t_seed = ct.add_parser("seed", help="load the synthetic Kaveri Body Works books")
@@ -684,7 +773,7 @@ def main(argv: list[str] | None = None) -> int:
     t_demo.set_defaults(func=cmd_ct_demo)
 
     args = parser.parse_args(argv)
-    if args.command not in {"cashflow", "contracts"}:
+    if args.command not in {"cashflow", "contracts", "ask", "telegram"}:
         args.company = args.company or "northstar"
     try:
         code = args.func(args)
