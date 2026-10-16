@@ -1,0 +1,40 @@
+{
+  "_comment": "Tool definitions (Anthropic tool-use format) for an AI agent that answers questions about a manufacturer's contracts using Node & Nerve. Each tool maps to one HTTP endpoint; the agent must not compute or invent figures itself. Not tested against a live model in this repository.",
+  "tools": [
+    {
+      "name": "investigate_contract",
+      "description": "Recorded direct cost, provisional profit, money owed, and missing or conflicting information for one manufacturing contract. Calls POST /v1/companies/{company}/contracts/investigations. Every figure in the result is computed by Node & Nerve from recorded entries; cite the source_ids and keep the 'provisional' label.",
+      "endpoint": {"method": "POST", "path": "/v1/companies/{company}/contracts/investigations"},
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "contract": {"type": "string", "description": "Contract reference such as CT-104."},
+          "as_of": {"type": "string", "format": "date", "description": "Reporting date YYYY-MM-DD. Optional."}
+        },
+        "required": ["contract"]
+      }
+    },
+    {
+      "name": "list_contracts",
+      "description": "All contracts with value, recorded cost, provisional profit, amount still to receive, and which have incomplete cost records. Calls GET /v1/companies/{company}/contracts.",
+      "endpoint": {"method": "GET", "path": "/v1/companies/{company}/contracts"},
+      "input_schema": {"type": "object", "properties": {}}
+    },
+    {
+      "name": "list_unallocated_costs",
+      "description": "Recorded costs not charged to any contract (overheads, unassigned labour, costs awaiting a split) and supplier payments not applied to any bill. Calls GET /v1/companies/{company}/costs/unallocated.",
+      "endpoint": {"method": "GET", "path": "/v1/companies/{company}/costs/unallocated"},
+      "input_schema": {"type": "object", "properties": {}}
+    },
+    {
+      "name": "list_changes_since",
+      "description": "Cost records, payments and allocations added or changed after a timestamp. Calls GET /v1/companies/{company}/costs/changes?since=.",
+      "endpoint": {"method": "GET", "path": "/v1/companies/{company}/costs/changes"},
+      "input_schema": {
+        "type": "object",
+        "properties": {"since": {"type": "string", "format": "date-time", "description": "ISO timestamp."}},
+        "required": ["since"]
+      }
+    }
+  ]
+}

@@ -28,3 +28,12 @@ curl -s -X POST "$BASE/v1/companies/northstar/events" -H "$H" -H "X-API-Key: $KE
   -d '{"type": "ownership_changed", "event_id": "evt-001", "entity_id": "ticket:atlas-142",
        "new_owner_id": "person:lena-ortiz", "occurred_at": "2026-10-16T10:00:00Z"}'
 echo
+
+# Cashflow Radar: validate CSV records without writing, then investigate
+curl -s -X POST "$BASE/v1/companies/varsha-electricals/cashflow/imports" -H "$H" -H "X-API-Key: $KEY" \
+  -d '{"files": {"customers.csv": "customer_id,name,city\nCUST-001,Shree Ganesh Contractors,Pune\n"},
+       "dry_run": true}'
+echo
+curl -s -X POST "$BASE/v1/companies/varsha-electricals/cashflow/investigations" -H "$H" -H "X-API-Key: $KEY" \
+  -d '{"as_of": "2026-10-16", "horizon_days": 7}'
+echo

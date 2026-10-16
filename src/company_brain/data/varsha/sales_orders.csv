@@ -1,0 +1,6 @@
+sales_order_id,customer_id,order_date,required_by,amount,status,purchase_order_id,source_ids
+SO-101,CUST-001,2026-08-28,2026-09-01,472000.00,delivered,,SRC-001
+SO-102,CUST-003,2026-10-03,2026-10-21,260000.00,awaiting_stock,PO-302,
+SO-103,CUST-001,2026-10-06,2026-10-10,210000.00,delivered,,SRC-001
+SO-104,CUST-004,2026-10-06,2026-10-20,72000.00,awaiting_stock,PO-303,SRC-011
+SO-105,CUST-001,2026-10-01,2026-10-22,410000.00,open,PO-301,SRC-004

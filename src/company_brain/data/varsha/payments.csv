@@ -1,0 +1,4 @@
+payment_id,customer_id,received_on,amount,currency,status,method,reference,source_ids
+PAY-490,CUST-003,2026-09-08,56000.00,INR,cleared,NEFT,UTR-HDFC-0908-1182,SRC-002
+PAY-501,CUST-001,2026-10-05,172000.00,INR,cleared,RTGS,UTR-HDFC-1005-0417,SRC-002
+PAY-502,CUST-003,2026-10-14,85000.00,INR,pending,cheque,CHQ-004512,SRC-003

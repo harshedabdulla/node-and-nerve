@@ -11,6 +11,9 @@
 │ investigate.py  deterministic investigation                   │
 │ ingest.py       idempotent writes and change events           │
 │ lookup.py       entity view, decision provenance, connections │
+│ cashflow.py     Cashflow Radar receivables investigation      │
+│ csv_import.py   validated, idempotent CSV import              │
+│ contract_cost.py  manufacturing contract cost investigation   │
 ├───────────────────────────────────────────────────────────────┤
 │ queries.py  named Cypher templates     schema.py  model rules │
 ├───────────────────────────────────────────────────────────────┤
@@ -21,6 +24,8 @@
 ```
 
 There is no other datastore. FalkorDB is the system of record for the context graph.
+
+Cashflow Radar ([cashflow-radar.md](cashflow-radar.md)) is an application on the same layers: its kinds and relationships are added to `schema.py`, its queries to `queries.py`, and its import and investigation reuse `Ingestor`, `GraphStore`, the evidence-path accumulator and `sources_for`.
 
 ## Request flow: an investigation
 

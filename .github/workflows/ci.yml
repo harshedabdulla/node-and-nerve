@@ -36,3 +36,7 @@ jobs:
           FALKORDB_PORT: "6379"
       - name: Evaluation
         run: uv run company-brain eval
+      - name: Cashflow Radar demo
+        run: uv run company-brain cashflow demo
+      - name: Contract costing demo
+        run: uv run company-brain contracts demo

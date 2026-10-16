@@ -193,6 +193,14 @@ One template per depth, because the bound must be a literal. Closed (historical)
 
 The Project → Ticket → Incident → Source → Decision → Person chain is assembled from the rows above, not invented: the incident path (query 2), the incident's supporting source (query 3), that source's `MENTIONS` edge to a current decision (queries 3 and 8), and the decision's `DECIDED_BY` edge (query 6). Each edge in the output corresponds to an edge returned by FalkorDB.
 
+## Cashflow Radar reads
+
+`cf_receivables`, `cf_commitments_due`, `cf_dependency_paths` and `cf_sources_by_id` are described, with their Cypher, in [cashflow-radar.md](cashflow-radar.md#how-falkordb-does-the-work). Two dialect points they rely on: `sum()` returns a float, so balances are wrapped in `toInteger()`; and named paths in `OPTIONAL MATCH` are tested with `CASE WHEN p IS NULL THEN [] ELSE … END` before calling `relationships(p)`.
+
+## Contract costing reads
+
+The `mf_*` templates (contract, charges, category totals, noted-but-unsplit costs, unallocated costs, unapplied payments, overview, changes since) are described with their Cypher in [contract-costing.md](contract-costing.md#how-falkordb-does-the-work). Dialect point found while building them: reusing a variable name across pattern comprehensions in one `RETURN` made later comprehensions come back empty, so each comprehension uses its own variable names.
+
 ## FalkorDB dialect notes (v4.20.7)
 
 Found while building this; each one shaped a query above.

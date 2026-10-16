@@ -10,6 +10,12 @@ Company Brain is a small HTTP service. You load people, teams, projects, tickets
 
 No LLM, API key, agent framework or particular frontend is required.
 
+The repository contains the reusable engine (the `company_brain` package, also called **Node & Nerve**) and applications of it that share one graph engine, one evidence model and one API:
+
+- **Project Atlas** (organizational context): why is a project late, who owns the blockers, what evidence supports it. Described below.
+- **[Contract cost investigation](docs/contract-costing.md)** (manufacturing): how much has a lorry-body contract cost so far, what is its provisional profit, and what is missing. [Jump to the section](#contract-cost-investigation-manufacturing).
+- **[Cashflow Radar](docs/cashflow-radar.md)** (small-business receivables): which customers owe money, and which supplier payments or commitments due this week have a *documented* dependency on those collections. [Jump to the section](#cashflow-radar).
+
 ---
 
 ## The problem
@@ -110,6 +116,8 @@ Other commands:
 uv run company-brain eval            # graph vs. isolated-records baseline
 uv run company-brain demo-update     # apply change events and show how the answer shifts
 uv run company-brain seed --reset    # drop and reload the demo company
+uv run company-brain cashflow demo   # Cashflow Radar end to end (see below)
+uv run company-brain contracts demo  # manufacturing contract costing end to end (see below)
 uv run pytest                        # unit + integration tests (integration needs FalkorDB)
 uv run pytest -m "not integration"   # unit tests only, no database
 uv run ruff check src tests && uv run mypy
@@ -145,6 +153,88 @@ source:postmortem-009 -[MENTIONS]-> decision:dec-004
 decision:dec-004 -[DECIDED_BY]-> person:priya-nair
 ```
 
+## Contract cost investigation (manufacturing)
+
+The same engine, a different domain. A small lorry-body builder records purchases, wages, machinery costs, expenses and payments in separate paper books, and sends them to the CA at month end. It can't easily tell what a contract has cost so far. Full documentation, including the calculation model: [docs/contract-costing.md](docs/contract-costing.md).
+
+```sh
+uv run company-brain contracts seed --reset         # synthetic Kaveri Body Works: 5 contracts, 9 jobs, 131 records
+uv run company-brain contracts investigate CT-104   # cost, provisional profit, what is missing
+uv run company-brain contracts overview             # every contract, which have incomplete costs
+uv run company-brain contracts unallocated          # costs not charged to any contract
+uv run company-brain contracts demo                 # re-seed is a no-op; new entries change the answer
+```
+
+FalkorDB traverses `Contract <-PART_OF*0..1- Job <-CHARGED_TO {amount}- Purchase|Wage|MachineryCost|Expense`. From each entry it continues to the supplier or worker, the payments that settle it, and the book page that recorded it. A cost reaches a contract only through a `CHARGED_TO` edge, and only the amount on that edge counts. Shared bills are split, never copied. Entries the book only notes for a contract, without a split, are reported as decisions, not cost. Payments settle bills; they are never cost.
+
+Real output for CT-104 (abridged):
+
+```
+Recorded direct cost (provisional)
+  Materials          ₹7,59,900
+  Labour               ₹71,500
+  Machinery            ₹11,800
+  Other direct          ₹8,500
+  Total              ₹8,51,700
+  (35 charged entries; excluded: PUR-2056)
+
+Profitability (provisional, recorded direct costs only)
+  Contract value           ₹15,30,000
+  Provisional profit        ₹6,78,300  (44.3% of contract value)
+  If all ₹32,100 of unsplit costs noted for it were charged here: ₹6,46,200
+
+Decisions needed
+  - PUR-2053 (PU enamel paint, ₹28,500) is noted for CT-104, CT-105 with no split recorded. [...]
+  - SP-309: ₹25,000 paid to Sri Balaji Steels on 14 Oct 2026 is not applied to any bill. [...]
+Unknown, to verify
+  - WG-416: Murugan, Welding, 4 days, ₹3,600 has no job recorded. [...]
+  - PUR-2055 (Lakshmi Welding Stores, ₹31,000): payment SP-307 is recorded but not cleared. [...]
+Inconsistencies between books
+  - PUR-2058 (Sri Balaji Steels, ₹58,000): the purchase book says 'paid', but the supplier payment book shows ₹0 [...]
+```
+
+Full JSON: [examples/contract-investigation.json](examples/contract-investigation.json). Tool definitions and a grounding prompt for an AI agent are in [examples/agent](examples/agent). They are not tested with a live model.
+
+## Cashflow Radar
+
+A focused business application on the same engine, for a small distributor that keeps its records in spreadsheets, accounting exports and chat messages. Full documentation: [docs/cashflow-radar.md](docs/cashflow-radar.md).
+
+```sh
+uv run company-brain cashflow seed --reset    # import synthetic Varsha Electricals (Pune) from CSV
+uv run company-brain cashflow investigate     # as of 2026-10-16, commitments due within 7 days
+uv run company-brain cashflow demo            # re-import (no change), later payments, stale export
+uv run company-brain cashflow import ./my-csvs --dry-run   # validate your own files
+```
+
+What it does:
+
+1. Imports customers, suppliers, invoices, payments and allocations, sales and purchase orders, commitments, recorded dependencies and source documents from CSV ([templates](examples/cashflow-templates)). Every row is validated (types, dates, INR amounts, references, company) before anything is written; re-imports are idempotent and older rows never overwrite newer ones.
+2. Stores them as typed nodes and edges in the company's FalkorDB graph, with the source document that asserted each link.
+3. Investigates with four fixed Cypher queries: outstanding balances computed from *cleared* allocated payments, open non-superseded commitments due in the window, and the traversal `Customer <-BILLED_TO- Invoice <-DEPENDS_ON- Commitment -OWED_TO-> Supplier`, extended through `-FOR_ORDER-> PurchaseOrder <-SOURCED_FROM- SalesOrder -PLACED_BY-> Customer`.
+4. Returns findings marked `documented` or `recorded_without_source`, evidence paths, sources, conflicts, missing information, open questions, next steps, and draft reminders that are never sent.
+
+It never infers that an overdue invoice puts a payment at risk: a dependency exists only if it was recorded, and it is "documented" only if an active source backs it. Example (real output, abridged):
+
+```
+Needs attention
+  1. Follow up with Shree Ganesh Contractors about INV-1001 (₹3,00,000 outstanding) before 21 Oct 2026:
+     COM-201 to Kiran Cables Pvt Ltd (₹3,50,000) is documented as depending on it.
+  2. Confirm whether COM-203 really depends on INV-1004, and record the document that says so.
+  3. Review SRC-008 'Email from Patil Builders, 3 Oct 2026' disputing INV-1002 before sending a payment reminder.
+
+  [+] collection dependency: COM-201 'Pay Kiran Cables for PO-301' (₹3,50,000 to Kiran Cables Pvt Ltd, due 21 Oct 2026)
+      is recorded as depending on collecting INV-1001 from Shree Ganesh Contractors (₹3,00,000 outstanding, 15 days
+      overdue). Documented by SRC-007 'WhatsApp message to Kiran Cables, 12 Oct 2026'.
+  [+] linked order: COM-201 pays for PO-301 (status: received), which supplies SO-105 for Shree Ganesh Contractors
+      (the same customer that owes INV-1001); status: open, required by 22 Oct 2026.
+
+Not established by the records
+  ? No dependency on a customer collection is recorded for COM-202R (Sunrise Switchgear, ₹2,40,000). Whether it
+    relies on incoming payments is not recorded.
+```
+
+Full JSON: [examples/cashflow-investigation.json](examples/cashflow-investigation.json). Google Sheets and Telegram were evaluated and documented, not built ([details](docs/cashflow-radar.md#integrations-evaluated-not-implemented)).
+
 ## API
 
 | Method | Path | Purpose |
@@ -160,6 +250,12 @@ decision:dec-004 -[DECIDED_BY]-> person:priya-nair
 | GET | `/v1/companies/{company}/entities/{id}` | Entity with its relationships. |
 | GET | `/v1/companies/{company}/decisions/{id}/sources` | Decision provenance. |
 | GET | `/v1/companies/{company}/connections?from=&to=&max_depth=` | Bounded paths between two entities. |
+| POST | `/v1/companies/{company}/cashflow/imports` | Cashflow Radar: validate and import CSV records (`dry_run` supported). |
+| POST | `/v1/companies/{company}/cashflow/investigations` | Cashflow Radar: receivables and documented dependencies. |
+| POST | `/v1/companies/{company}/contracts/investigations` | Contract costing: recorded cost, provisional profit, gaps for one contract. |
+| GET | `/v1/companies/{company}/contracts` | Contract costing: all contracts and which have incomplete costs. |
+| GET | `/v1/companies/{company}/costs/unallocated` | Contract costing: costs not charged to any contract. |
+| GET | `/v1/companies/{company}/costs/changes?since=` | Contract costing: entries and allocations changed since a timestamp. |
 
 There is deliberately no endpoint that accepts Cypher.
 
@@ -250,7 +346,8 @@ The scoring code is in [`evaluation.py`](src/company_brain/evaluation.py) and ru
 ```
 HTTP API (FastAPI, validation, API keys)        api.py, auth.py, models.py
     │
-Application services                            investigate.py, ingest.py, lookup.py
+Application services                            investigate.py, ingest.py, lookup.py,
+                                                cashflow.py, csv_import.py, contract_cost.py
     │
 Named query templates + schema rules            queries.py, schema.py
     │
@@ -277,7 +374,7 @@ Current limitations:
 - Investigations focus on projects, components and tickets. Blocker chains are followed two hops; paths at most four.
 - Expertise weights (resolved incident 3, owns component 2, authored incident source 1, member of owning team 1) are a fixed heuristic.
 - Re-assigning ownership back to a previous owner reuses (and reopens) the earlier `OWNS` edge, so that interval's history is overwritten.
-- No document parsing or external connectors yet; data comes in through the API or the seed file.
+- No document parsing or external connectors yet; data comes in through the API, CSV import or the seed files.
 - Built and tested against FalkorDB v4.20.7 only. See dialect notes in [docs/cypher.md](docs/cypher.md).
 
 ## Using it from an agent
@@ -297,7 +394,8 @@ Ideas for connectors (Jira/GitHub issues, Slack, documents, CRM) are in [docs/co
 - **Event**: Graph Hacks: Context for AI Agents (WeMakeDevs × FalkorDB), October 15–18, 2026.
 - **Track**: 03 — Company Brain.
 - **Timeline**: this repository was created and all code was written during the hackathon window, starting October 15, 2026. No pre-existing code was used apart from the open-source libraries listed in `pyproject.toml`.
-- **Data**: all data is synthetic. Northstar Systems, its people, vendors and URIs (`*.example`) are fictional.
+- **Data**: all data is synthetic. Northstar Systems, Varsha Electricals and Kaveri Body Works, their people, customers, suppliers, workers, vehicle numbers, amounts, documents and URIs (`*.example`) are fictional.
+- **Cashflow Radar** and the **manufacturing contract cost investigation** were added on October 16, 2026, on top of the engine built on October 15.
 - **AI assistance disclosure**: built with the help of an AI coding assistant (Claude Code, by Anthropic), which wrote much of the code and documentation under the author's direction. The author reviewed the design, graph model, queries and results, and can explain them.
 
 ## License

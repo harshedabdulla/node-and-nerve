@@ -1,0 +1,34 @@
+{
+ "_comment": "Synthetic records entered on 16 Oct 2026 after the base Kaveri Body Works books (used by `company-brain contracts demo`).",
+ "company_id": "kaveri-body-works",
+ "observed_at": "2026-10-16T12:00:00Z",
+ "entities": [
+  {"id": "payment:sp-307", "name": "Supplier payment (cheque, CHQ 118842)",
+   "properties": {"source_record_id": "SP-307", "status": "cleared"}},
+  {"id": "purchase:pur-2063", "name": "Thinner and putty (6 tin)",
+   "properties": {"source_record_id": "PUR-2063", "status": "recorded", "purchase_date": "2026-10-16",
+                  "material_type": "paint", "item": "Thinner and putty", "quantity": 6, "unit": "tin",
+                  "unit_price_paise": 108000, "amount_paise": 648000, "currency": "INR", "paid_status": "unpaid"}}
+ ],
+ "sources": [
+  {"id": "source:bank-2026-10-16", "name": "Bank statement, 16 Oct 2026", "source_type": "bank_statement",
+   "source_system": "bank_statement", "source_record_id": "Bank 2026-10-16",
+   "excerpt": "16 Oct: cheque 118842 to Lakshmi Welding Stores, Rs 31,000, cleared.",
+   "published_at": "2026-10-16", "supports": ["payment:sp-307"]},
+  {"id": "source:owner-note-2026-10-16", "name": "Owner's allocation note, 16 Oct 2026", "source_type": "document",
+   "source_system": "owner_note", "source_record_id": "Note 2026-10-16",
+   "excerpt": "PU enamel PUR-2053: 2 drums for 104B (Rs 19,000), 1 drum for 105A (Rs 9,500). Murugan 12-15 Oct was on 104B.",
+   "published_at": "2026-10-16", "mentions": ["purchase:pur-2053", "wage:wg-416"]},
+  {"id": "source:mpb-p17", "name": "Material purchase book, page 17", "source_type": "book_entry",
+   "source_system": "material_purchase_book", "source_record_id": "MPB p.17",
+   "excerpt": "16 Oct Ganesh Paints, thinner and putty 6 tins @1,080 for 104C, unpaid.",
+   "published_at": "2026-10-16", "supports": ["purchase:pur-2063"]}
+ ],
+ "relationships": [
+  {"type": "CHARGED_TO", "from": "purchase:pur-2053", "to": "job:j-104b", "source_id": "source:owner-note-2026-10-16", "properties": {"amount_paise": 1900000}},
+  {"type": "CHARGED_TO", "from": "purchase:pur-2053", "to": "job:j-105a", "source_id": "source:owner-note-2026-10-16", "properties": {"amount_paise": 950000}},
+  {"type": "CHARGED_TO", "from": "wage:wg-416", "to": "job:j-104b", "source_id": "source:owner-note-2026-10-16", "properties": {"amount_paise": 360000}},
+  {"type": "SUPPLIED_BY", "from": "purchase:pur-2063", "to": "supplier:sup-02", "source_id": "source:mpb-p17"},
+  {"type": "CHARGED_TO", "from": "purchase:pur-2063", "to": "job:j-104c", "source_id": "source:mpb-p17", "properties": {"amount_paise": 648000}}
+ ]
+}

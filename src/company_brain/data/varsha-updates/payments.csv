@@ -1,0 +1,2 @@
+payment_id,customer_id,received_on,amount,currency,status,method,reference,source_ids
+PAY-503,CUST-001,2026-10-20,300000.00,INR,cleared,RTGS,UTR-HDFC-1020-0921,SRC-013

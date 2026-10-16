@@ -2,14 +2,25 @@
 
 import logging
 from collections.abc import Callable
+from datetime import datetime
 from typing import Annotated, Any
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Path, Query, Request
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel, ConfigDict, Field
 
 from company_brain import __version__
 from company_brain.auth import ApiKeys
+from company_brain.cashflow import CashflowInvestigator, CashflowRequest, CashflowResponse
 from company_brain.config import Settings, get_settings
+from company_brain.contract_cost import (
+    ContractCostInvestigator,
+    ContractCostRequest,
+    ContractCostResponse,
+    OverviewResponse,
+    UnallocatedResponse,
+)
+from company_brain.csv_import import FILES, MAX_FILE_CHARS, CsvImporter, ImportReport
 from company_brain.graph import (
     CompanyNotFound,
     FalkorDBStore,
@@ -31,6 +42,7 @@ from company_brain.models import (
     RelationshipInput,
     SourceInput,
     WriteResult,
+    iso,
 )
 from company_brain.schema import COMPANY_ID_RE, KIND_PROPERTIES, RELATIONSHIP_RULES, Kind
 
@@ -44,6 +56,25 @@ CompanyId = Annotated[
         examples=["northstar"],
     ),
 ]
+
+
+class CsvImportRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    files: dict[str, Annotated[str, Field(max_length=MAX_FILE_CHARS)]] = Field(
+        min_length=1,
+        max_length=len(FILES),
+        description=f"CSV text by file name. Accepted names: {', '.join(FILES)}.",
+        examples=[
+            {"customers.csv": "customer_id,name,city\nCUST-001,Shree Ganesh Contractors,Pune\n"}
+        ],
+    )
+    dry_run: bool = Field(default=False, description="Validate only; write nothing.")
+    observed_at: datetime | None = Field(
+        default=None,
+        description="When these records were exported. Rows without updated_at use it. "
+        "Older versions never overwrite newer ones. Defaults to now.",
+    )
 
 
 def create_app(
@@ -165,6 +196,77 @@ def create_app(
         company_id: Company, body: InvestigationRequest, s: Store
     ) -> InvestigationResponse:
         return Investigator(s, company_id).investigate(body)
+
+    @app.post(
+        "/v1/companies/{company_id}/cashflow/imports",
+        tags=["cashflow"],
+        response_model=ImportReport,
+        summary="Validate and import business records from CSV (all-or-nothing validation)",
+        responses={
+            422: {"model": ImportReport, "description": "Validation failed; nothing written"}
+        },
+    )
+    def cashflow_import(company_id: Company, body: CsvImportRequest, s: Store) -> Any:
+        report = CsvImporter(s, company_id).run(
+            body.files, dry_run=body.dry_run, observed_at=body.observed_at, source_system="api"
+        )
+        if not report.valid:
+            return JSONResponse(status_code=422, content=report.model_dump(mode="json"))
+        return report
+
+    @app.post(
+        "/v1/companies/{company_id}/cashflow/investigations",
+        tags=["cashflow"],
+        response_model=CashflowResponse,
+        response_model_by_alias=True,
+        summary="Who owes money, and which commitments have a documented dependency on it",
+    )
+    def cashflow_investigate(
+        company_id: Company, body: CashflowRequest, s: Store
+    ) -> CashflowResponse:
+        return CashflowInvestigator(s, company_id).investigate(body)
+
+    @app.post(
+        "/v1/companies/{company_id}/contracts/investigations",
+        tags=["contracts"],
+        response_model=ContractCostResponse,
+        response_model_by_alias=True,
+        summary="Recorded cost, provisional profit and missing information for a contract",
+    )
+    def contract_investigate(
+        company_id: Company, body: ContractCostRequest, s: Store
+    ) -> ContractCostResponse:
+        return ContractCostInvestigator(s, company_id).investigate(body)
+
+    @app.get(
+        "/v1/companies/{company_id}/contracts",
+        tags=["contracts"],
+        response_model=OverviewResponse,
+        summary="All contracts with provisional figures and which have incomplete costs",
+    )
+    def contracts_overview(company_id: Company, s: Store) -> OverviewResponse:
+        return ContractCostInvestigator(s, company_id).overview()
+
+    @app.get(
+        "/v1/companies/{company_id}/costs/unallocated",
+        tags=["contracts"],
+        response_model=UnallocatedResponse,
+        summary="Recorded costs not charged to any contract, and unapplied supplier payments",
+    )
+    def costs_unallocated(company_id: Company, s: Store) -> UnallocatedResponse:
+        return ContractCostInvestigator(s, company_id).unallocated()
+
+    @app.get(
+        "/v1/companies/{company_id}/costs/changes",
+        tags=["contracts"],
+        summary="Cost records, payments and allocations added or changed since a timestamp",
+    )
+    def costs_changed(
+        company_id: Company,
+        s: Store,
+        since: Annotated[datetime, Query(description="ISO timestamp, e.g. 2026-10-15T18:00:00Z")],
+    ) -> list[dict[str, Any]]:
+        return ContractCostInvestigator(s, company_id).changed_since(iso(since))
 
     @app.get(
         "/v1/companies/{company_id}/entities/{entity_id}",

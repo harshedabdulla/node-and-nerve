@@ -16,6 +16,23 @@ Every node has two labels: `Entity` (for the unique id constraint and generic lo
 | decision | `Decision` | `decision:dec-004` | `status`, `decided_at` |
 | component | `Component` | `component:billing-gateway` | |
 | source | `Source` | `source:postmortem-009` | `uri`, `source_type`, `excerpt`, `status`, `published_at` |
+| customer | `Customer` | `customer:cust-001` | `city` |
+| supplier | `Supplier` | `supplier:sup-001` | `city` |
+| invoice | `Invoice` | `invoice:inv-1001` | `status`, `issue_date`, `due_date`, `amount_paise`, `currency`, `expected_payment_date` |
+| payment | `Payment` | `payment:pay-501` | `status`, `received_on`, `amount_paise`, `currency`, `method`, `reference` |
+| salesorder | `SalesOrder` | `salesorder:so-105` | `status`, `order_date`, `required_by`, `amount_paise`, `currency` |
+| purchaseorder | `PurchaseOrder` | `purchaseorder:po-301` | `status`, `order_date`, `expected_delivery`, `amount_paise`, `currency` |
+| commitment | `Commitment` | `commitment:com-201` | `status`, `commitment_type`, `due_date`, `amount_paise`, `currency` |
+
+| contract | `Contract` | `contract:ct-104` | `status`, `contract_date`, `expected_completion`, `body_count`, `body_type`, `amount_paise`, `currency` |
+| job | `Job` | `job:j-104a` | `status`, `body_type`, `chassis_ref`, `started_on`, `completed_on` |
+| worker | `Worker` | `worker:w-01` | `role`, `daily_rate_paise` |
+| purchase | `Purchase` | `purchase:pur-2047` | `status`, `paid_status`, `purchase_date`, `bill_ref`, `material_type`, `item`, `quantity`, `unit`, `unit_price_paise`, `amount_paise` |
+| wage | `Wage` | `wage:wg-401` | `status`, `paid_status`, `work_date`, `period_end`, `days`, `work_type`, `amount_paise` |
+| machinerycost | `MachineryCost` | `machinerycost:mc-401` | `status`, `paid_status`, `cost_date`, `cost_type`, `machine`, `quantity`, `unit`, `amount_paise` |
+| expense | `Expense` | `expense:ex-401` | `status`, `paid_status`, `expense_date`, `category`, `amount_paise` |
+
+Customer to commitment belong to [Cashflow Radar](cashflow-radar.md); contract to expense belong to the [contract cost investigation](contract-costing.md) (which also uses customer, supplier and payment). Money is integer paise (INR only); date properties are `YYYY-MM-DD` strings.
 
 Common properties on every node: `id`, `kind`, `name`, `description`, `source_system`, `source_record_id`, `created_at`, `updated_at`.
 
@@ -26,8 +43,13 @@ Allowed status values:
 - incident: `open`, `mitigated`, `resolved`
 - decision: `proposed`, `accepted`, `rejected`
 - source: `active`, `withdrawn`
+- invoice: `open`, `partially_paid`, `paid`, `disputed`, `written_off`, `cancelled`
+- payment: `cleared`, `pending`, `bounced`
+- salesorder: `open`, `awaiting_stock`, `dispatched`, `delivered`, `cancelled`
+- purchaseorder: `draft`, `placed`, `partially_received`, `received`, `cancelled`
+- commitment: `open`, `fulfilled`, `cancelled`
 
-Source types: `document`, `conversation`, `ticket_record`, `postmortem`, `meeting_notes`, `email`, `other`.
+Source types: `document`, `conversation`, `ticket_record`, `postmortem`, `meeting_notes`, `email`, `accounting_record`, `bank_statement`, `message`, `spreadsheet`, `other`.
 
 ### Identifiers
 
@@ -55,11 +77,27 @@ GRAPH.CONSTRAINT CREATE <graph> UNIQUE NODE Entity PROPERTIES 1 id
 | `AFFECTS` | incident, decision | ticket, project, component | |
 | `RESOLVED` | person | incident | Basis for expertise |
 | `DECIDED_BY` | decision | person | Decision owner |
-| `SUPERSEDES` | decision | decision | Newer → older |
-| `SUPPORTED_BY` | decision, incident, ticket | source | The source is evidence for the record |
+| `SUPERSEDES` | decision, commitment | same kind | Newer → older |
+| `SUPPORTED_BY` | decision, incident, ticket, and every Cashflow Radar record | source | The source is evidence for the record |
 | `MENTIONS` | source | any non-source | The source refers to it, but is not evidence for it |
-| `CONTRADICTS` | source | decision, incident | The source disputes the record |
+| `CONTRADICTS` | source | decision, incident, invoice, payment, commitment | The source disputes the record |
 | `AUTHORED_BY` | source | person | |
+| `BILLED_TO` | invoice | customer | |
+| `RECEIVED_FROM` | payment | customer | |
+| `ALLOCATED_TO` | payment | invoice | `amount_paise` applied to that invoice |
+| `PLACED_BY` | salesorder | customer | |
+| `PLACED_WITH` | purchaseorder | supplier | |
+| `SOURCED_FROM` | salesorder | purchaseorder | The sales order waits on this stock |
+| `FOR_ORDER` | invoice, commitment | salesorder, purchaseorder | |
+| `OWED_TO` | commitment | supplier, customer | |
+| `DEPENDS_ON` | commitment | invoice | A recorded dependency on collecting the invoice; never inferred. `source_id` says who documented it |
+| `CHARGED_TO` | purchase, wage, machinerycost, expense | job, contract | `amount_paise`: the part of the entry borne there. The only way a cost reaches a contract |
+| `NOTED_FOR` | purchase, wage, machinerycost, expense | job, contract | The book links the entry to it without an amount: a pending decision, never cost |
+| `SUPPLIED_BY` | purchase, machinerycost, expense | supplier | |
+| `EARNED_BY` | wage | worker | |
+| `PAID_TO` | payment | supplier, worker | |
+
+`PART_OF` also links job → contract, `PLACED_BY` contract → customer, and `ALLOCATED_TO` payment → purchase, machinerycost, expense or contract. `SUPPORTED_BY` and `CONTRADICTS` accept the cost entries.
 
 Every edge has `created_at`, `updated_at`, `valid_from`, and may have:
 

@@ -1,0 +1,2670 @@
+{
+  "investigation_id": "ccr_49d37a8891e44226",
+  "company_id": "kaveri-body-works",
+  "as_of": "2026-10-16",
+  "contract": {
+    "id": "contract:ct-104",
+    "ref": "CT-104",
+    "name": "CT-104: 3 closed container bodies",
+    "customer_id": "customer:cus-04",
+    "customer_name": "Pon Logistics",
+    "status": "in_production",
+    "body_type": "closed container",
+    "body_count": 3,
+    "contract_date": "2026-09-10",
+    "expected_completion": "2026-10-31",
+    "value_paise": 153000000,
+    "jobs": [
+      {
+        "id": "job:j-104a",
+        "ref": "J-104A",
+        "status": "painting",
+        "started_on": "2026-09-14",
+        "completed_on": null
+      },
+      {
+        "id": "job:j-104b",
+        "ref": "J-104B",
+        "status": "fabrication",
+        "started_on": "2026-09-21",
+        "completed_on": null
+      },
+      {
+        "id": "job:j-104c",
+        "ref": "J-104C",
+        "status": "fabrication",
+        "started_on": "2026-09-28",
+        "completed_on": null
+      }
+    ],
+    "source_ids": [
+      "source:crg-p2"
+    ]
+  },
+  "cost_breakdown": {
+    "materials_paise": 75990000,
+    "labour_paise": 7150000,
+    "machinery_paise": 1180000,
+    "other_paise": 850000,
+    "total_paise": 85170000,
+    "entries": 35,
+    "excluded_void": [
+      "PUR-2056"
+    ],
+    "excluded_without_amount": []
+  },
+  "profitability": {
+    "contract_value_paise": 153000000,
+    "recorded_direct_cost_paise": 85170000,
+    "provisional_profit_paise": 67830000,
+    "provisional_margin_percent": "44.3",
+    "pending_allocation_paise": 3210000,
+    "profit_if_all_pending_charged_here_paise": 64620000,
+    "label": "provisional, based on recorded direct costs only"
+  },
+  "customer_account": {
+    "contract_value_paise": 153000000,
+    "received_paise": 80000000,
+    "pending_receipts_paise": 0,
+    "outstanding_paise": 73000000,
+    "receipts": [
+      {
+        "id": "payment:cr-104-1",
+        "ref": "CR-104-1",
+        "status": "cleared",
+        "received_on": "2026-09-10",
+        "method": "NEFT",
+        "reference": "UTR 0910-1401",
+        "amount_paise": 50000000,
+        "source_id": "source:rcb-p3"
+      },
+      {
+        "id": "payment:cr-104-2",
+        "ref": "CR-104-2",
+        "status": "cleared",
+        "received_on": "2026-10-05",
+        "method": "cheque",
+        "reference": "CHQ 552019",
+        "amount_paise": 30000000,
+        "source_id": "source:rcb-p3"
+      }
+    ]
+  },
+  "supplier_bills": [
+    {
+      "record_id": "expense:ex-401",
+      "ref": "EX-401",
+      "supplier": "Velan Transport",
+      "bill_amount_paise": 600000,
+      "charged_here_paise": 400000,
+      "paid_cleared_paise": 0,
+      "paid_pending_paise": 0,
+      "outstanding_paise": 0,
+      "book_paid_status": "paid",
+      "reconciliation": "consistent",
+      "settled_in": "expense_book",
+      "shared_with": [
+        "contract:ct-105"
+      ]
+    },
+    {
+      "record_id": "machinerycost:mc-401",
+      "ref": "MC-401",
+      "supplier": "Arun Crane & Equipment Hire",
+      "bill_amount_paise": 700000,
+      "charged_here_paise": 700000,
+      "paid_cleared_paise": 0,
+      "paid_pending_paise": 0,
+      "outstanding_paise": 700000,
+      "book_paid_status": "unpaid",
+      "reconciliation": "consistent",
+      "settled_in": "supplier_payment_book",
+      "shared_with": []
+    },
+    {
+      "record_id": "machinerycost:mc-402",
+      "ref": "MC-402",
+      "supplier": "Arun Crane & Equipment Hire",
+      "bill_amount_paise": 480000,
+      "charged_here_paise": 480000,
+      "paid_cleared_paise": 480000,
+      "paid_pending_paise": 0,
+      "outstanding_paise": 0,
+      "book_paid_status": "paid",
+      "reconciliation": "consistent",
+      "settled_in": "supplier_payment_book",
+      "shared_with": []
+    },
+    {
+      "record_id": "purchase:pur-2041",
+      "ref": "PUR-2041",
+      "supplier": "Sri Balaji Steels",
+      "bill_amount_paise": 35700000,
+      "charged_here_paise": 35700000,
+      "paid_cleared_paise": 35700000,
+      "paid_pending_paise": 0,
+      "outstanding_paise": 0,
+      "book_paid_status": "paid",
+      "reconciliation": "consistent",
+      "settled_in": "supplier_payment_book",
+      "shared_with": []
+    },
+    {
+      "record_id": "purchase:pur-2042",
+      "ref": "PUR-2042",
+      "supplier": "Sri Balaji Steels",
+      "bill_amount_paise": 16740000,
+      "charged_here_paise": 16740000,
+      "paid_cleared_paise": 10000000,
+      "paid_pending_paise": 0,
+      "outstanding_paise": 6740000,
+      "book_paid_status": "partly_paid",
+      "reconciliation": "consistent",
+      "settled_in": "supplier_payment_book",
+      "shared_with": []
+    },
+    {
+      "record_id": "purchase:pur-2047",
+      "ref": "PUR-2047",
+      "supplier": "Coimbatore Steel Traders",
+      "bill_amount_paise": 13800000,
+      "charged_here_paise": 9200000,
+      "paid_cleared_paise": 0,
+      "paid_pending_paise": 0,
+      "outstanding_paise": 13800000,
+      "book_paid_status": "unpaid",
+      "reconciliation": "consistent",
+      "settled_in": "supplier_payment_book",
+      "shared_with": [
+        "job:j-105a"
+      ]
+    },
+    {
+      "record_id": "purchase:pur-2050",
+      "ref": "PUR-2050",
+      "supplier": "Ganesh Paints & Hardware",
+      "bill_amount_paise": 2480000,
+      "charged_here_paise": 2480000,
+      "paid_cleared_paise": 2480000,
+      "paid_pending_paise": 0,
+      "outstanding_paise": 0,
+      "book_paid_status": "paid",
+      "reconciliation": "consistent",
+      "settled_in": "supplier_payment_book",
+      "shared_with": []
+    },
+    {
+      "record_id": "purchase:pur-2055",
+      "ref": "PUR-2055",
+      "supplier": "Lakshmi Welding Stores",
+      "bill_amount_paise": 3100000,
+      "charged_here_paise": 3100000,
+      "paid_cleared_paise": 0,
+      "paid_pending_paise": 3100000,
+      "outstanding_paise": 3100000,
+      "book_paid_status": "paid",
+      "reconciliation": "unconfirmed",
+      "settled_in": "supplier_payment_book",
+      "shared_with": []
+    },
+    {
+      "record_id": "purchase:pur-2057",
+      "ref": "PUR-2057",
+      "supplier": "Lakshmi Welding Stores",
+      "bill_amount_paise": 720000,
+      "charged_here_paise": 720000,
+      "paid_cleared_paise": 720000,
+      "paid_pending_paise": 0,
+      "outstanding_paise": 0,
+      "book_paid_status": "paid",
+      "reconciliation": "consistent",
+      "settled_in": "supplier_payment_book",
+      "shared_with": []
+    },
+    {
+      "record_id": "purchase:pur-2058",
+      "ref": "PUR-2058",
+      "supplier": "Sri Balaji Steels",
+      "bill_amount_paise": 5800000,
+      "charged_here_paise": 5800000,
+      "paid_cleared_paise": 0,
+      "paid_pending_paise": 0,
+      "outstanding_paise": 5800000,
+      "book_paid_status": "paid",
+      "reconciliation": "mismatch",
+      "settled_in": "supplier_payment_book",
+      "shared_with": []
+    },
+    {
+      "record_id": "purchase:pur-2059",
+      "ref": "PUR-2059",
+      "supplier": "Ganesh Paints & Hardware",
+      "bill_amount_paise": 2250000,
+      "charged_here_paise": 2250000,
+      "paid_cleared_paise": 2250000,
+      "paid_pending_paise": 0,
+      "outstanding_paise": 0,
+      "book_paid_status": "paid",
+      "reconciliation": "consistent",
+      "settled_in": "supplier_payment_book",
+      "shared_with": []
+    }
+  ],
+  "wages_unpaid": [
+    {
+      "record_id": "wage:wg-414",
+      "ref": "WG-414",
+      "worker": "Ilango",
+      "amount_paise": 340000,
+      "period": "2026-10-12 to 2026-10-15",
+      "paid_status": "unpaid"
+    },
+    {
+      "record_id": "wage:wg-415",
+      "ref": "WG-415",
+      "worker": "Ravi",
+      "amount_paise": 320000,
+      "period": "2026-10-12 to 2026-10-15",
+      "paid_status": "unpaid"
+    }
+  ],
+  "cost_lines": [
+    {
+      "record_id": "expense:ex-401",
+      "ref": "EX-401",
+      "kind": "expense",
+      "category": "other",
+      "description": "Freight for square tube from Coimbatore",
+      "date": "2026-09-26",
+      "charged_to": "contract:ct-104",
+      "charged_to_ref": "CT-104",
+      "charged_paise": 400000,
+      "record_amount_paise": 600000,
+      "shared_with": [
+        "contract:ct-105"
+      ],
+      "counterparty": "Velan Transport",
+      "source_ids": [
+        "source:meb-p9"
+      ],
+      "path_id": "path-1"
+    },
+    {
+      "record_id": "expense:ex-403",
+      "ref": "EX-403",
+      "kind": "expense",
+      "category": "other",
+      "description": "Body lettering and stickers, CT-104",
+      "date": "2026-10-14",
+      "charged_to": "contract:ct-104",
+      "charged_to_ref": "CT-104",
+      "charged_paise": 450000,
+      "record_amount_paise": 450000,
+      "shared_with": [],
+      "counterparty": null,
+      "source_ids": [
+        "source:meb-p9"
+      ],
+      "path_id": "path-2"
+    },
+    {
+      "record_id": "machinerycost:mc-401",
+      "ref": "MC-401",
+      "kind": "machinerycost",
+      "category": "machinery",
+      "description": "Sheet bending machine: rental (2 day)",
+      "date": "2026-09-24",
+      "charged_to": "contract:ct-104",
+      "charged_to_ref": "CT-104",
+      "charged_paise": 700000,
+      "record_amount_paise": 700000,
+      "shared_with": [],
+      "counterparty": "Arun Crane & Equipment Hire",
+      "source_ids": [
+        "source:mxb-p4"
+      ],
+      "path_id": "path-3"
+    },
+    {
+      "record_id": "machinerycost:mc-402",
+      "ref": "MC-402",
+      "kind": "machinerycost",
+      "category": "machinery",
+      "description": "Crane: rental (4 hour)",
+      "date": "2026-10-09",
+      "charged_to": "job:j-104a",
+      "charged_to_ref": "J-104A",
+      "charged_paise": 480000,
+      "record_amount_paise": 480000,
+      "shared_with": [],
+      "counterparty": "Arun Crane & Equipment Hire",
+      "source_ids": [
+        "source:mxb-p4"
+      ],
+      "path_id": "path-4"
+    },
+    {
+      "record_id": "purchase:pur-2041",
+      "ref": "PUR-2041",
+      "kind": "purchase",
+      "category": "materials",
+      "description": "MS sheet 2mm (105 sheet)",
+      "date": "2026-09-12",
+      "charged_to": "job:j-104a",
+      "charged_to_ref": "J-104A",
+      "charged_paise": 11900000,
+      "record_amount_paise": 35700000,
+      "shared_with": [],
+      "counterparty": "Sri Balaji Steels",
+      "source_ids": [
+        "source:mpb-p14"
+      ],
+      "path_id": "path-5"
+    },
+    {
+      "record_id": "purchase:pur-2041",
+      "ref": "PUR-2041",
+      "kind": "purchase",
+      "category": "materials",
+      "description": "MS sheet 2mm (105 sheet)",
+      "date": "2026-09-12",
+      "charged_to": "job:j-104b",
+      "charged_to_ref": "J-104B",
+      "charged_paise": 11900000,
+      "record_amount_paise": 35700000,
+      "shared_with": [],
+      "counterparty": "Sri Balaji Steels",
+      "source_ids": [
+        "source:mpb-p14"
+      ],
+      "path_id": "path-6"
+    },
+    {
+      "record_id": "purchase:pur-2041",
+      "ref": "PUR-2041",
+      "kind": "purchase",
+      "category": "materials",
+      "description": "MS sheet 2mm (105 sheet)",
+      "date": "2026-09-12",
+      "charged_to": "job:j-104c",
+      "charged_to_ref": "J-104C",
+      "charged_paise": 11900000,
+      "record_amount_paise": 35700000,
+      "shared_with": [],
+      "counterparty": "Sri Balaji Steels",
+      "source_ids": [
+        "source:mpb-p14"
+      ],
+      "path_id": "path-7"
+    },
+    {
+      "record_id": "purchase:pur-2042",
+      "ref": "PUR-2042",
+      "kind": "purchase",
+      "category": "materials",
+      "description": "ISMC channel 100mm (2700 kg)",
+      "date": "2026-09-12",
+      "charged_to": "job:j-104a",
+      "charged_to_ref": "J-104A",
+      "charged_paise": 5580000,
+      "record_amount_paise": 16740000,
+      "shared_with": [],
+      "counterparty": "Sri Balaji Steels",
+      "source_ids": [
+        "source:mpb-p14"
+      ],
+      "path_id": "path-8"
+    },
+    {
+      "record_id": "purchase:pur-2042",
+      "ref": "PUR-2042",
+      "kind": "purchase",
+      "category": "materials",
+      "description": "ISMC channel 100mm (2700 kg)",
+      "date": "2026-09-12",
+      "charged_to": "job:j-104b",
+      "charged_to_ref": "J-104B",
+      "charged_paise": 5580000,
+      "record_amount_paise": 16740000,
+      "shared_with": [],
+      "counterparty": "Sri Balaji Steels",
+      "source_ids": [
+        "source:mpb-p14"
+      ],
+      "path_id": "path-9"
+    },
+    {
+      "record_id": "purchase:pur-2042",
+      "ref": "PUR-2042",
+      "kind": "purchase",
+      "category": "materials",
+      "description": "ISMC channel 100mm (2700 kg)",
+      "date": "2026-09-12",
+      "charged_to": "job:j-104c",
+      "charged_to_ref": "J-104C",
+      "charged_paise": 5580000,
+      "record_amount_paise": 16740000,
+      "shared_with": [],
+      "counterparty": "Sri Balaji Steels",
+      "source_ids": [
+        "source:mpb-p14"
+      ],
+      "path_id": "path-10"
+    },
+    {
+      "record_id": "purchase:pur-2047",
+      "ref": "PUR-2047",
+      "kind": "purchase",
+      "category": "materials",
+      "description": "MS square tube 40x40 (120 length)",
+      "date": "2026-09-26",
+      "charged_to": "job:j-104b",
+      "charged_to_ref": "J-104B",
+      "charged_paise": 4600000,
+      "record_amount_paise": 13800000,
+      "shared_with": [
+        "job:j-105a"
+      ],
+      "counterparty": "Coimbatore Steel Traders",
+      "source_ids": [
+        "source:mpb-p14",
+        "source:bill-cst-884"
+      ],
+      "path_id": "path-11"
+    },
+    {
+      "record_id": "purchase:pur-2047",
+      "ref": "PUR-2047",
+      "kind": "purchase",
+      "category": "materials",
+      "description": "MS square tube 40x40 (120 length)",
+      "date": "2026-09-26",
+      "charged_to": "job:j-104c",
+      "charged_to_ref": "J-104C",
+      "charged_paise": 4600000,
+      "record_amount_paise": 13800000,
+      "shared_with": [
+        "job:j-105a"
+      ],
+      "counterparty": "Coimbatore Steel Traders",
+      "source_ids": [
+        "source:mpb-p14",
+        "source:bill-cst-884"
+      ],
+      "path_id": "path-12"
+    },
+    {
+      "record_id": "purchase:pur-2050",
+      "ref": "PUR-2050",
+      "kind": "purchase",
+      "category": "materials",
+      "description": "Epoxy primer 20L (4 drum)",
+      "date": "2026-10-03",
+      "charged_to": "job:j-104a",
+      "charged_to_ref": "J-104A",
+      "charged_paise": 2480000,
+      "record_amount_paise": 2480000,
+      "shared_with": [],
+      "counterparty": "Ganesh Paints & Hardware",
+      "source_ids": [
+        "source:mpb-p15"
+      ],
+      "path_id": "path-13"
+    },
+    {
+      "record_id": "purchase:pur-2055",
+      "ref": "PUR-2055",
+      "kind": "purchase",
+      "category": "materials",
+      "description": "Welding rods E6013 3.15mm (25 packet)",
+      "date": "2026-10-10",
+      "charged_to": "job:j-104b",
+      "charged_to_ref": "J-104B",
+      "charged_paise": 1550000,
+      "record_amount_paise": 3100000,
+      "shared_with": [],
+      "counterparty": "Lakshmi Welding Stores",
+      "source_ids": [
+        "source:mpb-p15"
+      ],
+      "path_id": "path-14"
+    },
+    {
+      "record_id": "purchase:pur-2055",
+      "ref": "PUR-2055",
+      "kind": "purchase",
+      "category": "materials",
+      "description": "Welding rods E6013 3.15mm (25 packet)",
+      "date": "2026-10-10",
+      "charged_to": "job:j-104c",
+      "charged_to_ref": "J-104C",
+      "charged_paise": 1550000,
+      "record_amount_paise": 3100000,
+      "shared_with": [],
+      "counterparty": "Lakshmi Welding Stores",
+      "source_ids": [
+        "source:mpb-p15"
+      ],
+      "path_id": "path-15"
+    },
+    {
+      "record_id": "purchase:pur-2057",
+      "ref": "PUR-2057",
+      "kind": "purchase",
+      "category": "materials",
+      "description": "CO2 gas cylinder refill (4 cylinder)",
+      "date": "2026-10-11",
+      "charged_to": "contract:ct-104",
+      "charged_to_ref": "CT-104",
+      "charged_paise": 720000,
+      "record_amount_paise": 720000,
+      "shared_with": [],
+      "counterparty": "Lakshmi Welding Stores",
+      "source_ids": [
+        "source:mpb-p15"
+      ],
+      "path_id": "path-16"
+    },
+    {
+      "record_id": "purchase:pur-2058",
+      "ref": "PUR-2058",
+      "kind": "purchase",
+      "category": "materials",
+      "description": "MS sheet 1.6mm (20 sheet)",
+      "date": "2026-10-13",
+      "charged_to": "job:j-104c",
+      "charged_to_ref": "J-104C",
+      "charged_paise": 5800000,
+      "record_amount_paise": 5800000,
+      "shared_with": [],
+      "counterparty": "Sri Balaji Steels",
+      "source_ids": [
+        "source:mpb-p16"
+      ],
+      "path_id": "path-17"
+    },
+    {
+      "record_id": "purchase:pur-2059",
+      "ref": "PUR-2059",
+      "kind": "purchase",
+      "category": "materials",
+      "description": "Container door hinges and locks (6 set)",
+      "date": "2026-10-13",
+      "charged_to": "job:j-104a",
+      "charged_to_ref": "J-104A",
+      "charged_paise": 750000,
+      "record_amount_paise": 2250000,
+      "shared_with": [],
+      "counterparty": "Ganesh Paints & Hardware",
+      "source_ids": [
+        "source:mpb-p16"
+      ],
+      "path_id": "path-18"
+    },
+    {
+      "record_id": "purchase:pur-2059",
+      "ref": "PUR-2059",
+      "kind": "purchase",
+      "category": "materials",
+      "description": "Container door hinges and locks (6 set)",
+      "date": "2026-10-13",
+      "charged_to": "job:j-104b",
+      "charged_to_ref": "J-104B",
+      "charged_paise": 750000,
+      "record_amount_paise": 2250000,
+      "shared_with": [],
+      "counterparty": "Ganesh Paints & Hardware",
+      "source_ids": [
+        "source:mpb-p16"
+      ],
+      "path_id": "path-19"
+    },
+    {
+      "record_id": "purchase:pur-2059",
+      "ref": "PUR-2059",
+      "kind": "purchase",
+      "category": "materials",
+      "description": "Container door hinges and locks (6 set)",
+      "date": "2026-10-13",
+      "charged_to": "job:j-104c",
+      "charged_to_ref": "J-104C",
+      "charged_paise": 750000,
+      "record_amount_paise": 2250000,
+      "shared_with": [],
+      "counterparty": "Ganesh Paints & Hardware",
+      "source_ids": [
+        "source:mpb-p16"
+      ],
+      "path_id": "path-20"
+    },
+    {
+      "record_id": "wage:wg-401",
+      "ref": "WG-401",
+      "kind": "wage",
+      "category": "labour",
+      "description": "Welding, 6 days (2026-09-14 to 2026-09-19)",
+      "date": "2026-09-14",
+      "charged_to": "job:j-104a",
+      "charged_to_ref": "J-104A",
+      "charged_paise": 540000,
+      "record_amount_paise": 540000,
+      "shared_with": [],
+      "counterparty": "Murugan",
+      "source_ids": [
+        "source:wb-p23"
+      ],
+      "path_id": "path-21"
+    },
+    {
+      "record_id": "wage:wg-402",
+      "ref": "WG-402",
+      "kind": "wage",
+      "category": "labour",
+      "description": "Fabrication, 6 days (2026-09-14 to 2026-09-19)",
+      "date": "2026-09-14",
+      "charged_to": "job:j-104a",
+      "charged_to_ref": "J-104A",
+      "charged_paise": 510000,
+      "record_amount_paise": 510000,
+      "shared_with": [],
+      "counterparty": "Selvam",
+      "source_ids": [
+        "source:wb-p23"
+      ],
+      "path_id": "path-22"
+    },
+    {
+      "record_id": "wage:wg-403",
+      "ref": "WG-403",
+      "kind": "wage",
+      "category": "labour",
+      "description": "Helper, 6 days (2026-09-14 to 2026-09-19)",
+      "date": "2026-09-14",
+      "charged_to": "job:j-104a",
+      "charged_to_ref": "J-104A",
+      "charged_paise": 360000,
+      "record_amount_paise": 360000,
+      "shared_with": [],
+      "counterparty": "Karthik",
+      "source_ids": [
+        "source:wb-p23"
+      ],
+      "path_id": "path-23"
+    },
+    {
+      "record_id": "wage:wg-404",
+      "ref": "WG-404",
+      "kind": "wage",
+      "category": "labour",
+      "description": "Welding, 6 days (2026-09-21 to 2026-09-26)",
+      "date": "2026-09-21",
+      "charged_to": "job:j-104a",
+      "charged_to_ref": "J-104A",
+      "charged_paise": 540000,
+      "record_amount_paise": 540000,
+      "shared_with": [],
+      "counterparty": "Murugan",
+      "source_ids": [
+        "source:wb-p23"
+      ],
+      "path_id": "path-24"
+    },
+    {
+      "record_id": "wage:wg-405",
+      "ref": "WG-405",
+      "kind": "wage",
+      "category": "labour",
+      "description": "Welding, 6 days (2026-09-21 to 2026-09-26)",
+      "date": "2026-09-21",
+      "charged_to": "job:j-104b",
+      "charged_to_ref": "J-104B",
+      "charged_paise": 540000,
+      "record_amount_paise": 540000,
+      "shared_with": [],
+      "counterparty": "Saravanan",
+      "source_ids": [
+        "source:wb-p23"
+      ],
+      "path_id": "path-25"
+    },
+    {
+      "record_id": "wage:wg-406",
+      "ref": "WG-406",
+      "kind": "wage",
+      "category": "labour",
+      "description": "Fabrication, 6 days (2026-09-21 to 2026-09-26)",
+      "date": "2026-09-21",
+      "charged_to": "job:j-104b",
+      "charged_to_ref": "J-104B",
+      "charged_paise": 510000,
+      "record_amount_paise": 510000,
+      "shared_with": [],
+      "counterparty": "Selvam",
+      "source_ids": [
+        "source:wb-p23"
+      ],
+      "path_id": "path-26"
+    },
+    {
+      "record_id": "wage:wg-407",
+      "ref": "WG-407",
+      "kind": "wage",
+      "category": "labour",
+      "description": "Welding, 6 days (2026-09-28 to 2026-10-03)",
+      "date": "2026-09-28",
+      "charged_to": "job:j-104b",
+      "charged_to_ref": "J-104B",
+      "charged_paise": 540000,
+      "record_amount_paise": 540000,
+      "shared_with": [],
+      "counterparty": "Saravanan",
+      "source_ids": [
+        "source:wb-p24"
+      ],
+      "path_id": "path-27"
+    },
+    {
+      "record_id": "wage:wg-408",
+      "ref": "WG-408",
+      "kind": "wage",
+      "category": "labour",
+      "description": "Welding, 6 days (2026-09-28 to 2026-10-03)",
+      "date": "2026-09-28",
+      "charged_to": "job:j-104c",
+      "charged_to_ref": "J-104C",
+      "charged_paise": 540000,
+      "record_amount_paise": 540000,
+      "shared_with": [],
+      "counterparty": "Murugan",
+      "source_ids": [
+        "source:wb-p24"
+      ],
+      "path_id": "path-28"
+    },
+    {
+      "record_id": "wage:wg-409",
+      "ref": "WG-409",
+      "kind": "wage",
+      "category": "labour",
+      "description": "Fabrication, 6 days (2026-09-28 to 2026-10-03)",
+      "date": "2026-09-28",
+      "charged_to": "job:j-104c",
+      "charged_to_ref": "J-104C",
+      "charged_paise": 510000,
+      "record_amount_paise": 510000,
+      "shared_with": [],
+      "counterparty": "Selvam",
+      "source_ids": [
+        "source:wb-p24"
+      ],
+      "path_id": "path-29"
+    },
+    {
+      "record_id": "wage:wg-410",
+      "ref": "WG-410",
+      "kind": "wage",
+      "category": "labour",
+      "description": "Painting, 6 days (2026-10-05 to 2026-10-10)",
+      "date": "2026-10-05",
+      "charged_to": "job:j-104a",
+      "charged_to_ref": "J-104A",
+      "charged_paise": 480000,
+      "record_amount_paise": 480000,
+      "shared_with": [],
+      "counterparty": "Ravi",
+      "source_ids": [
+        "source:wb-p24"
+      ],
+      "path_id": "path-30"
+    },
+    {
+      "record_id": "wage:wg-411",
+      "ref": "WG-411",
+      "kind": "wage",
+      "category": "labour",
+      "description": "Welding, 6 days (2026-10-05 to 2026-10-10)",
+      "date": "2026-10-05",
+      "charged_to": "job:j-104b",
+      "charged_to_ref": "J-104B",
+      "charged_paise": 540000,
+      "record_amount_paise": 540000,
+      "shared_with": [],
+      "counterparty": "Saravanan",
+      "source_ids": [
+        "source:wb-p24"
+      ],
+      "path_id": "path-31"
+    },
+    {
+      "record_id": "wage:wg-412",
+      "ref": "WG-412",
+      "kind": "wage",
+      "category": "labour",
+      "description": "Welding, 6 days (2026-10-05 to 2026-10-10)",
+      "date": "2026-10-05",
+      "charged_to": "job:j-104c",
+      "charged_to_ref": "J-104C",
+      "charged_paise": 540000,
+      "record_amount_paise": 540000,
+      "shared_with": [],
+      "counterparty": "Murugan",
+      "source_ids": [
+        "source:wb-p24"
+      ],
+      "path_id": "path-32"
+    },
+    {
+      "record_id": "wage:wg-414",
+      "ref": "WG-414",
+      "kind": "wage",
+      "category": "labour",
+      "description": "Fitting, 4 days (2026-10-12 to 2026-10-15)",
+      "date": "2026-10-12",
+      "charged_to": "job:j-104a",
+      "charged_to_ref": "J-104A",
+      "charged_paise": 340000,
+      "record_amount_paise": 340000,
+      "shared_with": [],
+      "counterparty": "Ilango",
+      "source_ids": [
+        "source:wb-p25"
+      ],
+      "path_id": "path-33"
+    },
+    {
+      "record_id": "wage:wg-415",
+      "ref": "WG-415",
+      "kind": "wage",
+      "category": "labour",
+      "description": "Painting, 4 days (2026-10-12 to 2026-10-15)",
+      "date": "2026-10-12",
+      "charged_to": "job:j-104b",
+      "charged_to_ref": "J-104B",
+      "charged_paise": 320000,
+      "record_amount_paise": 320000,
+      "shared_with": [],
+      "counterparty": "Ravi",
+      "source_ids": [
+        "source:wb-p25"
+      ],
+      "path_id": "path-34"
+    },
+    {
+      "record_id": "wage:wg-417",
+      "ref": "WG-417",
+      "kind": "wage",
+      "category": "labour",
+      "description": "Fabrication, 4 days (2026-10-12 to 2026-10-15)",
+      "date": "2026-10-12",
+      "charged_to": "job:j-104c",
+      "charged_to_ref": "J-104C",
+      "charged_paise": 340000,
+      "record_amount_paise": 340000,
+      "shared_with": [],
+      "counterparty": "Selvam",
+      "source_ids": [
+        "source:wb-p25"
+      ],
+      "path_id": "path-35"
+    }
+  ],
+  "pending_allocations": [
+    {
+      "record_id": "purchase:pur-2053",
+      "ref": "PUR-2053",
+      "kind": "purchase",
+      "description": "PU enamel paint 20L (3 drum)",
+      "amount_paise": 2850000,
+      "unallocated_paise": 2850000,
+      "noted_for": [
+        "contract:ct-104",
+        "contract:ct-105"
+      ],
+      "source_ids": [
+        "source:mpb-p15"
+      ]
+    },
+    {
+      "record_id": "wage:wg-413",
+      "ref": "WG-413",
+      "kind": "wage",
+      "description": "Helper, 6 days (2026-10-05 to 2026-10-10)",
+      "amount_paise": 360000,
+      "unallocated_paise": 360000,
+      "noted_for": [
+        "contract:ct-104",
+        "contract:ct-105"
+      ],
+      "source_ids": [
+        "source:wb-p24"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "finding-1",
+      "kind": "fact",
+      "category": "contract",
+      "statement": "CT-104 for Pon Logistics: 3 closed container bodies, ₹15,30,000, contracted 10 Sep 2026, expected by 31 Oct 2026; status in_production. Jobs: J-104A (painting), J-104B (fabrication), J-104C (fabrication).",
+      "entity_ids": [
+        "contract:ct-104",
+        "job:j-104a",
+        "job:j-104b",
+        "job:j-104c"
+      ],
+      "path_ids": [],
+      "source_ids": [
+        "source:crg-p2"
+      ]
+    },
+    {
+      "id": "finding-2",
+      "kind": "fact",
+      "category": "voided_entry",
+      "statement": "PUR-2056 is struck out in the book (void); it is not counted.",
+      "entity_ids": [
+        "purchase:pur-2056"
+      ],
+      "path_ids": [],
+      "source_ids": []
+    },
+    {
+      "id": "finding-3",
+      "kind": "fact",
+      "category": "shared_cost",
+      "statement": "EX-401 (Freight for square tube from Coimbatore, ₹6,000) is shared: ₹4,000 is charged to CT-104 and the rest to CT-105. Only ₹4,000 counts here.",
+      "entity_ids": [
+        "expense:ex-401",
+        "contract:ct-104"
+      ],
+      "path_ids": [
+        "path-1"
+      ],
+      "source_ids": [
+        "source:meb-p9"
+      ]
+    },
+    {
+      "id": "finding-4",
+      "kind": "fact",
+      "category": "shared_cost",
+      "statement": "PUR-2047 (MS square tube 40x40 (120 length), ₹1,38,000) is shared: ₹92,000 is charged to J-104B, J-104C and the rest to J-105A. Only ₹92,000 counts here.",
+      "entity_ids": [
+        "purchase:pur-2047",
+        "job:j-104b",
+        "job:j-104c"
+      ],
+      "path_ids": [
+        "path-11",
+        "path-12"
+      ],
+      "source_ids": [
+        "source:mpb-p14",
+        "source:bill-cst-884"
+      ]
+    },
+    {
+      "id": "finding-5",
+      "kind": "calculation",
+      "category": "recorded_direct_cost",
+      "statement": "Recorded direct cost so far: ₹8,51,700 from 35 charged entries: materials ₹7,59,900, labour ₹71,500, machinery ₹11,800, other direct ₹8,500.",
+      "entity_ids": [
+        "contract:ct-104"
+      ],
+      "path_ids": [
+        "path-1",
+        "path-10",
+        "path-11",
+        "path-12",
+        "path-13",
+        "path-14",
+        "path-15",
+        "path-16",
+        "path-17",
+        "path-18",
+        "path-19",
+        "path-2",
+        "path-20",
+        "path-21",
+        "path-22",
+        "path-23",
+        "path-24",
+        "path-25",
+        "path-26",
+        "path-27",
+        "path-28",
+        "path-29",
+        "path-3",
+        "path-30",
+        "path-31",
+        "path-32",
+        "path-33",
+        "path-34",
+        "path-35",
+        "path-4",
+        "path-5",
+        "path-6",
+        "path-7",
+        "path-8",
+        "path-9"
+      ],
+      "source_ids": []
+    },
+    {
+      "id": "finding-6",
+      "kind": "decision",
+      "category": "allocation_needed",
+      "statement": "PUR-2053 (PU enamel paint 20L (3 drum), ₹28,500) is noted for CT-104, CT-105 with no split recorded. ₹28,500 is not counted in any contract's cost until the split is decided.",
+      "entity_ids": [
+        "purchase:pur-2053",
+        "contract:ct-104",
+        "contract:ct-105"
+      ],
+      "path_ids": [],
+      "source_ids": [
+        "source:mpb-p15"
+      ]
+    },
+    {
+      "id": "finding-7",
+      "kind": "decision",
+      "category": "allocation_needed",
+      "statement": "WG-413 (Helper, 6 days (2026-10-05 to 2026-10-10), ₹3,600) is noted for CT-104, CT-105 with no split recorded. ₹3,600 is not counted in any contract's cost until the split is decided.",
+      "entity_ids": [
+        "wage:wg-413",
+        "contract:ct-104",
+        "contract:ct-105"
+      ],
+      "path_ids": [],
+      "source_ids": [
+        "source:wb-p24"
+      ]
+    },
+    {
+      "id": "finding-8",
+      "kind": "unknown",
+      "category": "unassigned_labour",
+      "statement": "WG-416: Murugan, Welding, 4 days (2026-10-12 to 2026-10-15), ₹3,600 has no job recorded. It may belong to this or another contract; it is not counted anywhere.",
+      "entity_ids": [
+        "wage:wg-416"
+      ],
+      "path_ids": [],
+      "source_ids": [
+        "source:wb-p25"
+      ]
+    },
+    {
+      "id": "finding-9",
+      "kind": "decision",
+      "category": "unallocated_overheads",
+      "statement": "₹39,790 of workshop costs are not charged to any contract (EX-402 ₹3,850, EX-404 ₹18,400, MC-403 ₹11,040, MC-404 ₹6,500). They are excluded from every contract's direct cost; decide whether and how to share them.",
+      "entity_ids": [
+        "expense:ex-402",
+        "expense:ex-404",
+        "machinerycost:mc-403",
+        "machinerycost:mc-404"
+      ],
+      "path_ids": [],
+      "source_ids": [
+        "source:eb-bill-2026-09",
+        "source:meb-p9",
+        "source:mxb-p4"
+      ]
+    },
+    {
+      "id": "finding-10",
+      "kind": "calculation",
+      "category": "provisional_profit",
+      "statement": "Provisional profit based on recorded direct costs: ₹6,78,300 (44.3% of ₹15,30,000). If all ₹32,100 of unsplit costs noted for it were charged here, it would be ₹6,46,200. Not final profit: overheads, unassigned labour and future costs are not included.",
+      "entity_ids": [
+        "contract:ct-104"
+      ],
+      "path_ids": [],
+      "source_ids": []
+    },
+    {
+      "id": "finding-11",
+      "kind": "fact",
+      "category": "customer_receipts",
+      "statement": "Pon Logistics has paid ₹8,00,000 against CT-104 in 2 cleared receipt(s); ₹7,30,000 of the contract value is still to be received. Receipts are cash collected, not additional revenue.",
+      "entity_ids": [
+        "contract:ct-104",
+        "payment:cr-104-1",
+        "payment:cr-104-2"
+      ],
+      "path_ids": [],
+      "source_ids": [
+        "source:rcb-p3"
+      ]
+    },
+    {
+      "id": "finding-12",
+      "kind": "unknown",
+      "category": "payment_unconfirmed",
+      "statement": "PUR-2055 (Lakshmi Welding Stores, ₹31,000): payment SP-307 of ₹31,000 is recorded but not cleared, so the bill is not yet confirmed as paid.",
+      "entity_ids": [
+        "purchase:pur-2055",
+        "payment:sp-307"
+      ],
+      "path_ids": [],
+      "source_ids": [
+        "source:spb-p8"
+      ]
+    },
+    {
+      "id": "finding-13",
+      "kind": "inconsistency",
+      "category": "unreconciled",
+      "statement": "PUR-2058 (Sri Balaji Steels, ₹58,000): the purchase book says 'paid', but the supplier payment book shows ₹0 cleared against it (payments: none).",
+      "entity_ids": [
+        "purchase:pur-2058"
+      ],
+      "path_ids": [],
+      "source_ids": [
+        "source:mpb-p16"
+      ]
+    },
+    {
+      "id": "finding-14",
+      "kind": "calculation",
+      "category": "supplier_outstanding",
+      "statement": "Supplier bills on this contract with money still owed per payment records: MC-401 Arun Crane & Equipment Hire ₹7,000 of ₹7,000; PUR-2042 Sri Balaji Steels ₹67,400 of ₹1,67,400; PUR-2047 Coimbatore Steel Traders ₹1,38,000 of ₹1,38,000 (whole bill, shared with J-105A); PUR-2055 Lakshmi Welding Stores ₹31,000 of ₹31,000; PUR-2058 Sri Balaji Steels ₹58,000 of ₹58,000. These are amounts owed, not extra cost.",
+      "entity_ids": [
+        "machinerycost:mc-401",
+        "purchase:pur-2042",
+        "purchase:pur-2047",
+        "purchase:pur-2055",
+        "purchase:pur-2058"
+      ],
+      "path_ids": [],
+      "source_ids": []
+    },
+    {
+      "id": "finding-15",
+      "kind": "decision",
+      "category": "unapplied_payment",
+      "statement": "SP-309: ₹25,000 paid to Sri Balaji Steels on 14 Oct 2026 is not applied to any bill. Open bills from this supplier on this contract: PUR-2042 (₹67,400 unpaid), PUR-2058 (₹58,000 unpaid). Which bill it settles is not recorded.",
+      "entity_ids": [
+        "payment:sp-309",
+        "supplier:sup-01",
+        "purchase:pur-2042",
+        "purchase:pur-2058"
+      ],
+      "path_ids": [],
+      "source_ids": [
+        "source:spb-p8"
+      ]
+    },
+    {
+      "id": "finding-16",
+      "kind": "unknown",
+      "category": "wage_payment_unknown",
+      "statement": "WG-417 (Selvam, ₹3,400): the wage book does not say whether it was paid. It is counted as cost; whether it is still owed is unknown.",
+      "entity_ids": [
+        "wage:wg-417"
+      ],
+      "path_ids": [],
+      "source_ids": [
+        "source:wb-p25"
+      ]
+    },
+    {
+      "id": "finding-17",
+      "kind": "fact",
+      "category": "wages_unpaid",
+      "statement": "Wages charged to this contract and recorded as unpaid: WG-414 Ilango ₹3,400; WG-415 Ravi ₹3,200. They are already in cost; paying them adds no cost.",
+      "entity_ids": [
+        "wage:wg-414",
+        "wage:wg-415"
+      ],
+      "path_ids": [],
+      "source_ids": []
+    }
+  ],
+  "decisions_required": [
+    "Decide how much of PUR-2053 (₹28,500) belongs to CT-104 versus CT-105.",
+    "Decide how much of WG-413 (₹3,600) belongs to CT-104 versus CT-105.",
+    "Record which job WG-416 (Murugan) worked on.",
+    "Decide a rule for sharing workshop overheads across contracts.",
+    "Reconcile PUR-2058 with the supplier payment book.",
+    "Record which bill SP-309 (₹25,000) pays."
+  ],
+  "missing_information": [
+    "No source record supports MC-404 (Plasma cutter: maintenance (1 service))."
+  ],
+  "warnings": [
+    "CT-104 is still in_production: costs still to come are not in the records, so profit will change.",
+    "Figures are provisional and based only on the recorded entries. They are not statutory accounts: no GST, depreciation, inventory valuation or overhead absorption is applied. Confirm with the accountant before relying on them."
+  ],
+  "calculation_rules": [
+    "Recorded direct cost = sum of the amounts charged (CHARGED_TO) to this contract or its jobs from valid purchase, labour, machinery and expense entries.",
+    "A shared bill counts only for the portion charged here; the rest belongs to the other jobs or contracts it is charged to.",
+    "Voided (struck-out) entries are excluded.",
+    "Charges recorded without an amount are excluded and reported as unknown, not as zero.",
+    "Costs only noted for this contract, without an amount, are excluded until someone decides the split.",
+    "Workshop overheads not charged to any contract are excluded.",
+    "Provisional profit = contract value - recorded direct cost. It is not final or statutory profit: no tax, depreciation, inventory valuation or overhead absorption is applied.",
+    "Supplier payments and customer receipts settle amounts owed; they never add cost or revenue. Only cleared payments count as paid."
+  ],
+  "evidence_paths": [
+    {
+      "id": "path-1",
+      "description": "EX-401 charged to CT-104",
+      "edges": [
+        {
+          "type": "CHARGED_TO",
+          "from": "expense:ex-401",
+          "to": "contract:ct-104",
+          "source_id": "source:meb-p9"
+        },
+        {
+          "type": "SUPPLIED_BY",
+          "from": "expense:ex-401",
+          "to": "supplier:sup-07",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-2",
+      "description": "EX-403 charged to CT-104",
+      "edges": [
+        {
+          "type": "CHARGED_TO",
+          "from": "expense:ex-403",
+          "to": "contract:ct-104",
+          "source_id": "source:meb-p9"
+        }
+      ]
+    },
+    {
+      "id": "path-3",
+      "description": "MC-401 charged to CT-104",
+      "edges": [
+        {
+          "type": "CHARGED_TO",
+          "from": "machinerycost:mc-401",
+          "to": "contract:ct-104",
+          "source_id": "source:mxb-p4"
+        },
+        {
+          "type": "SUPPLIED_BY",
+          "from": "machinerycost:mc-401",
+          "to": "supplier:sup-05",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-4",
+      "description": "MC-402 charged to J-104A",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104a",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "machinerycost:mc-402",
+          "to": "job:j-104a",
+          "source_id": "source:mxb-p4"
+        },
+        {
+          "type": "SUPPLIED_BY",
+          "from": "machinerycost:mc-402",
+          "to": "supplier:sup-05",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-5",
+      "description": "PUR-2041 charged to J-104A",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104a",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "purchase:pur-2041",
+          "to": "job:j-104a",
+          "source_id": "source:mpb-p14"
+        },
+        {
+          "type": "SUPPLIED_BY",
+          "from": "purchase:pur-2041",
+          "to": "supplier:sup-01",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-6",
+      "description": "PUR-2041 charged to J-104B",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104b",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "purchase:pur-2041",
+          "to": "job:j-104b",
+          "source_id": "source:mpb-p14"
+        },
+        {
+          "type": "SUPPLIED_BY",
+          "from": "purchase:pur-2041",
+          "to": "supplier:sup-01",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-7",
+      "description": "PUR-2041 charged to J-104C",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104c",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "purchase:pur-2041",
+          "to": "job:j-104c",
+          "source_id": "source:mpb-p14"
+        },
+        {
+          "type": "SUPPLIED_BY",
+          "from": "purchase:pur-2041",
+          "to": "supplier:sup-01",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-8",
+      "description": "PUR-2042 charged to J-104A",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104a",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "purchase:pur-2042",
+          "to": "job:j-104a",
+          "source_id": "source:mpb-p14"
+        },
+        {
+          "type": "SUPPLIED_BY",
+          "from": "purchase:pur-2042",
+          "to": "supplier:sup-01",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-9",
+      "description": "PUR-2042 charged to J-104B",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104b",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "purchase:pur-2042",
+          "to": "job:j-104b",
+          "source_id": "source:mpb-p14"
+        },
+        {
+          "type": "SUPPLIED_BY",
+          "from": "purchase:pur-2042",
+          "to": "supplier:sup-01",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-10",
+      "description": "PUR-2042 charged to J-104C",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104c",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "purchase:pur-2042",
+          "to": "job:j-104c",
+          "source_id": "source:mpb-p14"
+        },
+        {
+          "type": "SUPPLIED_BY",
+          "from": "purchase:pur-2042",
+          "to": "supplier:sup-01",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-11",
+      "description": "PUR-2047 charged to J-104B",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104b",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "purchase:pur-2047",
+          "to": "job:j-104b",
+          "source_id": "source:bill-cst-884"
+        },
+        {
+          "type": "SUPPLIED_BY",
+          "from": "purchase:pur-2047",
+          "to": "supplier:sup-04",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-12",
+      "description": "PUR-2047 charged to J-104C",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104c",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "purchase:pur-2047",
+          "to": "job:j-104c",
+          "source_id": "source:bill-cst-884"
+        },
+        {
+          "type": "SUPPLIED_BY",
+          "from": "purchase:pur-2047",
+          "to": "supplier:sup-04",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-13",
+      "description": "PUR-2050 charged to J-104A",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104a",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "purchase:pur-2050",
+          "to": "job:j-104a",
+          "source_id": "source:mpb-p15"
+        },
+        {
+          "type": "SUPPLIED_BY",
+          "from": "purchase:pur-2050",
+          "to": "supplier:sup-02",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-14",
+      "description": "PUR-2055 charged to J-104B",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104b",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "purchase:pur-2055",
+          "to": "job:j-104b",
+          "source_id": "source:mpb-p15"
+        },
+        {
+          "type": "SUPPLIED_BY",
+          "from": "purchase:pur-2055",
+          "to": "supplier:sup-03",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-15",
+      "description": "PUR-2055 charged to J-104C",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104c",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "purchase:pur-2055",
+          "to": "job:j-104c",
+          "source_id": "source:mpb-p15"
+        },
+        {
+          "type": "SUPPLIED_BY",
+          "from": "purchase:pur-2055",
+          "to": "supplier:sup-03",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-16",
+      "description": "PUR-2057 charged to CT-104",
+      "edges": [
+        {
+          "type": "CHARGED_TO",
+          "from": "purchase:pur-2057",
+          "to": "contract:ct-104",
+          "source_id": "source:mpb-p15"
+        },
+        {
+          "type": "SUPPLIED_BY",
+          "from": "purchase:pur-2057",
+          "to": "supplier:sup-03",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-17",
+      "description": "PUR-2058 charged to J-104C",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104c",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "purchase:pur-2058",
+          "to": "job:j-104c",
+          "source_id": "source:mpb-p16"
+        },
+        {
+          "type": "SUPPLIED_BY",
+          "from": "purchase:pur-2058",
+          "to": "supplier:sup-01",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-18",
+      "description": "PUR-2059 charged to J-104A",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104a",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "purchase:pur-2059",
+          "to": "job:j-104a",
+          "source_id": "source:mpb-p16"
+        },
+        {
+          "type": "SUPPLIED_BY",
+          "from": "purchase:pur-2059",
+          "to": "supplier:sup-02",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-19",
+      "description": "PUR-2059 charged to J-104B",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104b",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "purchase:pur-2059",
+          "to": "job:j-104b",
+          "source_id": "source:mpb-p16"
+        },
+        {
+          "type": "SUPPLIED_BY",
+          "from": "purchase:pur-2059",
+          "to": "supplier:sup-02",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-20",
+      "description": "PUR-2059 charged to J-104C",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104c",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "purchase:pur-2059",
+          "to": "job:j-104c",
+          "source_id": "source:mpb-p16"
+        },
+        {
+          "type": "SUPPLIED_BY",
+          "from": "purchase:pur-2059",
+          "to": "supplier:sup-02",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-21",
+      "description": "WG-401 charged to J-104A",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104a",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "wage:wg-401",
+          "to": "job:j-104a",
+          "source_id": "source:wb-p23"
+        },
+        {
+          "type": "EARNED_BY",
+          "from": "wage:wg-401",
+          "to": "worker:w-01",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-22",
+      "description": "WG-402 charged to J-104A",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104a",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "wage:wg-402",
+          "to": "job:j-104a",
+          "source_id": "source:wb-p23"
+        },
+        {
+          "type": "EARNED_BY",
+          "from": "wage:wg-402",
+          "to": "worker:w-03",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-23",
+      "description": "WG-403 charged to J-104A",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104a",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "wage:wg-403",
+          "to": "job:j-104a",
+          "source_id": "source:wb-p23"
+        },
+        {
+          "type": "EARNED_BY",
+          "from": "wage:wg-403",
+          "to": "worker:w-05",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-24",
+      "description": "WG-404 charged to J-104A",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104a",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "wage:wg-404",
+          "to": "job:j-104a",
+          "source_id": "source:wb-p23"
+        },
+        {
+          "type": "EARNED_BY",
+          "from": "wage:wg-404",
+          "to": "worker:w-01",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-25",
+      "description": "WG-405 charged to J-104B",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104b",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "wage:wg-405",
+          "to": "job:j-104b",
+          "source_id": "source:wb-p23"
+        },
+        {
+          "type": "EARNED_BY",
+          "from": "wage:wg-405",
+          "to": "worker:w-02",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-26",
+      "description": "WG-406 charged to J-104B",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104b",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "wage:wg-406",
+          "to": "job:j-104b",
+          "source_id": "source:wb-p23"
+        },
+        {
+          "type": "EARNED_BY",
+          "from": "wage:wg-406",
+          "to": "worker:w-03",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-27",
+      "description": "WG-407 charged to J-104B",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104b",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "wage:wg-407",
+          "to": "job:j-104b",
+          "source_id": "source:wb-p24"
+        },
+        {
+          "type": "EARNED_BY",
+          "from": "wage:wg-407",
+          "to": "worker:w-02",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-28",
+      "description": "WG-408 charged to J-104C",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104c",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "wage:wg-408",
+          "to": "job:j-104c",
+          "source_id": "source:wb-p24"
+        },
+        {
+          "type": "EARNED_BY",
+          "from": "wage:wg-408",
+          "to": "worker:w-01",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-29",
+      "description": "WG-409 charged to J-104C",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104c",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "wage:wg-409",
+          "to": "job:j-104c",
+          "source_id": "source:wb-p24"
+        },
+        {
+          "type": "EARNED_BY",
+          "from": "wage:wg-409",
+          "to": "worker:w-03",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-30",
+      "description": "WG-410 charged to J-104A",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104a",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "wage:wg-410",
+          "to": "job:j-104a",
+          "source_id": "source:wb-p24"
+        },
+        {
+          "type": "EARNED_BY",
+          "from": "wage:wg-410",
+          "to": "worker:w-04",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-31",
+      "description": "WG-411 charged to J-104B",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104b",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "wage:wg-411",
+          "to": "job:j-104b",
+          "source_id": "source:wb-p24"
+        },
+        {
+          "type": "EARNED_BY",
+          "from": "wage:wg-411",
+          "to": "worker:w-02",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-32",
+      "description": "WG-412 charged to J-104C",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104c",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "wage:wg-412",
+          "to": "job:j-104c",
+          "source_id": "source:wb-p24"
+        },
+        {
+          "type": "EARNED_BY",
+          "from": "wage:wg-412",
+          "to": "worker:w-01",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-33",
+      "description": "WG-414 charged to J-104A",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104a",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "wage:wg-414",
+          "to": "job:j-104a",
+          "source_id": "source:wb-p25"
+        },
+        {
+          "type": "EARNED_BY",
+          "from": "wage:wg-414",
+          "to": "worker:w-06",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-34",
+      "description": "WG-415 charged to J-104B",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104b",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "wage:wg-415",
+          "to": "job:j-104b",
+          "source_id": "source:wb-p25"
+        },
+        {
+          "type": "EARNED_BY",
+          "from": "wage:wg-415",
+          "to": "worker:w-04",
+          "source_id": null
+        }
+      ]
+    },
+    {
+      "id": "path-35",
+      "description": "WG-417 charged to J-104C",
+      "edges": [
+        {
+          "type": "PART_OF",
+          "from": "job:j-104c",
+          "to": "contract:ct-104",
+          "source_id": "source:crg-p2"
+        },
+        {
+          "type": "CHARGED_TO",
+          "from": "wage:wg-417",
+          "to": "job:j-104c",
+          "source_id": "source:wb-p25"
+        },
+        {
+          "type": "EARNED_BY",
+          "from": "wage:wg-417",
+          "to": "worker:w-03",
+          "source_id": null
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "source:crg-p2",
+      "name": "Contract register, page 2",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "CT-104 Pon Logistics, 3 closed container bodies @ Rs 5,10,000 = Rs 15,30,000, deliver by 31 Oct. CT-105 Sri Vel Transports, 2 platform bodies, Rs 6,80,000.",
+      "source_system": "contract_register",
+      "source_record_id": "CRG p.2",
+      "authors": [],
+      "relation": "supports",
+      "about": "contract:ct-104"
+    },
+    {
+      "id": "source:meb-p9",
+      "name": "Miscellaneous expense book, page 9",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "Freight Coimbatore->Namakkal Rs 6,000 (104: 4,000, 105: 2,000). Grinding and cutting discs Rs 3,850. EB bill Sept Rs 18,400. Lettering CT-104 Rs 4,500.",
+      "source_system": "misc_expense_book",
+      "source_record_id": "MEB p.9",
+      "authors": [],
+      "relation": "supports",
+      "about": "expense:ex-401"
+    },
+    {
+      "id": "source:meb-p9",
+      "name": "Miscellaneous expense book, page 9",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "Freight Coimbatore->Namakkal Rs 6,000 (104: 4,000, 105: 2,000). Grinding and cutting discs Rs 3,850. EB bill Sept Rs 18,400. Lettering CT-104 Rs 4,500.",
+      "source_system": "misc_expense_book",
+      "source_record_id": "MEB p.9",
+      "authors": [],
+      "relation": "supports",
+      "about": "expense:ex-402"
+    },
+    {
+      "id": "source:meb-p9",
+      "name": "Miscellaneous expense book, page 9",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "Freight Coimbatore->Namakkal Rs 6,000 (104: 4,000, 105: 2,000). Grinding and cutting discs Rs 3,850. EB bill Sept Rs 18,400. Lettering CT-104 Rs 4,500.",
+      "source_system": "misc_expense_book",
+      "source_record_id": "MEB p.9",
+      "authors": [],
+      "relation": "supports",
+      "about": "expense:ex-403"
+    },
+    {
+      "id": "source:eb-bill-2026-09",
+      "name": "Electricity bill, September 2026",
+      "uri": null,
+      "source_type": "document",
+      "status": "active",
+      "excerpt": "Workshop connection, Sept 2026: Rs 18,400.",
+      "source_system": "electricity_board",
+      "source_record_id": "EB 2026-09",
+      "authors": [],
+      "relation": "supports",
+      "about": "expense:ex-404"
+    },
+    {
+      "id": "source:meb-p9",
+      "name": "Miscellaneous expense book, page 9",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "Freight Coimbatore->Namakkal Rs 6,000 (104: 4,000, 105: 2,000). Grinding and cutting discs Rs 3,850. EB bill Sept Rs 18,400. Lettering CT-104 Rs 4,500.",
+      "source_system": "misc_expense_book",
+      "source_record_id": "MEB p.9",
+      "authors": [],
+      "relation": "supports",
+      "about": "expense:ex-404"
+    },
+    {
+      "id": "source:mxb-p4",
+      "name": "Machinery expense book, page 4",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "Crane and bending machine hire, generator diesel.",
+      "source_system": "machinery_book",
+      "source_record_id": "MXB p.4",
+      "authors": [],
+      "relation": "supports",
+      "about": "machinerycost:mc-401"
+    },
+    {
+      "id": "source:mxb-p4",
+      "name": "Machinery expense book, page 4",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "Crane and bending machine hire, generator diesel.",
+      "source_system": "machinery_book",
+      "source_record_id": "MXB p.4",
+      "authors": [],
+      "relation": "supports",
+      "about": "machinerycost:mc-402"
+    },
+    {
+      "id": "source:mxb-p4",
+      "name": "Machinery expense book, page 4",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "Crane and bending machine hire, generator diesel.",
+      "source_system": "machinery_book",
+      "source_record_id": "MXB p.4",
+      "authors": [],
+      "relation": "supports",
+      "about": "machinerycost:mc-403"
+    },
+    {
+      "id": "source:rcb-p3",
+      "name": "Customer receipt book, page 3",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "Customer advances and part payments, Aug-Oct 2026.",
+      "source_system": "receipt_book",
+      "source_record_id": "RCB p.3",
+      "authors": [],
+      "relation": "supports",
+      "about": "payment:cr-104-1"
+    },
+    {
+      "id": "source:rcb-p3",
+      "name": "Customer receipt book, page 3",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "Customer advances and part payments, Aug-Oct 2026.",
+      "source_system": "receipt_book",
+      "source_record_id": "RCB p.3",
+      "authors": [],
+      "relation": "supports",
+      "about": "payment:cr-104-2"
+    },
+    {
+      "id": "source:spb-p7",
+      "name": "Supplier payment book, page 7",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "Aug-Sep 2026 supplier payments with bill references.",
+      "source_system": "supplier_payment_book",
+      "source_record_id": "SPB p.7",
+      "authors": [],
+      "relation": "supports",
+      "about": "payment:sp-301"
+    },
+    {
+      "id": "source:spb-p7",
+      "name": "Supplier payment book, page 7",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "Aug-Sep 2026 supplier payments with bill references.",
+      "source_system": "supplier_payment_book",
+      "source_record_id": "SPB p.7",
+      "authors": [],
+      "relation": "supports",
+      "about": "payment:sp-302"
+    },
+    {
+      "id": "source:spb-p8",
+      "name": "Supplier payment book, page 8",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "Oct 2026 supplier payments. 10 Oct cheque 118842 to Lakshmi Welding (not yet cleared). 14 Oct Rs 25,000 cash to Sri Balaji, no bill written.",
+      "source_system": "supplier_payment_book",
+      "source_record_id": "SPB p.8",
+      "authors": [],
+      "relation": "supports",
+      "about": "payment:sp-305"
+    },
+    {
+      "id": "source:spb-p8",
+      "name": "Supplier payment book, page 8",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "Oct 2026 supplier payments. 10 Oct cheque 118842 to Lakshmi Welding (not yet cleared). 14 Oct Rs 25,000 cash to Sri Balaji, no bill written.",
+      "source_system": "supplier_payment_book",
+      "source_record_id": "SPB p.8",
+      "authors": [],
+      "relation": "supports",
+      "about": "payment:sp-307"
+    },
+    {
+      "id": "source:spb-p8",
+      "name": "Supplier payment book, page 8",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "Oct 2026 supplier payments. 10 Oct cheque 118842 to Lakshmi Welding (not yet cleared). 14 Oct Rs 25,000 cash to Sri Balaji, no bill written.",
+      "source_system": "supplier_payment_book",
+      "source_record_id": "SPB p.8",
+      "authors": [],
+      "relation": "supports",
+      "about": "payment:sp-308"
+    },
+    {
+      "id": "source:spb-p8",
+      "name": "Supplier payment book, page 8",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "Oct 2026 supplier payments. 10 Oct cheque 118842 to Lakshmi Welding (not yet cleared). 14 Oct Rs 25,000 cash to Sri Balaji, no bill written.",
+      "source_system": "supplier_payment_book",
+      "source_record_id": "SPB p.8",
+      "authors": [],
+      "relation": "supports",
+      "about": "payment:sp-310"
+    },
+    {
+      "id": "source:spb-p8",
+      "name": "Supplier payment book, page 8",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "Oct 2026 supplier payments. 10 Oct cheque 118842 to Lakshmi Welding (not yet cleared). 14 Oct Rs 25,000 cash to Sri Balaji, no bill written.",
+      "source_system": "supplier_payment_book",
+      "source_record_id": "SPB p.8",
+      "authors": [],
+      "relation": "supports",
+      "about": "payment:sp-311"
+    },
+    {
+      "id": "source:mpb-p14",
+      "name": "Material purchase book, page 14",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "12 Sep: Sri Balaji, MS sheet 2mm x105 @3,400 (35 per body, CT-104); ISMC 100 2,700 kg @62 (900 kg per body). 26 Sep: Coimbatore Steel Traders, sq. tube 40x40 x120 @1,150, see bill.",
+      "source_system": "material_purchase_book",
+      "source_record_id": "MPB p.14",
+      "authors": [],
+      "relation": "supports",
+      "about": "purchase:pur-2041"
+    },
+    {
+      "id": "source:mpb-p14",
+      "name": "Material purchase book, page 14",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "12 Sep: Sri Balaji, MS sheet 2mm x105 @3,400 (35 per body, CT-104); ISMC 100 2,700 kg @62 (900 kg per body). 26 Sep: Coimbatore Steel Traders, sq. tube 40x40 x120 @1,150, see bill.",
+      "source_system": "material_purchase_book",
+      "source_record_id": "MPB p.14",
+      "authors": [],
+      "relation": "supports",
+      "about": "purchase:pur-2042"
+    },
+    {
+      "id": "source:bill-cst-884",
+      "name": "Coimbatore Steel Traders bill CST/884",
+      "uri": null,
+      "source_type": "document",
+      "status": "active",
+      "excerpt": "120 lengths MS square tube 40x40, Rs 1,38,000. Cut to order: 40 lengths for body 104B, 40 for 104C, 40 for 105A.",
+      "source_system": "supplier_bill",
+      "source_record_id": "CST/884",
+      "authors": [],
+      "relation": "supports",
+      "about": "purchase:pur-2047"
+    },
+    {
+      "id": "source:mpb-p14",
+      "name": "Material purchase book, page 14",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "12 Sep: Sri Balaji, MS sheet 2mm x105 @3,400 (35 per body, CT-104); ISMC 100 2,700 kg @62 (900 kg per body). 26 Sep: Coimbatore Steel Traders, sq. tube 40x40 x120 @1,150, see bill.",
+      "source_system": "material_purchase_book",
+      "source_record_id": "MPB p.14",
+      "authors": [],
+      "relation": "supports",
+      "about": "purchase:pur-2047"
+    },
+    {
+      "id": "source:mpb-p15",
+      "name": "Material purchase book, page 15",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "3 Oct epoxy primer 4 drums (104A). 8 Oct PU enamel 3 drums 'for 104 & 105'. 10 Oct welding rods 25 pkt (104B/104C), paid by cheque. 10 Oct rods 25 pkt (struck out, written twice). 11 Oct CO2 refill 4 cyl (CT-104).",
+      "source_system": "material_purchase_book",
+      "source_record_id": "MPB p.15",
+      "authors": [],
+      "relation": "supports",
+      "about": "purchase:pur-2050"
+    },
+    {
+      "id": "source:mpb-p15",
+      "name": "Material purchase book, page 15",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "3 Oct epoxy primer 4 drums (104A). 8 Oct PU enamel 3 drums 'for 104 & 105'. 10 Oct welding rods 25 pkt (104B/104C), paid by cheque. 10 Oct rods 25 pkt (struck out, written twice). 11 Oct CO2 refill 4 cyl (CT-104).",
+      "source_system": "material_purchase_book",
+      "source_record_id": "MPB p.15",
+      "authors": [],
+      "relation": "supports",
+      "about": "purchase:pur-2053"
+    },
+    {
+      "id": "source:mpb-p15",
+      "name": "Material purchase book, page 15",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "3 Oct epoxy primer 4 drums (104A). 8 Oct PU enamel 3 drums 'for 104 & 105'. 10 Oct welding rods 25 pkt (104B/104C), paid by cheque. 10 Oct rods 25 pkt (struck out, written twice). 11 Oct CO2 refill 4 cyl (CT-104).",
+      "source_system": "material_purchase_book",
+      "source_record_id": "MPB p.15",
+      "authors": [],
+      "relation": "supports",
+      "about": "purchase:pur-2055"
+    },
+    {
+      "id": "source:mpb-p15",
+      "name": "Material purchase book, page 15",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "3 Oct epoxy primer 4 drums (104A). 8 Oct PU enamel 3 drums 'for 104 & 105'. 10 Oct welding rods 25 pkt (104B/104C), paid by cheque. 10 Oct rods 25 pkt (struck out, written twice). 11 Oct CO2 refill 4 cyl (CT-104).",
+      "source_system": "material_purchase_book",
+      "source_record_id": "MPB p.15",
+      "authors": [],
+      "relation": "supports",
+      "about": "purchase:pur-2056"
+    },
+    {
+      "id": "source:mpb-p15",
+      "name": "Material purchase book, page 15",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "3 Oct epoxy primer 4 drums (104A). 8 Oct PU enamel 3 drums 'for 104 & 105'. 10 Oct welding rods 25 pkt (104B/104C), paid by cheque. 10 Oct rods 25 pkt (struck out, written twice). 11 Oct CO2 refill 4 cyl (CT-104).",
+      "source_system": "material_purchase_book",
+      "source_record_id": "MPB p.15",
+      "authors": [],
+      "relation": "supports",
+      "about": "purchase:pur-2057"
+    },
+    {
+      "id": "source:mpb-p16",
+      "name": "Material purchase book, page 16",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "13 Oct Sri Balaji MS sheet 1.6mm x20 (104C) 'cash paid'. 13 Oct door hinges & locks 6 sets (2 per body, CT-104). 14 Oct Sri Balaji MS sheet 2mm x70 (CT-105).",
+      "source_system": "material_purchase_book",
+      "source_record_id": "MPB p.16",
+      "authors": [],
+      "relation": "supports",
+      "about": "purchase:pur-2058"
+    },
+    {
+      "id": "source:mpb-p16",
+      "name": "Material purchase book, page 16",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "13 Oct Sri Balaji MS sheet 1.6mm x20 (104C) 'cash paid'. 13 Oct door hinges & locks 6 sets (2 per body, CT-104). 14 Oct Sri Balaji MS sheet 2mm x70 (CT-105).",
+      "source_system": "material_purchase_book",
+      "source_record_id": "MPB p.16",
+      "authors": [],
+      "relation": "supports",
+      "about": "purchase:pur-2059"
+    },
+    {
+      "id": "source:wb-p23",
+      "name": "Wage book, page 23",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "14-26 Sep 2026 weekly wages, CT-104 bodies A and B.",
+      "source_system": "wage_book",
+      "source_record_id": "WB p.23",
+      "authors": [],
+      "relation": "supports",
+      "about": "wage:wg-401"
+    },
+    {
+      "id": "source:wb-p23",
+      "name": "Wage book, page 23",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "14-26 Sep 2026 weekly wages, CT-104 bodies A and B.",
+      "source_system": "wage_book",
+      "source_record_id": "WB p.23",
+      "authors": [],
+      "relation": "supports",
+      "about": "wage:wg-402"
+    },
+    {
+      "id": "source:wb-p23",
+      "name": "Wage book, page 23",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "14-26 Sep 2026 weekly wages, CT-104 bodies A and B.",
+      "source_system": "wage_book",
+      "source_record_id": "WB p.23",
+      "authors": [],
+      "relation": "supports",
+      "about": "wage:wg-403"
+    },
+    {
+      "id": "source:wb-p23",
+      "name": "Wage book, page 23",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "14-26 Sep 2026 weekly wages, CT-104 bodies A and B.",
+      "source_system": "wage_book",
+      "source_record_id": "WB p.23",
+      "authors": [],
+      "relation": "supports",
+      "about": "wage:wg-404"
+    },
+    {
+      "id": "source:wb-p23",
+      "name": "Wage book, page 23",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "14-26 Sep 2026 weekly wages, CT-104 bodies A and B.",
+      "source_system": "wage_book",
+      "source_record_id": "WB p.23",
+      "authors": [],
+      "relation": "supports",
+      "about": "wage:wg-405"
+    },
+    {
+      "id": "source:wb-p23",
+      "name": "Wage book, page 23",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "14-26 Sep 2026 weekly wages, CT-104 bodies A and B.",
+      "source_system": "wage_book",
+      "source_record_id": "WB p.23",
+      "authors": [],
+      "relation": "supports",
+      "about": "wage:wg-406"
+    },
+    {
+      "id": "source:wb-p24",
+      "name": "Wage book, page 24",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "28 Sep-10 Oct 2026 weekly wages. Karthik (helper) 5-10 Oct: '104/105', no split written.",
+      "source_system": "wage_book",
+      "source_record_id": "WB p.24",
+      "authors": [],
+      "relation": "supports",
+      "about": "wage:wg-407"
+    },
+    {
+      "id": "source:wb-p24",
+      "name": "Wage book, page 24",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "28 Sep-10 Oct 2026 weekly wages. Karthik (helper) 5-10 Oct: '104/105', no split written.",
+      "source_system": "wage_book",
+      "source_record_id": "WB p.24",
+      "authors": [],
+      "relation": "supports",
+      "about": "wage:wg-408"
+    },
+    {
+      "id": "source:wb-p24",
+      "name": "Wage book, page 24",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "28 Sep-10 Oct 2026 weekly wages. Karthik (helper) 5-10 Oct: '104/105', no split written.",
+      "source_system": "wage_book",
+      "source_record_id": "WB p.24",
+      "authors": [],
+      "relation": "supports",
+      "about": "wage:wg-409"
+    },
+    {
+      "id": "source:wb-p24",
+      "name": "Wage book, page 24",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "28 Sep-10 Oct 2026 weekly wages. Karthik (helper) 5-10 Oct: '104/105', no split written.",
+      "source_system": "wage_book",
+      "source_record_id": "WB p.24",
+      "authors": [],
+      "relation": "supports",
+      "about": "wage:wg-410"
+    },
+    {
+      "id": "source:wb-p24",
+      "name": "Wage book, page 24",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "28 Sep-10 Oct 2026 weekly wages. Karthik (helper) 5-10 Oct: '104/105', no split written.",
+      "source_system": "wage_book",
+      "source_record_id": "WB p.24",
+      "authors": [],
+      "relation": "supports",
+      "about": "wage:wg-411"
+    },
+    {
+      "id": "source:wb-p24",
+      "name": "Wage book, page 24",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "28 Sep-10 Oct 2026 weekly wages. Karthik (helper) 5-10 Oct: '104/105', no split written.",
+      "source_system": "wage_book",
+      "source_record_id": "WB p.24",
+      "authors": [],
+      "relation": "supports",
+      "about": "wage:wg-412"
+    },
+    {
+      "id": "source:wb-p24",
+      "name": "Wage book, page 24",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "28 Sep-10 Oct 2026 weekly wages. Karthik (helper) 5-10 Oct: '104/105', no split written.",
+      "source_system": "wage_book",
+      "source_record_id": "WB p.24",
+      "authors": [],
+      "relation": "supports",
+      "about": "wage:wg-413"
+    },
+    {
+      "id": "source:wb-p25",
+      "name": "Wage book, page 25",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "12-15 Oct 2026, week not closed. Murugan 4 days: job column blank. Selvam 4 days 104C: paid column blank.",
+      "source_system": "wage_book",
+      "source_record_id": "WB p.25",
+      "authors": [],
+      "relation": "supports",
+      "about": "wage:wg-414"
+    },
+    {
+      "id": "source:wb-p25",
+      "name": "Wage book, page 25",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "12-15 Oct 2026, week not closed. Murugan 4 days: job column blank. Selvam 4 days 104C: paid column blank.",
+      "source_system": "wage_book",
+      "source_record_id": "WB p.25",
+      "authors": [],
+      "relation": "supports",
+      "about": "wage:wg-415"
+    },
+    {
+      "id": "source:wb-p25",
+      "name": "Wage book, page 25",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "12-15 Oct 2026, week not closed. Murugan 4 days: job column blank. Selvam 4 days 104C: paid column blank.",
+      "source_system": "wage_book",
+      "source_record_id": "WB p.25",
+      "authors": [],
+      "relation": "supports",
+      "about": "wage:wg-416"
+    },
+    {
+      "id": "source:wb-p25",
+      "name": "Wage book, page 25",
+      "uri": null,
+      "source_type": "book_entry",
+      "status": "active",
+      "excerpt": "12-15 Oct 2026, week not closed. Murugan 4 days: job column blank. Selvam 4 days 104C: paid column blank.",
+      "source_system": "wage_book",
+      "source_record_id": "WB p.25",
+      "authors": [],
+      "relation": "supports",
+      "about": "wage:wg-417"
+    }
+  ],
+  "queries_executed": [
+    "mf_contract",
+    "mf_contract_charges",
+    "mf_contract_cost_totals",
+    "mf_contract_noted",
+    "mf_unallocated",
+    "mf_unapplied_payments",
+    "sources_for"
+  ]
+}

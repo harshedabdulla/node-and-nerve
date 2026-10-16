@@ -8,8 +8,16 @@ from typing import Annotated, Any, Literal
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from company_brain.schema import (
+    COMMITMENT_TYPES,
     COMMON_PROPERTIES,
+    COST_TYPES,
+    CURRENCIES,
+    DATE_PROPERTIES,
+    EXPENSE_CATEGORIES,
     KIND_PROPERTIES,
+    MATERIAL_TYPES,
+    MONEY_PROPERTIES,
+    PAID_STATUSES,
     SOURCE_TYPES,
     STATUS_VALUES,
     Kind,
@@ -75,9 +83,30 @@ class EntityInput(_Strict):
                 f"status {status!r} is not valid for {kind.value}; "
                 f"use one of {sorted(STATUS_VALUES[kind])}"
             )
-        for key in ("due_date",):
-            if key in self.properties and self.properties[key] is not None:
+        for key in DATE_PROPERTIES & set(self.properties):
+            if self.properties[key] is not None:
                 date.fromisoformat(str(self.properties[key]))
+        for key in MONEY_PROPERTIES & set(self.properties):
+            amount = self.properties[key]
+            if amount is not None and (
+                isinstance(amount, bool) or not isinstance(amount, int) or amount < 0
+            ):
+                raise ValueError(f"{key} must be a non-negative integer (1 rupee = 100 paise)")
+        for key, allowed in (
+            ("paid_status", PAID_STATUSES),
+            ("cost_type", COST_TYPES),
+            ("category", EXPENSE_CATEGORIES),
+            ("material_type", MATERIAL_TYPES),
+        ):
+            value = self.properties.get(key)
+            if value is not None and value not in allowed:
+                raise ValueError(f"{key} must be one of {sorted(allowed)}")
+        currency = self.properties.get("currency")
+        if currency is not None and currency not in CURRENCIES:
+            raise ValueError(f"currency must be one of {sorted(CURRENCIES)}")
+        ctype = self.properties.get("commitment_type")
+        if ctype is not None and ctype not in COMMITMENT_TYPES:
+            raise ValueError(f"commitment_type must be one of {sorted(COMMITMENT_TYPES)}")
         if kind is Kind.SOURCE:
             stype = self.properties.get("source_type")
             if stype is not None and stype not in SOURCE_TYPES:

@@ -1,0 +1,3846 @@
+{
+ "_comment": "Kaveri Body Works is a fictional lorry-body manufacturer. Every company, person, vehicle number, amount and book entry here is synthetic.",
+ "company_id": "kaveri-body-works",
+ "company": {
+  "name": "Kaveri Body Works",
+  "city": "Namakkal, Tamil Nadu",
+  "business": "Custom lorry bodies (platform, closed container, tipper) built on customers' chassis",
+  "books": [
+   "Contract register",
+   "Material purchase book",
+   "Wage book",
+   "Supplier payment book",
+   "Machinery expense book",
+   "Miscellaneous expense book",
+   "Customer receipt book"
+  ]
+ },
+ "observed_at": "2026-10-15T18:00:00Z",
+ "as_of": "2026-10-16",
+ "_scenarios": [
+  "PUR-2041/2042/2059: one bill split evenly across the three CT-104 bodies.",
+  "PUR-2047: square tube shared by CT-104 and CT-105; split taken from supplier bill CST/884.",
+  "EX-401: freight shared 4,000/2,000 between CT-104 and CT-105 per the expense book.",
+  "PUR-2053: paint 'for 104 & 105' with no split: NOTED_FOR both, charged to neither.",
+  "PUR-2056: duplicate of PUR-2055 struck out in the book (void): never counted.",
+  "PUR-2042, PUR-2031: partly paid supplier bills.",
+  "SP-307: cheque for PUR-2055 not cleared: payment unconfirmed.",
+  "PUR-2058: book says cash paid; no supplier payment applied (unreconciled).",
+  "SP-309: Rs 25,000 cash to Sri Balaji with no bill: unapplied payment.",
+  "WG-413: helper wages noted for 104/105 with no split.",
+  "WG-416: wage entry with the job column blank (unassigned labour).",
+  "WG-417: wage entry with the paid column blank (unknown payment status).",
+  "MC-403, MC-404, EX-404: workshop overheads with no allocation (policy decision).",
+  "EX-402: consumables with no contract allocation and no note.",
+  "MC-404: recorded on a loose slip only: no source record.",
+  "CT-102, CT-103, CT-104: customer balances outstanding; CT-101 fully received."
+ ],
+ "entities": [
+  {
+   "id": "customer:cus-01",
+   "name": "Sri Vel Transports",
+   "properties": {
+    "source_record_id": "CUS-01",
+    "city": "Salem"
+   }
+  },
+  {
+   "id": "customer:cus-02",
+   "name": "Annai Roadways",
+   "properties": {
+    "source_record_id": "CUS-02",
+    "city": "Erode"
+   }
+  },
+  {
+   "id": "customer:cus-03",
+   "name": "Thirumalai Carriers",
+   "properties": {
+    "source_record_id": "CUS-03",
+    "city": "Karur"
+   }
+  },
+  {
+   "id": "customer:cus-04",
+   "name": "Pon Logistics",
+   "properties": {
+    "source_record_id": "CUS-04",
+    "city": "Coimbatore"
+   }
+  },
+  {
+   "id": "supplier:sup-01",
+   "name": "Sri Balaji Steels",
+   "properties": {
+    "source_record_id": "SUP-01",
+    "city": "Namakkal"
+   }
+  },
+  {
+   "id": "supplier:sup-02",
+   "name": "Ganesh Paints & Hardware",
+   "properties": {
+    "source_record_id": "SUP-02",
+    "city": "Namakkal"
+   }
+  },
+  {
+   "id": "supplier:sup-03",
+   "name": "Lakshmi Welding Stores",
+   "properties": {
+    "source_record_id": "SUP-03",
+    "city": "Namakkal"
+   }
+  },
+  {
+   "id": "supplier:sup-04",
+   "name": "Coimbatore Steel Traders",
+   "properties": {
+    "source_record_id": "SUP-04",
+    "city": "Coimbatore"
+   }
+  },
+  {
+   "id": "supplier:sup-05",
+   "name": "Arun Crane & Equipment Hire",
+   "properties": {
+    "source_record_id": "SUP-05",
+    "city": "Namakkal"
+   }
+  },
+  {
+   "id": "supplier:sup-06",
+   "name": "Murali Fuels",
+   "properties": {
+    "source_record_id": "SUP-06",
+    "city": "Namakkal"
+   }
+  },
+  {
+   "id": "supplier:sup-07",
+   "name": "Velan Transport",
+   "properties": {
+    "source_record_id": "SUP-07",
+    "city": "Namakkal"
+   }
+  },
+  {
+   "id": "worker:w-01",
+   "name": "Murugan",
+   "properties": {
+    "source_record_id": "W-01",
+    "role": "welder",
+    "daily_rate_paise": 90000
+   }
+  },
+  {
+   "id": "worker:w-02",
+   "name": "Saravanan",
+   "properties": {
+    "source_record_id": "W-02",
+    "role": "welder",
+    "daily_rate_paise": 90000
+   }
+  },
+  {
+   "id": "worker:w-03",
+   "name": "Selvam",
+   "properties": {
+    "source_record_id": "W-03",
+    "role": "fabricator",
+    "daily_rate_paise": 85000
+   }
+  },
+  {
+   "id": "worker:w-04",
+   "name": "Ravi",
+   "properties": {
+    "source_record_id": "W-04",
+    "role": "painter",
+    "daily_rate_paise": 80000
+   }
+  },
+  {
+   "id": "worker:w-05",
+   "name": "Karthik",
+   "properties": {
+    "source_record_id": "W-05",
+    "role": "helper",
+    "daily_rate_paise": 60000
+   }
+  },
+  {
+   "id": "worker:w-06",
+   "name": "Ilango",
+   "properties": {
+    "source_record_id": "W-06",
+    "role": "fitter",
+    "daily_rate_paise": 85000
+   }
+  },
+  {
+   "id": "contract:ct-101",
+   "name": "CT-101: 2 platform bodies",
+   "properties": {
+    "source_record_id": "CT-101",
+    "status": "delivered",
+    "contract_date": "2026-08-05",
+    "expected_completion": "2026-09-10",
+    "body_count": 2,
+    "body_type": "platform",
+    "amount_paise": 64000000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "job:j-101a",
+   "name": "J-101A: platform body on chassis TN-30-AK-2214",
+   "properties": {
+    "source_record_id": "J-101A",
+    "status": "delivered",
+    "body_type": "platform",
+    "chassis_ref": "TN-30-AK-2214",
+    "started_on": "2026-08-08",
+    "completed_on": "2026-09-06"
+   }
+  },
+  {
+   "id": "job:j-101b",
+   "name": "J-101B: platform body on chassis TN-30-AK-2215",
+   "properties": {
+    "source_record_id": "J-101B",
+    "status": "delivered",
+    "body_type": "platform",
+    "chassis_ref": "TN-30-AK-2215",
+    "started_on": "2026-08-08",
+    "completed_on": "2026-09-09"
+   }
+  },
+  {
+   "id": "contract:ct-102",
+   "name": "CT-102: 1 closed container body",
+   "properties": {
+    "source_record_id": "CT-102",
+    "status": "delivered",
+    "contract_date": "2026-08-20",
+    "expected_completion": "2026-09-30",
+    "body_count": 1,
+    "body_type": "closed container",
+    "amount_paise": 48000000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "job:j-102a",
+   "name": "J-102A: closed container body on chassis TN-33-BC-7781",
+   "properties": {
+    "source_record_id": "J-102A",
+    "status": "delivered",
+    "body_type": "closed container",
+    "chassis_ref": "TN-33-BC-7781",
+    "started_on": "2026-08-24",
+    "completed_on": "2026-09-28"
+   }
+  },
+  {
+   "id": "contract:ct-103",
+   "name": "CT-103: 1 tipper body",
+   "properties": {
+    "source_record_id": "CT-103",
+    "status": "completed",
+    "contract_date": "2026-09-02",
+    "expected_completion": "2026-10-10",
+    "body_count": 1,
+    "body_type": "tipper",
+    "amount_paise": 36000000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "job:j-103a",
+   "name": "J-103A: tipper body on chassis TN-47-AL-0912",
+   "properties": {
+    "source_record_id": "J-103A",
+    "status": "completed",
+    "body_type": "tipper",
+    "chassis_ref": "TN-47-AL-0912",
+    "started_on": "2026-09-07",
+    "completed_on": "2026-10-09"
+   }
+  },
+  {
+   "id": "contract:ct-104",
+   "name": "CT-104: 3 closed container bodies",
+   "properties": {
+    "source_record_id": "CT-104",
+    "status": "in_production",
+    "contract_date": "2026-09-10",
+    "expected_completion": "2026-10-31",
+    "body_count": 3,
+    "body_type": "closed container",
+    "amount_paise": 153000000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "job:j-104a",
+   "name": "J-104A: closed container body on chassis TN-38-CQ-5501",
+   "properties": {
+    "source_record_id": "J-104A",
+    "status": "painting",
+    "body_type": "closed container",
+    "chassis_ref": "TN-38-CQ-5501",
+    "started_on": "2026-09-14"
+   }
+  },
+  {
+   "id": "job:j-104b",
+   "name": "J-104B: closed container body on chassis TN-38-CQ-5502",
+   "properties": {
+    "source_record_id": "J-104B",
+    "status": "fabrication",
+    "body_type": "closed container",
+    "chassis_ref": "TN-38-CQ-5502",
+    "started_on": "2026-09-21"
+   }
+  },
+  {
+   "id": "job:j-104c",
+   "name": "J-104C: closed container body on chassis TN-38-CQ-5503",
+   "properties": {
+    "source_record_id": "J-104C",
+    "status": "fabrication",
+    "body_type": "closed container",
+    "chassis_ref": "TN-38-CQ-5503",
+    "started_on": "2026-09-28"
+   }
+  },
+  {
+   "id": "contract:ct-105",
+   "name": "CT-105: 2 platform bodies",
+   "properties": {
+    "source_record_id": "CT-105",
+    "status": "in_production",
+    "contract_date": "2026-09-25",
+    "expected_completion": "2026-11-15",
+    "body_count": 2,
+    "body_type": "platform",
+    "amount_paise": 68000000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "job:j-105a",
+   "name": "J-105A: platform body on chassis TN-30-AM-1180",
+   "properties": {
+    "source_record_id": "J-105A",
+    "status": "fabrication",
+    "body_type": "platform",
+    "chassis_ref": "TN-30-AM-1180",
+    "started_on": "2026-10-12"
+   }
+  },
+  {
+   "id": "job:j-105b",
+   "name": "J-105B: platform body on chassis TN-30-AM-1181",
+   "properties": {
+    "source_record_id": "J-105B",
+    "status": "planned",
+    "body_type": "platform",
+    "chassis_ref": "TN-30-AM-1181"
+   }
+  },
+  {
+   "id": "purchase:pur-2011",
+   "name": "MS sheet 2mm (80 sheet)",
+   "properties": {
+    "source_record_id": "PUR-2011",
+    "status": "recorded",
+    "purchase_date": "2026-08-07",
+    "material_type": "steel",
+    "item": "MS sheet 2mm",
+    "quantity": 80,
+    "unit": "sheet",
+    "unit_price_paise": 330000,
+    "amount_paise": 26400000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "purchase:pur-2012",
+   "name": "ISMC channel 75mm (2400 kg)",
+   "properties": {
+    "source_record_id": "PUR-2012",
+    "status": "recorded",
+    "purchase_date": "2026-08-07",
+    "material_type": "steel",
+    "item": "ISMC channel 75mm",
+    "quantity": 2400,
+    "unit": "kg",
+    "unit_price_paise": 6200,
+    "amount_paise": 14880000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "purchase:pur-2014",
+   "name": "Enamel paint 20L (4 drum)",
+   "properties": {
+    "source_record_id": "PUR-2014",
+    "status": "recorded",
+    "purchase_date": "2026-08-25",
+    "material_type": "paint",
+    "item": "Enamel paint 20L",
+    "quantity": 4,
+    "unit": "drum",
+    "unit_price_paise": 920000,
+    "amount_paise": 3680000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "purchase:pur-2015",
+   "name": "Welding rods E6013 3.15mm (24 packet)",
+   "properties": {
+    "source_record_id": "PUR-2015",
+    "status": "recorded",
+    "purchase_date": "2026-08-12",
+    "material_type": "welding",
+    "item": "Welding rods E6013 3.15mm",
+    "quantity": 24,
+    "unit": "packet",
+    "unit_price_paise": 120000,
+    "amount_paise": 2880000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-101",
+   "name": "Welding, 6 days (2026-08-08 to 2026-08-13)",
+   "properties": {
+    "source_record_id": "WG-101",
+    "status": "recorded",
+    "work_date": "2026-08-08",
+    "period_end": "2026-08-13",
+    "days": 6,
+    "work_type": "welding",
+    "amount_paise": 540000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-102",
+   "name": "Fabrication, 6 days (2026-08-08 to 2026-08-13)",
+   "properties": {
+    "source_record_id": "WG-102",
+    "status": "recorded",
+    "work_date": "2026-08-08",
+    "period_end": "2026-08-13",
+    "days": 6,
+    "work_type": "fabrication",
+    "amount_paise": 510000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-103",
+   "name": "Welding, 6 days (2026-08-08 to 2026-08-13)",
+   "properties": {
+    "source_record_id": "WG-103",
+    "status": "recorded",
+    "work_date": "2026-08-08",
+    "period_end": "2026-08-13",
+    "days": 6,
+    "work_type": "welding",
+    "amount_paise": 540000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-104",
+   "name": "Fabrication, 6 days (2026-08-17 to 2026-08-22)",
+   "properties": {
+    "source_record_id": "WG-104",
+    "status": "recorded",
+    "work_date": "2026-08-17",
+    "period_end": "2026-08-22",
+    "days": 6,
+    "work_type": "fabrication",
+    "amount_paise": 510000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-105",
+   "name": "Welding, 6 days (2026-08-17 to 2026-08-22)",
+   "properties": {
+    "source_record_id": "WG-105",
+    "status": "recorded",
+    "work_date": "2026-08-17",
+    "period_end": "2026-08-22",
+    "days": 6,
+    "work_type": "welding",
+    "amount_paise": 540000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-106",
+   "name": "Painting, 6 days (2026-08-24 to 2026-08-29)",
+   "properties": {
+    "source_record_id": "WG-106",
+    "status": "recorded",
+    "work_date": "2026-08-24",
+    "period_end": "2026-08-29",
+    "days": 6,
+    "work_type": "painting",
+    "amount_paise": 480000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-107",
+   "name": "Painting, 6 days (2026-08-31 to 2026-09-05)",
+   "properties": {
+    "source_record_id": "WG-107",
+    "status": "recorded",
+    "work_date": "2026-08-31",
+    "period_end": "2026-09-05",
+    "days": 6,
+    "work_type": "painting",
+    "amount_paise": 480000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-108",
+   "name": "Helper, 18 days (2026-08-08 to 2026-08-29)",
+   "properties": {
+    "source_record_id": "WG-108",
+    "status": "recorded",
+    "work_date": "2026-08-08",
+    "period_end": "2026-08-29",
+    "days": 18,
+    "work_type": "helper",
+    "amount_paise": 1080000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "machinerycost:mc-101",
+   "name": "Crane: rental (4 hour)",
+   "properties": {
+    "source_record_id": "MC-101",
+    "status": "recorded",
+    "cost_date": "2026-09-06",
+    "cost_type": "rental",
+    "machine": "Crane",
+    "quantity": 4,
+    "unit": "hour",
+    "amount_paise": 480000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "payment:sp-201",
+   "name": "Supplier payment (NEFT, UTR 0814-2201)",
+   "properties": {
+    "source_record_id": "SP-201",
+    "status": "cleared",
+    "paid_on": "2026-08-14",
+    "method": "NEFT",
+    "reference": "UTR 0814-2201",
+    "amount_paise": 26400000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:sp-202",
+   "name": "Supplier payment (NEFT, UTR 0814-2202)",
+   "properties": {
+    "source_record_id": "SP-202",
+    "status": "cleared",
+    "paid_on": "2026-08-14",
+    "method": "NEFT",
+    "reference": "UTR 0814-2202",
+    "amount_paise": 14880000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:sp-203",
+   "name": "Supplier payment (cash, cash)",
+   "properties": {
+    "source_record_id": "SP-203",
+    "status": "cleared",
+    "paid_on": "2026-08-28",
+    "method": "cash",
+    "reference": "cash",
+    "amount_paise": 3680000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:sp-204",
+   "name": "Supplier payment (cash, cash)",
+   "properties": {
+    "source_record_id": "SP-204",
+    "status": "cleared",
+    "paid_on": "2026-08-20",
+    "method": "cash",
+    "reference": "cash",
+    "amount_paise": 2880000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:sp-205",
+   "name": "Supplier payment (UPI, UPI 0908-4471)",
+   "properties": {
+    "source_record_id": "SP-205",
+    "status": "cleared",
+    "paid_on": "2026-09-08",
+    "method": "UPI",
+    "reference": "UPI 0908-4471",
+    "amount_paise": 480000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:cr-101-1",
+   "name": "Receipt from customer UTR 0805-1101",
+   "properties": {
+    "source_record_id": "CR-101-1",
+    "status": "cleared",
+    "received_on": "2026-08-05",
+    "method": "NEFT",
+    "reference": "UTR 0805-1101",
+    "amount_paise": 30000000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:cr-101-2",
+   "name": "Receipt from customer UTR 0912-1102",
+   "properties": {
+    "source_record_id": "CR-101-2",
+    "status": "cleared",
+    "received_on": "2026-09-12",
+    "method": "NEFT",
+    "reference": "UTR 0912-1102",
+    "amount_paise": 34000000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "purchase:pur-2021",
+   "name": "MS sheet 2mm (70 sheet)",
+   "properties": {
+    "source_record_id": "PUR-2021",
+    "status": "recorded",
+    "purchase_date": "2026-08-22",
+    "material_type": "steel",
+    "item": "MS sheet 2mm",
+    "quantity": 70,
+    "unit": "sheet",
+    "unit_price_paise": 335000,
+    "amount_paise": 23450000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "purchase:pur-2022",
+   "name": "ISMC channel 100mm (900 kg)",
+   "properties": {
+    "source_record_id": "PUR-2022",
+    "status": "recorded",
+    "purchase_date": "2026-08-22",
+    "material_type": "steel",
+    "item": "ISMC channel 100mm",
+    "quantity": 900,
+    "unit": "kg",
+    "unit_price_paise": 6200,
+    "amount_paise": 5580000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "purchase:pur-2023",
+   "name": "Primer and enamel paint 20L (3 drum)",
+   "properties": {
+    "source_record_id": "PUR-2023",
+    "status": "recorded",
+    "purchase_date": "2026-09-15",
+    "material_type": "paint",
+    "item": "Primer and enamel paint 20L",
+    "quantity": 3,
+    "unit": "drum",
+    "unit_price_paise": 860000,
+    "amount_paise": 2580000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "purchase:pur-2024",
+   "name": "Container door hinges and locks (2 set)",
+   "properties": {
+    "source_record_id": "PUR-2024",
+    "status": "recorded",
+    "purchase_date": "2026-09-10",
+    "material_type": "hardware",
+    "item": "Container door hinges and locks",
+    "quantity": 2,
+    "unit": "set",
+    "unit_price_paise": 375000,
+    "amount_paise": 750000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-201",
+   "name": "Welding, 6 days (2026-08-24 to 2026-08-29)",
+   "properties": {
+    "source_record_id": "WG-201",
+    "status": "recorded",
+    "work_date": "2026-08-24",
+    "period_end": "2026-08-29",
+    "days": 6,
+    "work_type": "welding",
+    "amount_paise": 540000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-202",
+   "name": "Fabrication, 6 days (2026-08-24 to 2026-08-29)",
+   "properties": {
+    "source_record_id": "WG-202",
+    "status": "recorded",
+    "work_date": "2026-08-24",
+    "period_end": "2026-08-29",
+    "days": 6,
+    "work_type": "fabrication",
+    "amount_paise": 510000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-203",
+   "name": "Welding, 6 days (2026-08-31 to 2026-09-05)",
+   "properties": {
+    "source_record_id": "WG-203",
+    "status": "recorded",
+    "work_date": "2026-08-31",
+    "period_end": "2026-09-05",
+    "days": 6,
+    "work_type": "welding",
+    "amount_paise": 540000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-204",
+   "name": "Fabrication, 6 days (2026-08-31 to 2026-09-05)",
+   "properties": {
+    "source_record_id": "WG-204",
+    "status": "recorded",
+    "work_date": "2026-08-31",
+    "period_end": "2026-09-05",
+    "days": 6,
+    "work_type": "fabrication",
+    "amount_paise": 510000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-205",
+   "name": "Painting, 6 days (2026-09-14 to 2026-09-19)",
+   "properties": {
+    "source_record_id": "WG-205",
+    "status": "recorded",
+    "work_date": "2026-09-14",
+    "period_end": "2026-09-19",
+    "days": 6,
+    "work_type": "painting",
+    "amount_paise": 480000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-206",
+   "name": "Fitting, 4 days (2026-09-14 to 2026-09-17)",
+   "properties": {
+    "source_record_id": "WG-206",
+    "status": "recorded",
+    "work_date": "2026-09-14",
+    "period_end": "2026-09-17",
+    "days": 4,
+    "work_type": "fitting",
+    "amount_paise": 340000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "expense:ex-201",
+   "name": "Delivery of CT-102 body to Erode",
+   "properties": {
+    "source_record_id": "EX-201",
+    "status": "recorded",
+    "expense_date": "2026-09-29",
+    "category": "transport",
+    "amount_paise": 550000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "payment:sp-206",
+   "name": "Supplier payment (NEFT, UTR 0902-2206)",
+   "properties": {
+    "source_record_id": "SP-206",
+    "status": "cleared",
+    "paid_on": "2026-09-02",
+    "method": "NEFT",
+    "reference": "UTR 0902-2206",
+    "amount_paise": 23450000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:sp-207",
+   "name": "Supplier payment (NEFT, UTR 0902-2207)",
+   "properties": {
+    "source_record_id": "SP-207",
+    "status": "cleared",
+    "paid_on": "2026-09-02",
+    "method": "NEFT",
+    "reference": "UTR 0902-2207",
+    "amount_paise": 5580000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:sp-208",
+   "name": "Supplier payment (UPI, UPI 0918-3308)",
+   "properties": {
+    "source_record_id": "SP-208",
+    "status": "cleared",
+    "paid_on": "2026-09-18",
+    "method": "UPI",
+    "reference": "UPI 0918-3308",
+    "amount_paise": 3330000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:cr-102-1",
+   "name": "Receipt from customer CHQ 004417",
+   "properties": {
+    "source_record_id": "CR-102-1",
+    "status": "cleared",
+    "received_on": "2026-08-20",
+    "method": "cheque",
+    "reference": "CHQ 004417",
+    "amount_paise": 20000000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:cr-102-2",
+   "name": "Receipt from customer UTR 0930-1202",
+   "properties": {
+    "source_record_id": "CR-102-2",
+    "status": "cleared",
+    "received_on": "2026-09-30",
+    "method": "NEFT",
+    "reference": "UTR 0930-1202",
+    "amount_paise": 15000000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "purchase:pur-2031",
+   "name": "MS plate 5mm (1800 kg)",
+   "properties": {
+    "source_record_id": "PUR-2031",
+    "status": "recorded",
+    "purchase_date": "2026-09-04",
+    "material_type": "steel",
+    "item": "MS plate 5mm",
+    "quantity": 1800,
+    "unit": "kg",
+    "unit_price_paise": 6800,
+    "amount_paise": 12240000,
+    "currency": "INR",
+    "paid_status": "partly_paid"
+   }
+  },
+  {
+   "id": "purchase:pur-2032",
+   "name": "ISMC channel 125mm (700 kg)",
+   "properties": {
+    "source_record_id": "PUR-2032",
+    "status": "recorded",
+    "purchase_date": "2026-09-04",
+    "material_type": "steel",
+    "item": "ISMC channel 125mm",
+    "quantity": 700,
+    "unit": "kg",
+    "unit_price_paise": 6300,
+    "amount_paise": 4410000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "purchase:pur-2033",
+   "name": "Enamel paint 20L (2 drum)",
+   "properties": {
+    "source_record_id": "PUR-2033",
+    "status": "recorded",
+    "purchase_date": "2026-10-02",
+    "material_type": "paint",
+    "item": "Enamel paint 20L",
+    "quantity": 2,
+    "unit": "drum",
+    "unit_price_paise": 860000,
+    "amount_paise": 1720000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "purchase:pur-2034",
+   "name": "Welding rods E6013 3.15mm (8 packet)",
+   "properties": {
+    "source_record_id": "PUR-2034",
+    "status": "recorded",
+    "purchase_date": "2026-09-08",
+    "material_type": "welding",
+    "item": "Welding rods E6013 3.15mm",
+    "quantity": 8,
+    "unit": "packet",
+    "unit_price_paise": 124000,
+    "amount_paise": 992000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-301",
+   "name": "Welding, 6 days (2026-09-07 to 2026-09-12)",
+   "properties": {
+    "source_record_id": "WG-301",
+    "status": "recorded",
+    "work_date": "2026-09-07",
+    "period_end": "2026-09-12",
+    "days": 6,
+    "work_type": "welding",
+    "amount_paise": 540000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-302",
+   "name": "Fabrication, 6 days (2026-09-07 to 2026-09-12)",
+   "properties": {
+    "source_record_id": "WG-302",
+    "status": "recorded",
+    "work_date": "2026-09-07",
+    "period_end": "2026-09-12",
+    "days": 6,
+    "work_type": "fabrication",
+    "amount_paise": 510000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-303",
+   "name": "Welding, 6 days (2026-09-07 to 2026-09-12)",
+   "properties": {
+    "source_record_id": "WG-303",
+    "status": "recorded",
+    "work_date": "2026-09-07",
+    "period_end": "2026-09-12",
+    "days": 6,
+    "work_type": "welding",
+    "amount_paise": 540000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-304",
+   "name": "Fitting, 6 days (2026-09-21 to 2026-09-26)",
+   "properties": {
+    "source_record_id": "WG-304",
+    "status": "recorded",
+    "work_date": "2026-09-21",
+    "period_end": "2026-09-26",
+    "days": 6,
+    "work_type": "fitting",
+    "amount_paise": 510000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-305",
+   "name": "Painting, 6 days (2026-09-28 to 2026-10-03)",
+   "properties": {
+    "source_record_id": "WG-305",
+    "status": "recorded",
+    "work_date": "2026-09-28",
+    "period_end": "2026-10-03",
+    "days": 6,
+    "work_type": "painting",
+    "amount_paise": 480000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "payment:sp-209",
+   "name": "Supplier payment (NEFT, UTR 0920-2209)",
+   "properties": {
+    "source_record_id": "SP-209",
+    "status": "cleared",
+    "paid_on": "2026-09-20",
+    "method": "NEFT",
+    "reference": "UTR 0920-2209",
+    "amount_paise": 6000000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:sp-210",
+   "name": "Supplier payment (NEFT, UTR 0906-2210)",
+   "properties": {
+    "source_record_id": "SP-210",
+    "status": "cleared",
+    "paid_on": "2026-09-06",
+    "method": "NEFT",
+    "reference": "UTR 0906-2210",
+    "amount_paise": 4410000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:sp-211",
+   "name": "Supplier payment (cash, cash)",
+   "properties": {
+    "source_record_id": "SP-211",
+    "status": "cleared",
+    "paid_on": "2026-10-03",
+    "method": "cash",
+    "reference": "cash",
+    "amount_paise": 1720000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:sp-212",
+   "name": "Supplier payment (cash, cash)",
+   "properties": {
+    "source_record_id": "SP-212",
+    "status": "cleared",
+    "paid_on": "2026-09-10",
+    "method": "cash",
+    "reference": "cash",
+    "amount_paise": 992000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:cr-103-1",
+   "name": "Receipt from customer CHQ 118204",
+   "properties": {
+    "source_record_id": "CR-103-1",
+    "status": "cleared",
+    "received_on": "2026-09-02",
+    "method": "cheque",
+    "reference": "CHQ 118204",
+    "amount_paise": 10000000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "purchase:pur-2041",
+   "name": "MS sheet 2mm (105 sheet)",
+   "properties": {
+    "source_record_id": "PUR-2041",
+    "status": "recorded",
+    "purchase_date": "2026-09-12",
+    "material_type": "steel",
+    "item": "MS sheet 2mm",
+    "quantity": 105,
+    "unit": "sheet",
+    "unit_price_paise": 340000,
+    "amount_paise": 35700000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "purchase:pur-2042",
+   "name": "ISMC channel 100mm (2700 kg)",
+   "properties": {
+    "source_record_id": "PUR-2042",
+    "status": "recorded",
+    "purchase_date": "2026-09-12",
+    "material_type": "steel",
+    "item": "ISMC channel 100mm",
+    "quantity": 2700,
+    "unit": "kg",
+    "unit_price_paise": 6200,
+    "amount_paise": 16740000,
+    "currency": "INR",
+    "paid_status": "partly_paid"
+   }
+  },
+  {
+   "id": "purchase:pur-2047",
+   "name": "MS square tube 40x40 (120 length)",
+   "properties": {
+    "source_record_id": "PUR-2047",
+    "status": "recorded",
+    "purchase_date": "2026-09-26",
+    "material_type": "steel",
+    "item": "MS square tube 40x40",
+    "quantity": 120,
+    "unit": "length",
+    "unit_price_paise": 115000,
+    "amount_paise": 13800000,
+    "currency": "INR",
+    "paid_status": "unpaid",
+    "bill_ref": "CST/884"
+   }
+  },
+  {
+   "id": "purchase:pur-2050",
+   "name": "Epoxy primer 20L (4 drum)",
+   "properties": {
+    "source_record_id": "PUR-2050",
+    "status": "recorded",
+    "purchase_date": "2026-10-03",
+    "material_type": "paint",
+    "item": "Epoxy primer 20L",
+    "quantity": 4,
+    "unit": "drum",
+    "unit_price_paise": 620000,
+    "amount_paise": 2480000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "purchase:pur-2053",
+   "name": "PU enamel paint 20L (3 drum)",
+   "properties": {
+    "source_record_id": "PUR-2053",
+    "status": "recorded",
+    "purchase_date": "2026-10-08",
+    "material_type": "paint",
+    "item": "PU enamel paint 20L",
+    "quantity": 3,
+    "unit": "drum",
+    "unit_price_paise": 950000,
+    "amount_paise": 2850000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "purchase:pur-2055",
+   "name": "Welding rods E6013 3.15mm (25 packet)",
+   "properties": {
+    "source_record_id": "PUR-2055",
+    "status": "recorded",
+    "purchase_date": "2026-10-10",
+    "material_type": "welding",
+    "item": "Welding rods E6013 3.15mm",
+    "quantity": 25,
+    "unit": "packet",
+    "unit_price_paise": 124000,
+    "amount_paise": 3100000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "purchase:pur-2056",
+   "name": "Welding rods E6013 3.15mm (25 packet)",
+   "properties": {
+    "source_record_id": "PUR-2056",
+    "status": "void",
+    "purchase_date": "2026-10-10",
+    "material_type": "welding",
+    "item": "Welding rods E6013 3.15mm",
+    "quantity": 25,
+    "unit": "packet",
+    "unit_price_paise": 124000,
+    "amount_paise": 3100000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "purchase:pur-2057",
+   "name": "CO2 gas cylinder refill (4 cylinder)",
+   "properties": {
+    "source_record_id": "PUR-2057",
+    "status": "recorded",
+    "purchase_date": "2026-10-11",
+    "material_type": "welding",
+    "item": "CO2 gas cylinder refill",
+    "quantity": 4,
+    "unit": "cylinder",
+    "unit_price_paise": 180000,
+    "amount_paise": 720000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "purchase:pur-2058",
+   "name": "MS sheet 1.6mm (20 sheet)",
+   "properties": {
+    "source_record_id": "PUR-2058",
+    "status": "recorded",
+    "purchase_date": "2026-10-13",
+    "material_type": "steel",
+    "item": "MS sheet 1.6mm",
+    "quantity": 20,
+    "unit": "sheet",
+    "unit_price_paise": 290000,
+    "amount_paise": 5800000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "purchase:pur-2059",
+   "name": "Container door hinges and locks (6 set)",
+   "properties": {
+    "source_record_id": "PUR-2059",
+    "status": "recorded",
+    "purchase_date": "2026-10-13",
+    "material_type": "hardware",
+    "item": "Container door hinges and locks",
+    "quantity": 6,
+    "unit": "set",
+    "unit_price_paise": 375000,
+    "amount_paise": 2250000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-401",
+   "name": "Welding, 6 days (2026-09-14 to 2026-09-19)",
+   "properties": {
+    "source_record_id": "WG-401",
+    "status": "recorded",
+    "work_date": "2026-09-14",
+    "period_end": "2026-09-19",
+    "days": 6,
+    "work_type": "welding",
+    "amount_paise": 540000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-402",
+   "name": "Fabrication, 6 days (2026-09-14 to 2026-09-19)",
+   "properties": {
+    "source_record_id": "WG-402",
+    "status": "recorded",
+    "work_date": "2026-09-14",
+    "period_end": "2026-09-19",
+    "days": 6,
+    "work_type": "fabrication",
+    "amount_paise": 510000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-403",
+   "name": "Helper, 6 days (2026-09-14 to 2026-09-19)",
+   "properties": {
+    "source_record_id": "WG-403",
+    "status": "recorded",
+    "work_date": "2026-09-14",
+    "period_end": "2026-09-19",
+    "days": 6,
+    "work_type": "helper",
+    "amount_paise": 360000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-404",
+   "name": "Welding, 6 days (2026-09-21 to 2026-09-26)",
+   "properties": {
+    "source_record_id": "WG-404",
+    "status": "recorded",
+    "work_date": "2026-09-21",
+    "period_end": "2026-09-26",
+    "days": 6,
+    "work_type": "welding",
+    "amount_paise": 540000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-405",
+   "name": "Welding, 6 days (2026-09-21 to 2026-09-26)",
+   "properties": {
+    "source_record_id": "WG-405",
+    "status": "recorded",
+    "work_date": "2026-09-21",
+    "period_end": "2026-09-26",
+    "days": 6,
+    "work_type": "welding",
+    "amount_paise": 540000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-406",
+   "name": "Fabrication, 6 days (2026-09-21 to 2026-09-26)",
+   "properties": {
+    "source_record_id": "WG-406",
+    "status": "recorded",
+    "work_date": "2026-09-21",
+    "period_end": "2026-09-26",
+    "days": 6,
+    "work_type": "fabrication",
+    "amount_paise": 510000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-407",
+   "name": "Welding, 6 days (2026-09-28 to 2026-10-03)",
+   "properties": {
+    "source_record_id": "WG-407",
+    "status": "recorded",
+    "work_date": "2026-09-28",
+    "period_end": "2026-10-03",
+    "days": 6,
+    "work_type": "welding",
+    "amount_paise": 540000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-408",
+   "name": "Welding, 6 days (2026-09-28 to 2026-10-03)",
+   "properties": {
+    "source_record_id": "WG-408",
+    "status": "recorded",
+    "work_date": "2026-09-28",
+    "period_end": "2026-10-03",
+    "days": 6,
+    "work_type": "welding",
+    "amount_paise": 540000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-409",
+   "name": "Fabrication, 6 days (2026-09-28 to 2026-10-03)",
+   "properties": {
+    "source_record_id": "WG-409",
+    "status": "recorded",
+    "work_date": "2026-09-28",
+    "period_end": "2026-10-03",
+    "days": 6,
+    "work_type": "fabrication",
+    "amount_paise": 510000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-410",
+   "name": "Painting, 6 days (2026-10-05 to 2026-10-10)",
+   "properties": {
+    "source_record_id": "WG-410",
+    "status": "recorded",
+    "work_date": "2026-10-05",
+    "period_end": "2026-10-10",
+    "days": 6,
+    "work_type": "painting",
+    "amount_paise": 480000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-411",
+   "name": "Welding, 6 days (2026-10-05 to 2026-10-10)",
+   "properties": {
+    "source_record_id": "WG-411",
+    "status": "recorded",
+    "work_date": "2026-10-05",
+    "period_end": "2026-10-10",
+    "days": 6,
+    "work_type": "welding",
+    "amount_paise": 540000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-412",
+   "name": "Welding, 6 days (2026-10-05 to 2026-10-10)",
+   "properties": {
+    "source_record_id": "WG-412",
+    "status": "recorded",
+    "work_date": "2026-10-05",
+    "period_end": "2026-10-10",
+    "days": 6,
+    "work_type": "welding",
+    "amount_paise": 540000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-413",
+   "name": "Helper, 6 days (2026-10-05 to 2026-10-10)",
+   "properties": {
+    "source_record_id": "WG-413",
+    "status": "recorded",
+    "work_date": "2026-10-05",
+    "period_end": "2026-10-10",
+    "days": 6,
+    "work_type": "helper",
+    "amount_paise": 360000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "wage:wg-414",
+   "name": "Fitting, 4 days (2026-10-12 to 2026-10-15)",
+   "properties": {
+    "source_record_id": "WG-414",
+    "status": "recorded",
+    "work_date": "2026-10-12",
+    "period_end": "2026-10-15",
+    "days": 4,
+    "work_type": "fitting",
+    "amount_paise": 340000,
+    "currency": "INR",
+    "paid_status": "unpaid"
+   }
+  },
+  {
+   "id": "wage:wg-415",
+   "name": "Painting, 4 days (2026-10-12 to 2026-10-15)",
+   "properties": {
+    "source_record_id": "WG-415",
+    "status": "recorded",
+    "work_date": "2026-10-12",
+    "period_end": "2026-10-15",
+    "days": 4,
+    "work_type": "painting",
+    "amount_paise": 320000,
+    "currency": "INR",
+    "paid_status": "unpaid"
+   }
+  },
+  {
+   "id": "wage:wg-416",
+   "name": "Welding, 4 days (2026-10-12 to 2026-10-15)",
+   "properties": {
+    "source_record_id": "WG-416",
+    "status": "recorded",
+    "work_date": "2026-10-12",
+    "period_end": "2026-10-15",
+    "days": 4,
+    "work_type": "welding",
+    "amount_paise": 360000,
+    "currency": "INR",
+    "paid_status": "unpaid"
+   }
+  },
+  {
+   "id": "wage:wg-417",
+   "name": "Fabrication, 4 days (2026-10-12 to 2026-10-15)",
+   "properties": {
+    "source_record_id": "WG-417",
+    "status": "recorded",
+    "work_date": "2026-10-12",
+    "period_end": "2026-10-15",
+    "days": 4,
+    "work_type": "fabrication",
+    "amount_paise": 340000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "machinerycost:mc-401",
+   "name": "Sheet bending machine: rental (2 day)",
+   "properties": {
+    "source_record_id": "MC-401",
+    "status": "recorded",
+    "cost_date": "2026-09-24",
+    "cost_type": "rental",
+    "machine": "Sheet bending machine",
+    "quantity": 2,
+    "unit": "day",
+    "amount_paise": 700000,
+    "currency": "INR",
+    "paid_status": "unpaid"
+   }
+  },
+  {
+   "id": "machinerycost:mc-402",
+   "name": "Crane: rental (4 hour)",
+   "properties": {
+    "source_record_id": "MC-402",
+    "status": "recorded",
+    "cost_date": "2026-10-09",
+    "cost_type": "rental",
+    "machine": "Crane",
+    "quantity": 4,
+    "unit": "hour",
+    "amount_paise": 480000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "machinerycost:mc-403",
+   "name": "Generator: fuel (120 litre)",
+   "properties": {
+    "source_record_id": "MC-403",
+    "status": "recorded",
+    "cost_date": "2026-10-02",
+    "cost_type": "fuel",
+    "machine": "Generator",
+    "quantity": 120,
+    "unit": "litre",
+    "amount_paise": 1104000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "machinerycost:mc-404",
+   "name": "Plasma cutter: maintenance (1 service)",
+   "properties": {
+    "source_record_id": "MC-404",
+    "status": "recorded",
+    "cost_date": "2026-10-06",
+    "cost_type": "maintenance",
+    "machine": "Plasma cutter",
+    "quantity": 1,
+    "unit": "service",
+    "amount_paise": 650000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "expense:ex-401",
+   "name": "Freight for square tube from Coimbatore",
+   "properties": {
+    "source_record_id": "EX-401",
+    "status": "recorded",
+    "expense_date": "2026-09-26",
+    "category": "transport",
+    "amount_paise": 600000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "expense:ex-402",
+   "name": "Grinding and cutting discs",
+   "properties": {
+    "source_record_id": "EX-402",
+    "status": "recorded",
+    "expense_date": "2026-10-07",
+    "category": "consumables",
+    "amount_paise": 385000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "expense:ex-403",
+   "name": "Body lettering and stickers, CT-104",
+   "properties": {
+    "source_record_id": "EX-403",
+    "status": "recorded",
+    "expense_date": "2026-10-14",
+    "category": "other",
+    "amount_paise": 450000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "expense:ex-404",
+   "name": "Workshop electricity, September 2026",
+   "properties": {
+    "source_record_id": "EX-404",
+    "status": "recorded",
+    "expense_date": "2026-10-05",
+    "category": "electricity",
+    "amount_paise": 1840000,
+    "currency": "INR",
+    "paid_status": "paid"
+   }
+  },
+  {
+   "id": "payment:sp-301",
+   "name": "Supplier payment (NEFT, UTR 0920-2301)",
+   "properties": {
+    "source_record_id": "SP-301",
+    "status": "cleared",
+    "paid_on": "2026-09-20",
+    "method": "NEFT",
+    "reference": "UTR 0920-2301",
+    "amount_paise": 35700000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:sp-302",
+   "name": "Supplier payment (NEFT, UTR 0927-2302)",
+   "properties": {
+    "source_record_id": "SP-302",
+    "status": "cleared",
+    "paid_on": "2026-09-27",
+    "method": "NEFT",
+    "reference": "UTR 0927-2302",
+    "amount_paise": 10000000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:sp-305",
+   "name": "Supplier payment (UPI, UPI 1006-3305)",
+   "properties": {
+    "source_record_id": "SP-305",
+    "status": "cleared",
+    "paid_on": "2026-10-06",
+    "method": "UPI",
+    "reference": "UPI 1006-3305",
+    "amount_paise": 2480000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:sp-306",
+   "name": "Supplier payment (UPI, UPI 1010-3306)",
+   "properties": {
+    "source_record_id": "SP-306",
+    "status": "cleared",
+    "paid_on": "2026-10-10",
+    "method": "UPI",
+    "reference": "UPI 1010-3306",
+    "amount_paise": 2850000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:sp-307",
+   "name": "Supplier payment (cheque, CHQ 118842)",
+   "properties": {
+    "source_record_id": "SP-307",
+    "status": "pending",
+    "paid_on": "2026-10-10",
+    "method": "cheque",
+    "reference": "CHQ 118842",
+    "amount_paise": 3100000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:sp-308",
+   "name": "Supplier payment (cash, cash)",
+   "properties": {
+    "source_record_id": "SP-308",
+    "status": "cleared",
+    "paid_on": "2026-10-11",
+    "method": "cash",
+    "reference": "cash",
+    "amount_paise": 720000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:sp-309",
+   "name": "Supplier payment (cash, cash)",
+   "properties": {
+    "source_record_id": "SP-309",
+    "status": "cleared",
+    "paid_on": "2026-10-14",
+    "method": "cash",
+    "reference": "cash",
+    "amount_paise": 2500000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:sp-310",
+   "name": "Supplier payment (UPI, UPI 1015-3310)",
+   "properties": {
+    "source_record_id": "SP-310",
+    "status": "cleared",
+    "paid_on": "2026-10-15",
+    "method": "UPI",
+    "reference": "UPI 1015-3310",
+    "amount_paise": 2250000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:sp-311",
+   "name": "Supplier payment (UPI, UPI 1012-4411)",
+   "properties": {
+    "source_record_id": "SP-311",
+    "status": "cleared",
+    "paid_on": "2026-10-12",
+    "method": "UPI",
+    "reference": "UPI 1012-4411",
+    "amount_paise": 480000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:sp-312",
+   "name": "Supplier payment (cash, cash)",
+   "properties": {
+    "source_record_id": "SP-312",
+    "status": "cleared",
+    "paid_on": "2026-10-02",
+    "method": "cash",
+    "reference": "cash",
+    "amount_paise": 1104000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:cr-104-1",
+   "name": "Receipt from customer UTR 0910-1401",
+   "properties": {
+    "source_record_id": "CR-104-1",
+    "status": "cleared",
+    "received_on": "2026-09-10",
+    "method": "NEFT",
+    "reference": "UTR 0910-1401",
+    "amount_paise": 50000000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "payment:cr-104-2",
+   "name": "Receipt from customer CHQ 552019",
+   "properties": {
+    "source_record_id": "CR-104-2",
+    "status": "cleared",
+    "received_on": "2026-10-05",
+    "method": "cheque",
+    "reference": "CHQ 552019",
+    "amount_paise": 30000000,
+    "currency": "INR"
+   }
+  },
+  {
+   "id": "purchase:pur-2061",
+   "name": "MS sheet 2mm (70 sheet)",
+   "properties": {
+    "source_record_id": "PUR-2061",
+    "status": "recorded",
+    "purchase_date": "2026-10-14",
+    "material_type": "steel",
+    "item": "MS sheet 2mm",
+    "quantity": 70,
+    "unit": "sheet",
+    "unit_price_paise": 340000,
+    "amount_paise": 23800000,
+    "currency": "INR",
+    "paid_status": "unpaid"
+   }
+  },
+  {
+   "id": "wage:wg-501",
+   "name": "Welding, 4 days (2026-10-12 to 2026-10-15)",
+   "properties": {
+    "source_record_id": "WG-501",
+    "status": "recorded",
+    "work_date": "2026-10-12",
+    "period_end": "2026-10-15",
+    "days": 4,
+    "work_type": "welding",
+    "amount_paise": 360000,
+    "currency": "INR",
+    "paid_status": "unpaid"
+   }
+  },
+  {
+   "id": "payment:cr-105-1",
+   "name": "Receipt from customer UTR 0925-1501",
+   "properties": {
+    "source_record_id": "CR-105-1",
+    "status": "cleared",
+    "received_on": "2026-09-25",
+    "method": "NEFT",
+    "reference": "UTR 0925-1501",
+    "amount_paise": 20000000,
+    "currency": "INR"
+   }
+  }
+ ],
+ "sources": [
+  {
+   "id": "source:crg-p1",
+   "name": "Contract register, page 1",
+   "source_type": "book_entry",
+   "source_system": "contract_register",
+   "source_record_id": "CRG p.1",
+   "excerpt": "CT-101 Sri Vel Transports, 2 platform bodies, Rs 6,40,000. CT-102 Annai Roadways, 1 closed container, Rs 4,80,000. CT-103 Thirumalai Carriers, 1 tipper body, Rs 3,60,000; hydraulic kit supplied by customer.",
+   "published_at": "2026-09-02",
+   "supports": [
+    "contract:ct-101",
+    "job:j-101a",
+    "job:j-101b",
+    "contract:ct-102",
+    "job:j-102a",
+    "contract:ct-103",
+    "job:j-103a"
+   ],
+   "mentions": []
+  },
+  {
+   "id": "source:crg-p2",
+   "name": "Contract register, page 2",
+   "source_type": "book_entry",
+   "source_system": "contract_register",
+   "source_record_id": "CRG p.2",
+   "excerpt": "CT-104 Pon Logistics, 3 closed container bodies @ Rs 5,10,000 = Rs 15,30,000, deliver by 31 Oct. CT-105 Sri Vel Transports, 2 platform bodies, Rs 6,80,000.",
+   "published_at": "2026-09-25",
+   "supports": [
+    "contract:ct-104",
+    "job:j-104a",
+    "job:j-104b",
+    "job:j-104c",
+    "contract:ct-105",
+    "job:j-105a",
+    "job:j-105b"
+   ],
+   "mentions": []
+  },
+  {
+   "id": "source:mpb-p11",
+   "name": "Material purchase book, page 11",
+   "source_type": "book_entry",
+   "source_system": "material_purchase_book",
+   "source_record_id": "MPB p.11",
+   "excerpt": "Aug 2026 entries for CT-101: MS sheet, ISMC channel, welding rods, enamel paint.",
+   "published_at": "2026-08-25",
+   "supports": [
+    "purchase:pur-2011",
+    "purchase:pur-2012",
+    "purchase:pur-2014",
+    "purchase:pur-2015"
+   ],
+   "mentions": []
+  },
+  {
+   "id": "source:mpb-p12",
+   "name": "Material purchase book, page 12",
+   "source_type": "book_entry",
+   "source_system": "material_purchase_book",
+   "source_record_id": "MPB p.12",
+   "excerpt": "Aug-Sep 2026 entries for CT-102 and CT-103.",
+   "published_at": "2026-10-02",
+   "supports": [
+    "purchase:pur-2021",
+    "purchase:pur-2022",
+    "purchase:pur-2023",
+    "purchase:pur-2024",
+    "purchase:pur-2031",
+    "purchase:pur-2032",
+    "purchase:pur-2033",
+    "purchase:pur-2034"
+   ],
+   "mentions": []
+  },
+  {
+   "id": "source:mpb-p14",
+   "name": "Material purchase book, page 14",
+   "source_type": "book_entry",
+   "source_system": "material_purchase_book",
+   "source_record_id": "MPB p.14",
+   "excerpt": "12 Sep: Sri Balaji, MS sheet 2mm x105 @3,400 (35 per body, CT-104); ISMC 100 2,700 kg @62 (900 kg per body). 26 Sep: Coimbatore Steel Traders, sq. tube 40x40 x120 @1,150, see bill.",
+   "published_at": "2026-09-26",
+   "supports": [
+    "purchase:pur-2041",
+    "purchase:pur-2042",
+    "purchase:pur-2047"
+   ],
+   "mentions": []
+  },
+  {
+   "id": "source:mpb-p15",
+   "name": "Material purchase book, page 15",
+   "source_type": "book_entry",
+   "source_system": "material_purchase_book",
+   "source_record_id": "MPB p.15",
+   "excerpt": "3 Oct epoxy primer 4 drums (104A). 8 Oct PU enamel 3 drums 'for 104 & 105'. 10 Oct welding rods 25 pkt (104B/104C), paid by cheque. 10 Oct rods 25 pkt (struck out, written twice). 11 Oct CO2 refill 4 cyl (CT-104).",
+   "published_at": "2026-10-11",
+   "supports": [
+    "purchase:pur-2050",
+    "purchase:pur-2053",
+    "purchase:pur-2055",
+    "purchase:pur-2056",
+    "purchase:pur-2057"
+   ],
+   "mentions": []
+  },
+  {
+   "id": "source:mpb-p16",
+   "name": "Material purchase book, page 16",
+   "source_type": "book_entry",
+   "source_system": "material_purchase_book",
+   "source_record_id": "MPB p.16",
+   "excerpt": "13 Oct Sri Balaji MS sheet 1.6mm x20 (104C) 'cash paid'. 13 Oct door hinges & locks 6 sets (2 per body, CT-104). 14 Oct Sri Balaji MS sheet 2mm x70 (CT-105).",
+   "published_at": "2026-10-14",
+   "supports": [
+    "purchase:pur-2058",
+    "purchase:pur-2059",
+    "purchase:pur-2061"
+   ],
+   "mentions": []
+  },
+  {
+   "id": "source:bill-cst-884",
+   "name": "Coimbatore Steel Traders bill CST/884",
+   "source_type": "document",
+   "source_system": "supplier_bill",
+   "source_record_id": "CST/884",
+   "excerpt": "120 lengths MS square tube 40x40, Rs 1,38,000. Cut to order: 40 lengths for body 104B, 40 for 104C, 40 for 105A.",
+   "published_at": "2026-09-26",
+   "supports": [
+    "purchase:pur-2047"
+   ],
+   "mentions": []
+  },
+  {
+   "id": "source:wb-p21",
+   "name": "Wage book, page 21",
+   "source_type": "book_entry",
+   "source_system": "wage_book",
+   "source_record_id": "WB p.21",
+   "excerpt": "Aug 2026 weekly wages, CT-101 bodies.",
+   "published_at": "2026-08-29",
+   "supports": [
+    "wage:wg-101",
+    "wage:wg-102",
+    "wage:wg-103",
+    "wage:wg-104",
+    "wage:wg-105",
+    "wage:wg-106",
+    "wage:wg-107",
+    "wage:wg-108"
+   ],
+   "mentions": []
+  },
+  {
+   "id": "source:wb-p22",
+   "name": "Wage book, page 22",
+   "source_type": "book_entry",
+   "source_system": "wage_book",
+   "source_record_id": "WB p.22",
+   "excerpt": "Aug-Sep 2026 weekly wages, CT-102 and CT-103.",
+   "published_at": "2026-10-03",
+   "supports": [
+    "wage:wg-201",
+    "wage:wg-202",
+    "wage:wg-203",
+    "wage:wg-204",
+    "wage:wg-205",
+    "wage:wg-206",
+    "wage:wg-301",
+    "wage:wg-302",
+    "wage:wg-303",
+    "wage:wg-304",
+    "wage:wg-305"
+   ],
+   "mentions": []
+  },
+  {
+   "id": "source:wb-p23",
+   "name": "Wage book, page 23",
+   "source_type": "book_entry",
+   "source_system": "wage_book",
+   "source_record_id": "WB p.23",
+   "excerpt": "14-26 Sep 2026 weekly wages, CT-104 bodies A and B.",
+   "published_at": "2026-09-26",
+   "supports": [
+    "wage:wg-401",
+    "wage:wg-402",
+    "wage:wg-403",
+    "wage:wg-404",
+    "wage:wg-405",
+    "wage:wg-406"
+   ],
+   "mentions": []
+  },
+  {
+   "id": "source:wb-p24",
+   "name": "Wage book, page 24",
+   "source_type": "book_entry",
+   "source_system": "wage_book",
+   "source_record_id": "WB p.24",
+   "excerpt": "28 Sep-10 Oct 2026 weekly wages. Karthik (helper) 5-10 Oct: '104/105', no split written.",
+   "published_at": "2026-10-10",
+   "supports": [
+    "wage:wg-407",
+    "wage:wg-408",
+    "wage:wg-409",
+    "wage:wg-410",
+    "wage:wg-411",
+    "wage:wg-412",
+    "wage:wg-413"
+   ],
+   "mentions": []
+  },
+  {
+   "id": "source:wb-p25",
+   "name": "Wage book, page 25",
+   "source_type": "book_entry",
+   "source_system": "wage_book",
+   "source_record_id": "WB p.25",
+   "excerpt": "12-15 Oct 2026, week not closed. Murugan 4 days: job column blank. Selvam 4 days 104C: paid column blank.",
+   "published_at": "2026-10-15",
+   "supports": [
+    "wage:wg-414",
+    "wage:wg-415",
+    "wage:wg-416",
+    "wage:wg-417",
+    "wage:wg-501"
+   ],
+   "mentions": []
+  },
+  {
+   "id": "source:spb-p7",
+   "name": "Supplier payment book, page 7",
+   "source_type": "book_entry",
+   "source_system": "supplier_payment_book",
+   "source_record_id": "SPB p.7",
+   "excerpt": "Aug-Sep 2026 supplier payments with bill references.",
+   "published_at": "2026-09-27",
+   "supports": [
+    "payment:sp-201",
+    "payment:sp-202",
+    "payment:sp-203",
+    "payment:sp-204",
+    "payment:sp-205",
+    "payment:sp-206",
+    "payment:sp-207",
+    "payment:sp-208",
+    "payment:sp-209",
+    "payment:sp-210",
+    "payment:sp-212",
+    "payment:sp-301",
+    "payment:sp-302"
+   ],
+   "mentions": []
+  },
+  {
+   "id": "source:spb-p8",
+   "name": "Supplier payment book, page 8",
+   "source_type": "book_entry",
+   "source_system": "supplier_payment_book",
+   "source_record_id": "SPB p.8",
+   "excerpt": "Oct 2026 supplier payments. 10 Oct cheque 118842 to Lakshmi Welding (not yet cleared). 14 Oct Rs 25,000 cash to Sri Balaji, no bill written.",
+   "published_at": "2026-10-15",
+   "supports": [
+    "payment:sp-211",
+    "payment:sp-305",
+    "payment:sp-306",
+    "payment:sp-307",
+    "payment:sp-308",
+    "payment:sp-309",
+    "payment:sp-310",
+    "payment:sp-311",
+    "payment:sp-312"
+   ],
+   "mentions": []
+  },
+  {
+   "id": "source:mxb-p4",
+   "name": "Machinery expense book, page 4",
+   "source_type": "book_entry",
+   "source_system": "machinery_book",
+   "source_record_id": "MXB p.4",
+   "excerpt": "Crane and bending machine hire, generator diesel.",
+   "published_at": "2026-10-09",
+   "supports": [
+    "machinerycost:mc-101",
+    "machinerycost:mc-401",
+    "machinerycost:mc-402",
+    "machinerycost:mc-403"
+   ],
+   "mentions": []
+  },
+  {
+   "id": "source:meb-p9",
+   "name": "Miscellaneous expense book, page 9",
+   "source_type": "book_entry",
+   "source_system": "misc_expense_book",
+   "source_record_id": "MEB p.9",
+   "excerpt": "Freight Coimbatore->Namakkal Rs 6,000 (104: 4,000, 105: 2,000). Grinding and cutting discs Rs 3,850. EB bill Sept Rs 18,400. Lettering CT-104 Rs 4,500.",
+   "published_at": "2026-10-14",
+   "supports": [
+    "expense:ex-201",
+    "expense:ex-401",
+    "expense:ex-402",
+    "expense:ex-403",
+    "expense:ex-404"
+   ],
+   "mentions": []
+  },
+  {
+   "id": "source:eb-bill-2026-09",
+   "name": "Electricity bill, September 2026",
+   "source_type": "document",
+   "source_system": "electricity_board",
+   "source_record_id": "EB 2026-09",
+   "excerpt": "Workshop connection, Sept 2026: Rs 18,400.",
+   "published_at": "2026-10-05",
+   "supports": [
+    "expense:ex-404"
+   ],
+   "mentions": []
+  },
+  {
+   "id": "source:rcb-p3",
+   "name": "Customer receipt book, page 3",
+   "source_type": "book_entry",
+   "source_system": "receipt_book",
+   "source_record_id": "RCB p.3",
+   "excerpt": "Customer advances and part payments, Aug-Oct 2026.",
+   "published_at": "2026-10-05",
+   "supports": [
+    "payment:cr-101-1",
+    "payment:cr-101-2",
+    "payment:cr-102-1",
+    "payment:cr-102-2",
+    "payment:cr-103-1",
+    "payment:cr-104-1",
+    "payment:cr-104-2",
+    "payment:cr-105-1"
+   ],
+   "mentions": []
+  }
+ ],
+ "relationships": [
+  {
+   "type": "PLACED_BY",
+   "from": "contract:ct-101",
+   "to": "customer:cus-01",
+   "source_id": "source:crg-p1"
+  },
+  {
+   "type": "PART_OF",
+   "from": "job:j-101a",
+   "to": "contract:ct-101",
+   "source_id": "source:crg-p1"
+  },
+  {
+   "type": "PART_OF",
+   "from": "job:j-101b",
+   "to": "contract:ct-101",
+   "source_id": "source:crg-p1"
+  },
+  {
+   "type": "PLACED_BY",
+   "from": "contract:ct-102",
+   "to": "customer:cus-02",
+   "source_id": "source:crg-p1"
+  },
+  {
+   "type": "PART_OF",
+   "from": "job:j-102a",
+   "to": "contract:ct-102",
+   "source_id": "source:crg-p1"
+  },
+  {
+   "type": "PLACED_BY",
+   "from": "contract:ct-103",
+   "to": "customer:cus-03",
+   "source_id": "source:crg-p1"
+  },
+  {
+   "type": "PART_OF",
+   "from": "job:j-103a",
+   "to": "contract:ct-103",
+   "source_id": "source:crg-p1"
+  },
+  {
+   "type": "PLACED_BY",
+   "from": "contract:ct-104",
+   "to": "customer:cus-04",
+   "source_id": "source:crg-p2"
+  },
+  {
+   "type": "PART_OF",
+   "from": "job:j-104a",
+   "to": "contract:ct-104",
+   "source_id": "source:crg-p2"
+  },
+  {
+   "type": "PART_OF",
+   "from": "job:j-104b",
+   "to": "contract:ct-104",
+   "source_id": "source:crg-p2"
+  },
+  {
+   "type": "PART_OF",
+   "from": "job:j-104c",
+   "to": "contract:ct-104",
+   "source_id": "source:crg-p2"
+  },
+  {
+   "type": "PLACED_BY",
+   "from": "contract:ct-105",
+   "to": "customer:cus-01",
+   "source_id": "source:crg-p2"
+  },
+  {
+   "type": "PART_OF",
+   "from": "job:j-105a",
+   "to": "contract:ct-105",
+   "source_id": "source:crg-p2"
+  },
+  {
+   "type": "PART_OF",
+   "from": "job:j-105b",
+   "to": "contract:ct-105",
+   "source_id": "source:crg-p2"
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "purchase:pur-2011",
+   "to": "supplier:sup-01",
+   "source_id": "source:mpb-p11"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2011",
+   "to": "job:j-101a",
+   "source_id": "source:mpb-p11",
+   "properties": {
+    "amount_paise": 13200000
+   }
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2011",
+   "to": "job:j-101b",
+   "source_id": "source:mpb-p11",
+   "properties": {
+    "amount_paise": 13200000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "purchase:pur-2012",
+   "to": "supplier:sup-01",
+   "source_id": "source:mpb-p11"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2012",
+   "to": "job:j-101a",
+   "source_id": "source:mpb-p11",
+   "properties": {
+    "amount_paise": 7440000
+   }
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2012",
+   "to": "job:j-101b",
+   "source_id": "source:mpb-p11",
+   "properties": {
+    "amount_paise": 7440000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "purchase:pur-2014",
+   "to": "supplier:sup-02",
+   "source_id": "source:mpb-p11"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2014",
+   "to": "job:j-101a",
+   "source_id": "source:mpb-p11",
+   "properties": {
+    "amount_paise": 1840000
+   }
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2014",
+   "to": "job:j-101b",
+   "source_id": "source:mpb-p11",
+   "properties": {
+    "amount_paise": 1840000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "purchase:pur-2015",
+   "to": "supplier:sup-03",
+   "source_id": "source:mpb-p11"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2015",
+   "to": "job:j-101a",
+   "source_id": "source:mpb-p11",
+   "properties": {
+    "amount_paise": 1440000
+   }
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2015",
+   "to": "job:j-101b",
+   "source_id": "source:mpb-p11",
+   "properties": {
+    "amount_paise": 1440000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-101",
+   "to": "worker:w-01",
+   "source_id": "source:wb-p21"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-101",
+   "to": "job:j-101a",
+   "source_id": "source:wb-p21",
+   "properties": {
+    "amount_paise": 540000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-102",
+   "to": "worker:w-03",
+   "source_id": "source:wb-p21"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-102",
+   "to": "job:j-101a",
+   "source_id": "source:wb-p21",
+   "properties": {
+    "amount_paise": 510000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-103",
+   "to": "worker:w-02",
+   "source_id": "source:wb-p21"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-103",
+   "to": "job:j-101b",
+   "source_id": "source:wb-p21",
+   "properties": {
+    "amount_paise": 540000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-104",
+   "to": "worker:w-03",
+   "source_id": "source:wb-p21"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-104",
+   "to": "job:j-101b",
+   "source_id": "source:wb-p21",
+   "properties": {
+    "amount_paise": 510000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-105",
+   "to": "worker:w-01",
+   "source_id": "source:wb-p21"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-105",
+   "to": "job:j-101a",
+   "source_id": "source:wb-p21",
+   "properties": {
+    "amount_paise": 540000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-106",
+   "to": "worker:w-04",
+   "source_id": "source:wb-p21"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-106",
+   "to": "job:j-101a",
+   "source_id": "source:wb-p21",
+   "properties": {
+    "amount_paise": 480000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-107",
+   "to": "worker:w-04",
+   "source_id": "source:wb-p21"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-107",
+   "to": "job:j-101b",
+   "source_id": "source:wb-p21",
+   "properties": {
+    "amount_paise": 480000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-108",
+   "to": "worker:w-05",
+   "source_id": "source:wb-p21"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-108",
+   "to": "contract:ct-101",
+   "source_id": "source:wb-p21",
+   "properties": {
+    "amount_paise": 1080000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "machinerycost:mc-101",
+   "to": "supplier:sup-05",
+   "source_id": "source:mxb-p4"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "machinerycost:mc-101",
+   "to": "contract:ct-101",
+   "source_id": "source:mxb-p4",
+   "properties": {
+    "amount_paise": 480000
+   }
+  },
+  {
+   "type": "PAID_TO",
+   "from": "payment:sp-201",
+   "to": "supplier:sup-01",
+   "source_id": "source:spb-p7"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:sp-201",
+   "to": "purchase:pur-2011",
+   "source_id": "source:spb-p7",
+   "properties": {
+    "amount_paise": 26400000
+   }
+  },
+  {
+   "type": "PAID_TO",
+   "from": "payment:sp-202",
+   "to": "supplier:sup-01",
+   "source_id": "source:spb-p7"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:sp-202",
+   "to": "purchase:pur-2012",
+   "source_id": "source:spb-p7",
+   "properties": {
+    "amount_paise": 14880000
+   }
+  },
+  {
+   "type": "PAID_TO",
+   "from": "payment:sp-203",
+   "to": "supplier:sup-02",
+   "source_id": "source:spb-p7"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:sp-203",
+   "to": "purchase:pur-2014",
+   "source_id": "source:spb-p7",
+   "properties": {
+    "amount_paise": 3680000
+   }
+  },
+  {
+   "type": "PAID_TO",
+   "from": "payment:sp-204",
+   "to": "supplier:sup-03",
+   "source_id": "source:spb-p7"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:sp-204",
+   "to": "purchase:pur-2015",
+   "source_id": "source:spb-p7",
+   "properties": {
+    "amount_paise": 2880000
+   }
+  },
+  {
+   "type": "PAID_TO",
+   "from": "payment:sp-205",
+   "to": "supplier:sup-05",
+   "source_id": "source:spb-p7"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:sp-205",
+   "to": "machinerycost:mc-101",
+   "source_id": "source:spb-p7",
+   "properties": {
+    "amount_paise": 480000
+   }
+  },
+  {
+   "type": "RECEIVED_FROM",
+   "from": "payment:cr-101-1",
+   "to": "customer:cus-01",
+   "source_id": "source:rcb-p3"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:cr-101-1",
+   "to": "contract:ct-101",
+   "source_id": "source:rcb-p3",
+   "properties": {
+    "amount_paise": 30000000
+   }
+  },
+  {
+   "type": "RECEIVED_FROM",
+   "from": "payment:cr-101-2",
+   "to": "customer:cus-01",
+   "source_id": "source:rcb-p3"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:cr-101-2",
+   "to": "contract:ct-101",
+   "source_id": "source:rcb-p3",
+   "properties": {
+    "amount_paise": 34000000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "purchase:pur-2021",
+   "to": "supplier:sup-01",
+   "source_id": "source:mpb-p12"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2021",
+   "to": "job:j-102a",
+   "source_id": "source:mpb-p12",
+   "properties": {
+    "amount_paise": 23450000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "purchase:pur-2022",
+   "to": "supplier:sup-01",
+   "source_id": "source:mpb-p12"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2022",
+   "to": "job:j-102a",
+   "source_id": "source:mpb-p12",
+   "properties": {
+    "amount_paise": 5580000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "purchase:pur-2023",
+   "to": "supplier:sup-02",
+   "source_id": "source:mpb-p12"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2023",
+   "to": "job:j-102a",
+   "source_id": "source:mpb-p12",
+   "properties": {
+    "amount_paise": 2580000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "purchase:pur-2024",
+   "to": "supplier:sup-02",
+   "source_id": "source:mpb-p12"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2024",
+   "to": "job:j-102a",
+   "source_id": "source:mpb-p12",
+   "properties": {
+    "amount_paise": 750000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-201",
+   "to": "worker:w-01",
+   "source_id": "source:wb-p22"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-201",
+   "to": "job:j-102a",
+   "source_id": "source:wb-p22",
+   "properties": {
+    "amount_paise": 540000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-202",
+   "to": "worker:w-03",
+   "source_id": "source:wb-p22"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-202",
+   "to": "job:j-102a",
+   "source_id": "source:wb-p22",
+   "properties": {
+    "amount_paise": 510000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-203",
+   "to": "worker:w-02",
+   "source_id": "source:wb-p22"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-203",
+   "to": "job:j-102a",
+   "source_id": "source:wb-p22",
+   "properties": {
+    "amount_paise": 540000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-204",
+   "to": "worker:w-03",
+   "source_id": "source:wb-p22"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-204",
+   "to": "job:j-102a",
+   "source_id": "source:wb-p22",
+   "properties": {
+    "amount_paise": 510000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-205",
+   "to": "worker:w-04",
+   "source_id": "source:wb-p22"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-205",
+   "to": "job:j-102a",
+   "source_id": "source:wb-p22",
+   "properties": {
+    "amount_paise": 480000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-206",
+   "to": "worker:w-06",
+   "source_id": "source:wb-p22"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-206",
+   "to": "job:j-102a",
+   "source_id": "source:wb-p22",
+   "properties": {
+    "amount_paise": 340000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "expense:ex-201",
+   "to": "supplier:sup-07",
+   "source_id": "source:meb-p9"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "expense:ex-201",
+   "to": "contract:ct-102",
+   "source_id": "source:meb-p9",
+   "properties": {
+    "amount_paise": 550000
+   }
+  },
+  {
+   "type": "PAID_TO",
+   "from": "payment:sp-206",
+   "to": "supplier:sup-01",
+   "source_id": "source:spb-p7"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:sp-206",
+   "to": "purchase:pur-2021",
+   "source_id": "source:spb-p7",
+   "properties": {
+    "amount_paise": 23450000
+   }
+  },
+  {
+   "type": "PAID_TO",
+   "from": "payment:sp-207",
+   "to": "supplier:sup-01",
+   "source_id": "source:spb-p7"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:sp-207",
+   "to": "purchase:pur-2022",
+   "source_id": "source:spb-p7",
+   "properties": {
+    "amount_paise": 5580000
+   }
+  },
+  {
+   "type": "PAID_TO",
+   "from": "payment:sp-208",
+   "to": "supplier:sup-02",
+   "source_id": "source:spb-p7"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:sp-208",
+   "to": "purchase:pur-2023",
+   "source_id": "source:spb-p7",
+   "properties": {
+    "amount_paise": 2580000
+   }
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:sp-208",
+   "to": "purchase:pur-2024",
+   "source_id": "source:spb-p7",
+   "properties": {
+    "amount_paise": 750000
+   }
+  },
+  {
+   "type": "RECEIVED_FROM",
+   "from": "payment:cr-102-1",
+   "to": "customer:cus-02",
+   "source_id": "source:rcb-p3"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:cr-102-1",
+   "to": "contract:ct-102",
+   "source_id": "source:rcb-p3",
+   "properties": {
+    "amount_paise": 20000000
+   }
+  },
+  {
+   "type": "RECEIVED_FROM",
+   "from": "payment:cr-102-2",
+   "to": "customer:cus-02",
+   "source_id": "source:rcb-p3"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:cr-102-2",
+   "to": "contract:ct-102",
+   "source_id": "source:rcb-p3",
+   "properties": {
+    "amount_paise": 15000000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "purchase:pur-2031",
+   "to": "supplier:sup-04",
+   "source_id": "source:mpb-p12"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2031",
+   "to": "job:j-103a",
+   "source_id": "source:mpb-p12",
+   "properties": {
+    "amount_paise": 12240000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "purchase:pur-2032",
+   "to": "supplier:sup-01",
+   "source_id": "source:mpb-p12"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2032",
+   "to": "job:j-103a",
+   "source_id": "source:mpb-p12",
+   "properties": {
+    "amount_paise": 4410000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "purchase:pur-2033",
+   "to": "supplier:sup-02",
+   "source_id": "source:mpb-p12"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2033",
+   "to": "job:j-103a",
+   "source_id": "source:mpb-p12",
+   "properties": {
+    "amount_paise": 1720000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "purchase:pur-2034",
+   "to": "supplier:sup-03",
+   "source_id": "source:mpb-p12"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2034",
+   "to": "job:j-103a",
+   "source_id": "source:mpb-p12",
+   "properties": {
+    "amount_paise": 992000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-301",
+   "to": "worker:w-02",
+   "source_id": "source:wb-p22"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-301",
+   "to": "job:j-103a",
+   "source_id": "source:wb-p22",
+   "properties": {
+    "amount_paise": 540000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-302",
+   "to": "worker:w-03",
+   "source_id": "source:wb-p22"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-302",
+   "to": "job:j-103a",
+   "source_id": "source:wb-p22",
+   "properties": {
+    "amount_paise": 510000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-303",
+   "to": "worker:w-01",
+   "source_id": "source:wb-p22"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-303",
+   "to": "job:j-103a",
+   "source_id": "source:wb-p22",
+   "properties": {
+    "amount_paise": 540000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-304",
+   "to": "worker:w-06",
+   "source_id": "source:wb-p22"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-304",
+   "to": "job:j-103a",
+   "source_id": "source:wb-p22",
+   "properties": {
+    "amount_paise": 510000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-305",
+   "to": "worker:w-04",
+   "source_id": "source:wb-p22"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-305",
+   "to": "job:j-103a",
+   "source_id": "source:wb-p22",
+   "properties": {
+    "amount_paise": 480000
+   }
+  },
+  {
+   "type": "PAID_TO",
+   "from": "payment:sp-209",
+   "to": "supplier:sup-04",
+   "source_id": "source:spb-p7"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:sp-209",
+   "to": "purchase:pur-2031",
+   "source_id": "source:spb-p7",
+   "properties": {
+    "amount_paise": 6000000
+   }
+  },
+  {
+   "type": "PAID_TO",
+   "from": "payment:sp-210",
+   "to": "supplier:sup-01",
+   "source_id": "source:spb-p7"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:sp-210",
+   "to": "purchase:pur-2032",
+   "source_id": "source:spb-p7",
+   "properties": {
+    "amount_paise": 4410000
+   }
+  },
+  {
+   "type": "PAID_TO",
+   "from": "payment:sp-211",
+   "to": "supplier:sup-02",
+   "source_id": "source:spb-p8"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:sp-211",
+   "to": "purchase:pur-2033",
+   "source_id": "source:spb-p8",
+   "properties": {
+    "amount_paise": 1720000
+   }
+  },
+  {
+   "type": "PAID_TO",
+   "from": "payment:sp-212",
+   "to": "supplier:sup-03",
+   "source_id": "source:spb-p7"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:sp-212",
+   "to": "purchase:pur-2034",
+   "source_id": "source:spb-p7",
+   "properties": {
+    "amount_paise": 992000
+   }
+  },
+  {
+   "type": "RECEIVED_FROM",
+   "from": "payment:cr-103-1",
+   "to": "customer:cus-03",
+   "source_id": "source:rcb-p3"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:cr-103-1",
+   "to": "contract:ct-103",
+   "source_id": "source:rcb-p3",
+   "properties": {
+    "amount_paise": 10000000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "purchase:pur-2041",
+   "to": "supplier:sup-01",
+   "source_id": "source:mpb-p14"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2041",
+   "to": "job:j-104a",
+   "source_id": "source:mpb-p14",
+   "properties": {
+    "amount_paise": 11900000
+   }
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2041",
+   "to": "job:j-104b",
+   "source_id": "source:mpb-p14",
+   "properties": {
+    "amount_paise": 11900000
+   }
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2041",
+   "to": "job:j-104c",
+   "source_id": "source:mpb-p14",
+   "properties": {
+    "amount_paise": 11900000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "purchase:pur-2042",
+   "to": "supplier:sup-01",
+   "source_id": "source:mpb-p14"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2042",
+   "to": "job:j-104a",
+   "source_id": "source:mpb-p14",
+   "properties": {
+    "amount_paise": 5580000
+   }
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2042",
+   "to": "job:j-104b",
+   "source_id": "source:mpb-p14",
+   "properties": {
+    "amount_paise": 5580000
+   }
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2042",
+   "to": "job:j-104c",
+   "source_id": "source:mpb-p14",
+   "properties": {
+    "amount_paise": 5580000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "purchase:pur-2047",
+   "to": "supplier:sup-04",
+   "source_id": "source:mpb-p14"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2047",
+   "to": "job:j-104b",
+   "source_id": "source:bill-cst-884",
+   "properties": {
+    "amount_paise": 4600000
+   }
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2047",
+   "to": "job:j-104c",
+   "source_id": "source:bill-cst-884",
+   "properties": {
+    "amount_paise": 4600000
+   }
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2047",
+   "to": "job:j-105a",
+   "source_id": "source:bill-cst-884",
+   "properties": {
+    "amount_paise": 4600000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "purchase:pur-2050",
+   "to": "supplier:sup-02",
+   "source_id": "source:mpb-p15"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2050",
+   "to": "job:j-104a",
+   "source_id": "source:mpb-p15",
+   "properties": {
+    "amount_paise": 2480000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "purchase:pur-2053",
+   "to": "supplier:sup-02",
+   "source_id": "source:mpb-p15"
+  },
+  {
+   "type": "NOTED_FOR",
+   "from": "purchase:pur-2053",
+   "to": "contract:ct-104",
+   "source_id": "source:mpb-p15"
+  },
+  {
+   "type": "NOTED_FOR",
+   "from": "purchase:pur-2053",
+   "to": "contract:ct-105",
+   "source_id": "source:mpb-p15"
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "purchase:pur-2055",
+   "to": "supplier:sup-03",
+   "source_id": "source:mpb-p15"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2055",
+   "to": "job:j-104b",
+   "source_id": "source:mpb-p15",
+   "properties": {
+    "amount_paise": 1550000
+   }
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2055",
+   "to": "job:j-104c",
+   "source_id": "source:mpb-p15",
+   "properties": {
+    "amount_paise": 1550000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "purchase:pur-2056",
+   "to": "supplier:sup-03",
+   "source_id": "source:mpb-p15"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2056",
+   "to": "job:j-104b",
+   "source_id": "source:mpb-p15",
+   "properties": {
+    "amount_paise": 1550000
+   }
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2056",
+   "to": "job:j-104c",
+   "source_id": "source:mpb-p15",
+   "properties": {
+    "amount_paise": 1550000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "purchase:pur-2057",
+   "to": "supplier:sup-03",
+   "source_id": "source:mpb-p15"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2057",
+   "to": "contract:ct-104",
+   "source_id": "source:mpb-p15",
+   "properties": {
+    "amount_paise": 720000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "purchase:pur-2058",
+   "to": "supplier:sup-01",
+   "source_id": "source:mpb-p16"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2058",
+   "to": "job:j-104c",
+   "source_id": "source:mpb-p16",
+   "properties": {
+    "amount_paise": 5800000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "purchase:pur-2059",
+   "to": "supplier:sup-02",
+   "source_id": "source:mpb-p16"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2059",
+   "to": "job:j-104a",
+   "source_id": "source:mpb-p16",
+   "properties": {
+    "amount_paise": 750000
+   }
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2059",
+   "to": "job:j-104b",
+   "source_id": "source:mpb-p16",
+   "properties": {
+    "amount_paise": 750000
+   }
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2059",
+   "to": "job:j-104c",
+   "source_id": "source:mpb-p16",
+   "properties": {
+    "amount_paise": 750000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-401",
+   "to": "worker:w-01",
+   "source_id": "source:wb-p23"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-401",
+   "to": "job:j-104a",
+   "source_id": "source:wb-p23",
+   "properties": {
+    "amount_paise": 540000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-402",
+   "to": "worker:w-03",
+   "source_id": "source:wb-p23"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-402",
+   "to": "job:j-104a",
+   "source_id": "source:wb-p23",
+   "properties": {
+    "amount_paise": 510000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-403",
+   "to": "worker:w-05",
+   "source_id": "source:wb-p23"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-403",
+   "to": "job:j-104a",
+   "source_id": "source:wb-p23",
+   "properties": {
+    "amount_paise": 360000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-404",
+   "to": "worker:w-01",
+   "source_id": "source:wb-p23"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-404",
+   "to": "job:j-104a",
+   "source_id": "source:wb-p23",
+   "properties": {
+    "amount_paise": 540000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-405",
+   "to": "worker:w-02",
+   "source_id": "source:wb-p23"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-405",
+   "to": "job:j-104b",
+   "source_id": "source:wb-p23",
+   "properties": {
+    "amount_paise": 540000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-406",
+   "to": "worker:w-03",
+   "source_id": "source:wb-p23"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-406",
+   "to": "job:j-104b",
+   "source_id": "source:wb-p23",
+   "properties": {
+    "amount_paise": 510000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-407",
+   "to": "worker:w-02",
+   "source_id": "source:wb-p24"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-407",
+   "to": "job:j-104b",
+   "source_id": "source:wb-p24",
+   "properties": {
+    "amount_paise": 540000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-408",
+   "to": "worker:w-01",
+   "source_id": "source:wb-p24"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-408",
+   "to": "job:j-104c",
+   "source_id": "source:wb-p24",
+   "properties": {
+    "amount_paise": 540000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-409",
+   "to": "worker:w-03",
+   "source_id": "source:wb-p24"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-409",
+   "to": "job:j-104c",
+   "source_id": "source:wb-p24",
+   "properties": {
+    "amount_paise": 510000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-410",
+   "to": "worker:w-04",
+   "source_id": "source:wb-p24"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-410",
+   "to": "job:j-104a",
+   "source_id": "source:wb-p24",
+   "properties": {
+    "amount_paise": 480000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-411",
+   "to": "worker:w-02",
+   "source_id": "source:wb-p24"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-411",
+   "to": "job:j-104b",
+   "source_id": "source:wb-p24",
+   "properties": {
+    "amount_paise": 540000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-412",
+   "to": "worker:w-01",
+   "source_id": "source:wb-p24"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-412",
+   "to": "job:j-104c",
+   "source_id": "source:wb-p24",
+   "properties": {
+    "amount_paise": 540000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-413",
+   "to": "worker:w-05",
+   "source_id": "source:wb-p24"
+  },
+  {
+   "type": "NOTED_FOR",
+   "from": "wage:wg-413",
+   "to": "contract:ct-104",
+   "source_id": "source:wb-p24"
+  },
+  {
+   "type": "NOTED_FOR",
+   "from": "wage:wg-413",
+   "to": "contract:ct-105",
+   "source_id": "source:wb-p24"
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-414",
+   "to": "worker:w-06",
+   "source_id": "source:wb-p25"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-414",
+   "to": "job:j-104a",
+   "source_id": "source:wb-p25",
+   "properties": {
+    "amount_paise": 340000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-415",
+   "to": "worker:w-04",
+   "source_id": "source:wb-p25"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-415",
+   "to": "job:j-104b",
+   "source_id": "source:wb-p25",
+   "properties": {
+    "amount_paise": 320000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-416",
+   "to": "worker:w-01",
+   "source_id": "source:wb-p25"
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-417",
+   "to": "worker:w-03",
+   "source_id": "source:wb-p25"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-417",
+   "to": "job:j-104c",
+   "source_id": "source:wb-p25",
+   "properties": {
+    "amount_paise": 340000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "machinerycost:mc-401",
+   "to": "supplier:sup-05",
+   "source_id": "source:mxb-p4"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "machinerycost:mc-401",
+   "to": "contract:ct-104",
+   "source_id": "source:mxb-p4",
+   "properties": {
+    "amount_paise": 700000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "machinerycost:mc-402",
+   "to": "supplier:sup-05",
+   "source_id": "source:mxb-p4"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "machinerycost:mc-402",
+   "to": "job:j-104a",
+   "source_id": "source:mxb-p4",
+   "properties": {
+    "amount_paise": 480000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "machinerycost:mc-403",
+   "to": "supplier:sup-06",
+   "source_id": "source:mxb-p4"
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "expense:ex-401",
+   "to": "supplier:sup-07",
+   "source_id": "source:meb-p9"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "expense:ex-401",
+   "to": "contract:ct-104",
+   "source_id": "source:meb-p9",
+   "properties": {
+    "amount_paise": 400000
+   }
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "expense:ex-401",
+   "to": "contract:ct-105",
+   "source_id": "source:meb-p9",
+   "properties": {
+    "amount_paise": 200000
+   }
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "expense:ex-403",
+   "to": "contract:ct-104",
+   "source_id": "source:meb-p9",
+   "properties": {
+    "amount_paise": 450000
+   }
+  },
+  {
+   "type": "PAID_TO",
+   "from": "payment:sp-301",
+   "to": "supplier:sup-01",
+   "source_id": "source:spb-p7"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:sp-301",
+   "to": "purchase:pur-2041",
+   "source_id": "source:spb-p7",
+   "properties": {
+    "amount_paise": 35700000
+   }
+  },
+  {
+   "type": "PAID_TO",
+   "from": "payment:sp-302",
+   "to": "supplier:sup-01",
+   "source_id": "source:spb-p7"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:sp-302",
+   "to": "purchase:pur-2042",
+   "source_id": "source:spb-p7",
+   "properties": {
+    "amount_paise": 10000000
+   }
+  },
+  {
+   "type": "PAID_TO",
+   "from": "payment:sp-305",
+   "to": "supplier:sup-02",
+   "source_id": "source:spb-p8"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:sp-305",
+   "to": "purchase:pur-2050",
+   "source_id": "source:spb-p8",
+   "properties": {
+    "amount_paise": 2480000
+   }
+  },
+  {
+   "type": "PAID_TO",
+   "from": "payment:sp-306",
+   "to": "supplier:sup-02",
+   "source_id": "source:spb-p8"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:sp-306",
+   "to": "purchase:pur-2053",
+   "source_id": "source:spb-p8",
+   "properties": {
+    "amount_paise": 2850000
+   }
+  },
+  {
+   "type": "PAID_TO",
+   "from": "payment:sp-307",
+   "to": "supplier:sup-03",
+   "source_id": "source:spb-p8"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:sp-307",
+   "to": "purchase:pur-2055",
+   "source_id": "source:spb-p8",
+   "properties": {
+    "amount_paise": 3100000
+   }
+  },
+  {
+   "type": "PAID_TO",
+   "from": "payment:sp-308",
+   "to": "supplier:sup-03",
+   "source_id": "source:spb-p8"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:sp-308",
+   "to": "purchase:pur-2057",
+   "source_id": "source:spb-p8",
+   "properties": {
+    "amount_paise": 720000
+   }
+  },
+  {
+   "type": "PAID_TO",
+   "from": "payment:sp-309",
+   "to": "supplier:sup-01",
+   "source_id": "source:spb-p8"
+  },
+  {
+   "type": "PAID_TO",
+   "from": "payment:sp-310",
+   "to": "supplier:sup-02",
+   "source_id": "source:spb-p8"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:sp-310",
+   "to": "purchase:pur-2059",
+   "source_id": "source:spb-p8",
+   "properties": {
+    "amount_paise": 2250000
+   }
+  },
+  {
+   "type": "PAID_TO",
+   "from": "payment:sp-311",
+   "to": "supplier:sup-05",
+   "source_id": "source:spb-p8"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:sp-311",
+   "to": "machinerycost:mc-402",
+   "source_id": "source:spb-p8",
+   "properties": {
+    "amount_paise": 480000
+   }
+  },
+  {
+   "type": "PAID_TO",
+   "from": "payment:sp-312",
+   "to": "supplier:sup-06",
+   "source_id": "source:spb-p8"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:sp-312",
+   "to": "machinerycost:mc-403",
+   "source_id": "source:spb-p8",
+   "properties": {
+    "amount_paise": 1104000
+   }
+  },
+  {
+   "type": "RECEIVED_FROM",
+   "from": "payment:cr-104-1",
+   "to": "customer:cus-04",
+   "source_id": "source:rcb-p3"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:cr-104-1",
+   "to": "contract:ct-104",
+   "source_id": "source:rcb-p3",
+   "properties": {
+    "amount_paise": 50000000
+   }
+  },
+  {
+   "type": "RECEIVED_FROM",
+   "from": "payment:cr-104-2",
+   "to": "customer:cus-04",
+   "source_id": "source:rcb-p3"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:cr-104-2",
+   "to": "contract:ct-104",
+   "source_id": "source:rcb-p3",
+   "properties": {
+    "amount_paise": 30000000
+   }
+  },
+  {
+   "type": "SUPPLIED_BY",
+   "from": "purchase:pur-2061",
+   "to": "supplier:sup-01",
+   "source_id": "source:mpb-p16"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2061",
+   "to": "job:j-105a",
+   "source_id": "source:mpb-p16",
+   "properties": {
+    "amount_paise": 11900000
+   }
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "purchase:pur-2061",
+   "to": "job:j-105b",
+   "source_id": "source:mpb-p16",
+   "properties": {
+    "amount_paise": 11900000
+   }
+  },
+  {
+   "type": "EARNED_BY",
+   "from": "wage:wg-501",
+   "to": "worker:w-02",
+   "source_id": "source:wb-p25"
+  },
+  {
+   "type": "CHARGED_TO",
+   "from": "wage:wg-501",
+   "to": "job:j-105a",
+   "source_id": "source:wb-p25",
+   "properties": {
+    "amount_paise": 360000
+   }
+  },
+  {
+   "type": "RECEIVED_FROM",
+   "from": "payment:cr-105-1",
+   "to": "customer:cus-01",
+   "source_id": "source:rcb-p3"
+  },
+  {
+   "type": "ALLOCATED_TO",
+   "from": "payment:cr-105-1",
+   "to": "contract:ct-105",
+   "source_id": "source:rcb-p3",
+   "properties": {
+    "amount_paise": 20000000
+   }
+  }
+ ]
+}

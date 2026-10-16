@@ -1,0 +1,8 @@
+commitment_id,type,description,supplier_id,customer_id,purchase_order_id,sales_order_id,amount,due_date,status,supersedes,source_ids
+COM-200,supplier_payment,Pay Sunrise Switchgear for September stock,SUP-002,,,,95000.00,2026-10-05,fulfilled,,
+COM-201,supplier_payment,Pay Kiran Cables for PO-301,SUP-001,,PO-301,,350000.00,2026-10-21,open,,SRC-005
+COM-202,supplier_payment,Pay Sunrise Switchgear for PO-302,SUP-002,,PO-302,,240000.00,2026-10-15,open,,SRC-006
+COM-202R,supplier_payment,Pay Sunrise Switchgear for PO-302 (extended),SUP-002,,PO-302,,240000.00,2026-10-19,open,COM-202,SRC-009
+COM-203,supplier_payment,Pay Metro Lighting for PO-303,SUP-003,,PO-303,,60000.00,2026-10-22,open,,
+COM-204,customer_delivery,Deliver LED panels to Deccan Interiors,,CUST-004,,SO-104,,2026-10-20,open,,SRC-011
+COM-205,supplier_payment,Pay Kiran Cables advance for November cable stock,SUP-001,,,,100000.00,2026-11-05,open,,SRC-012

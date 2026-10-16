@@ -1,0 +1,4 @@
+commitment_id,invoice_id,source_ids,note
+COM-201,INV-1001,SRC-007,Kiran Cables payment to be released from the Shree Ganesh balance
+COM-203,INV-1004,,Owner noted this in the cash plan; no supporting document recorded
+COM-205,INV-1005,SRC-012,November cash plan funds this advance from INV-1005

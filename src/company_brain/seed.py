@@ -1,17 +1,21 @@
-"""Deterministic seed loader for the synthetic Northstar Systems graph.
+"""Deterministic seed loaders for the synthetic datasets.
+
+Northstar Systems (Project Atlas) is loaded from JSON. Varsha Electricals (Cashflow
+Radar) is loaded from CSV files through the same importer customers use.
 
 Every record uses a fixed ``observed_at`` timestamp and MERGE semantics, so running
-the seed any number of times yields exactly the same nodes, edges and properties.
+a seed any number of times yields exactly the same nodes, edges and properties.
 """
 
 from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from importlib import resources
 from typing import Any
 
+from company_brain.csv_import import CsvImporter, ImportReport
 from company_brain.graph import GraphStore
 from company_brain.ingest import Ingestor
 from company_brain.models import EntityInput, RelationshipInput, SourceInput
@@ -44,6 +48,7 @@ def seed(store: GraphStore, dataset: dict[str, Any], company_id: str | None = No
             from_id=r["from"],
             to_id=r["to"],
             source_id=r.get("source_id"),
+            properties=r.get("properties", {}),
             observed_at=observed,
         )
         for r in dataset["relationships"]
@@ -55,3 +60,43 @@ def seed(store: GraphStore, dataset: dict[str, Any], company_id: str | None = No
     for rel in relationships:
         ingest.upsert_relationship(rel)
     return SeedSummary(company, len(entities), len(sources), len(relationships))
+
+
+CASHFLOW_COMPANY = "varsha-electricals"
+CASHFLOW_OBSERVED_AT = datetime(2026, 10, 15, 18, 0, tzinfo=UTC)
+CASHFLOW_UPDATES_OBSERVED_AT = datetime(2026, 10, 20, 12, 0, tzinfo=UTC)
+
+
+def load_csv_dataset(name: str = "varsha") -> dict[str, str]:
+    """CSV files of a packaged dataset as {file name: text}."""
+    folder = resources.files("company_brain.data").joinpath(name)
+    return {
+        f.name: f.read_text("utf-8")
+        for f in sorted(folder.iterdir(), key=lambda f: f.name)
+        if f.name.endswith(".csv")
+    }
+
+
+def seed_cashflow(
+    store: GraphStore,
+    company_id: str = CASHFLOW_COMPANY,
+    dataset: str = "varsha",
+    observed_at: datetime = CASHFLOW_OBSERVED_AT,
+) -> ImportReport:
+    """Load the synthetic distributor through the CSV importer. Idempotent."""
+    report = CsvImporter(store, company_id).run(
+        load_csv_dataset(dataset), observed_at=observed_at, source_system="seed"
+    )
+    if not report.valid:
+        raise ValueError(f"packaged dataset {dataset!r} is invalid: {report.errors}")
+    return report
+
+
+CONTRACTS_COMPANY = "kaveri-body-works"
+
+
+def seed_contracts(
+    store: GraphStore, company_id: str = CONTRACTS_COMPANY, dataset: str = "kaveri"
+) -> SeedSummary:
+    """Load the synthetic lorry-body manufacturer (or its later updates). Idempotent."""
+    return seed(store, load_dataset(dataset), company_id)

@@ -31,6 +31,11 @@ _SOURCE_FIELDS = (
 
 _REL_FIELDS = "{type: type(r), from: startNode(r).id, to: endNode(r).id, source_id: r.source_id}"
 
+_NODE_FIELDS = (
+    "{id: n.id, kind: n.kind, name: n.name, status: n.status, "
+    "ref: n.source_record_id, required_by: n.required_by}"
+)
+
 # ---------------------------------------------------------------- writes
 
 UPSERT_ENTITY: dict[Kind, Query] = {
@@ -303,6 +308,259 @@ RETURN properties(d) AS decision,
 )
 
 
+# ---------------------------------------------------------------- Cashflow Radar
+#
+# Money is integer paise; dates are ISO strings. Only cleared payments reduce what
+# a customer owes. A commitment depends on a collection only through an explicit
+# DEPENDS_ON edge: the queries never derive a dependency from amounts or dates.
+
+# Invoice statuses that take an invoice out of receivables regardless of payments.
+CLOSED_INVOICE_STATUSES = ["cancelled", "written_off"]
+
+# C1: every invoice with money still outstanding, computed by the graph from the
+# payments allocated to it.
+CF_RECEIVABLES = Query(
+    name="cf_receivables",
+    cypher="""
+MATCH (i:Invoice)
+WHERE NOT coalesce(i.status, 'open') IN $closed
+OPTIONAL MATCH (p:Payment)-[a:ALLOCATED_TO]->(i)
+WITH i,
+     toInteger(sum(CASE WHEN p.status = 'cleared' THEN a.amount_paise ELSE 0 END)) AS cleared,
+     collect(CASE WHEN p IS NULL THEN NULL ELSE {
+         id: p.id, ref: p.source_record_id, status: p.status, received_on: p.received_on,
+         amount_paise: a.amount_paise, source_id: a.source_id} END) AS allocations
+WITH i, cleared, allocations, i.amount_paise - cleared AS outstanding
+WHERE outstanding IS NULL OR outstanding > 0
+RETURN properties(i) AS invoice,
+       [(i)-[b:BILLED_TO]->(c:Customer) | {id: c.id, name: c.name, source_id: b.source_id}]
+         AS customers,
+       cleared AS cleared_paise, outstanding AS outstanding_paise, allocations,
+       (i.due_date IS NOT NULL AND i.due_date < $as_of) AS overdue,
+       [(i)-[:FOR_ORDER]->(o:SalesOrder) | {id: o.id, name: o.name, status: o.status}] AS orders
+ORDER BY overdue DESC, i.due_date, i.id
+LIMIT $limit""",
+)
+
+# C2: open commitments due on or before $until (including past-due ones), with
+# superseded versions excluded by the graph, as for decisions. A cancelled
+# replacement does not supersede anything.
+CF_COMMITMENTS_DUE = Query(
+    name="cf_commitments_due",
+    cypher="""
+MATCH (k:Commitment)
+WHERE coalesce(k.status, 'open') = 'open' AND (k.due_date IS NULL OR k.due_date <= $until)
+OPTIONAL MATCH (newer:Commitment)-[:SUPERSEDES]->(k)
+WHERE coalesce(newer.status, 'open') <> 'cancelled'
+WITH k, count(newer) AS superseders
+WHERE superseders = 0
+RETURN properties(k) AS commitment,
+       [(k)-[ow:OWED_TO]->(x:Entity) | {id: x.id, kind: x.kind, name: x.name,
+                                       source_id: ow.source_id}] AS owed_to,
+       [(k)-[:FOR_ORDER]->(o:Entity) | {id: o.id, kind: o.kind, name: o.name,
+                                       status: o.status}] AS orders,
+       [(k)-[d:DEPENDS_ON]->(inv:Invoice) | {invoice_id: inv.id, ref: inv.source_record_id,
+                                             source_id: d.source_id}] AS depends_on,
+       [(k)-[sup:SUPERSEDES]->(old:Commitment) | {id: old.id, ref: old.source_record_id,
+                                                 due_date: old.due_date,
+                                                 amount_paise: old.amount_paise,
+                                                 source_id: sup.source_id}] AS supersedes
+ORDER BY k.due_date, k.id
+LIMIT $limit""",
+)
+
+# C3: the core traversal. From each outstanding invoice, follow recorded
+# DEPENDS_ON edges back to commitments, then out to who is owed and to the
+# purchase order -> waiting sales order -> customer chain. Returns the paths.
+CF_DEPENDENCY_PATHS = Query(
+    name="cf_dependency_paths",
+    cypher=f"""
+UNWIND $invoice_ids AS iid
+MATCH dep = (i:Invoice {{id: iid}})<-[d:DEPENDS_ON]-(k:Commitment)
+OPTIONAL MATCH (newer:Commitment)-[:SUPERSEDES]->(k)
+WHERE coalesce(newer.status, 'open') <> 'cancelled'
+WITH iid, i, dep, d, k, collect(newer.id) AS superseded_by
+OPTIONAL MATCH billed = (i)-[:BILLED_TO]->(:Customer)
+OPTIONAL MATCH owed = (k)-[:OWED_TO]->(:Entity)
+OPTIONAL MATCH chain = (k)-[:FOR_ORDER]->(:PurchaseOrder)<-[:SOURCED_FROM]-(:SalesOrder)
+                       -[:PLACED_BY]->(:Customer)
+RETURN iid AS invoice_id, k.id AS commitment_id, properties(k) AS commitment,
+       superseded_by, d.source_id AS dependency_source_id, d.note AS note,
+       CASE WHEN billed IS NULL THEN [] ELSE [r IN relationships(billed) | {_REL_FIELDS}] END
+         + [r IN relationships(dep) | {_REL_FIELDS}] AS dependency_rels,
+       CASE WHEN owed IS NULL THEN [] ELSE [r IN relationships(owed) | {_REL_FIELDS}] END
+         AS owed_rels,
+       CASE WHEN owed IS NULL THEN [] ELSE [n IN nodes(owed) | {_NODE_FIELDS}] END AS owed_nodes,
+       CASE WHEN chain IS NULL THEN [] ELSE [r IN relationships(chain) | {_REL_FIELDS}] END
+         AS order_rels,
+       CASE WHEN chain IS NULL THEN [] ELSE [n IN nodes(chain) | {_NODE_FIELDS}] END
+         AS order_nodes
+ORDER BY invoice_id, commitment_id""",
+)
+
+# Note (FalkorDB v4.20.7): a variable name reused across pattern comprehensions in one
+# RETURN can make later comprehensions come back empty, so each uses its own names.
+
+# Sources cited on edges (for example the message that documents a dependency).
+CF_SOURCES_BY_ID = Query(
+    name="cf_sources_by_id",
+    cypher=f"""
+UNWIND $ids AS sid
+MATCH (s:Source {{id: sid}})
+RETURN {_SOURCE_FIELDS} AS source
+ORDER BY s.id""",
+)
+
+
+# ---------------------------------------------------------------- Contract costing
+#
+# A cost reaches a contract only through CHARGED_TO edges into the contract or one of
+# its jobs, and only the amount on that edge counts (a shared bill is split, never
+# copied). NOTED_FOR marks a cost the books associate with a job or contract without
+# an amount: a pending decision, never a cost. Payments settle bills through
+# ALLOCATED_TO; they are never costs. Voided book entries are returned so they can be
+# reported, and are excluded from every total.
+
+_COST_RECORD_LINKS = """
+       [(rec)-[o:CHARGED_TO]->(xc:Entity) | {id: xc.id, amount_paise: o.amount_paise}]
+         AS all_charges,
+       [(rec)-[:NOTED_FOR]->(xn:Entity) | xn.id] AS noted_for,
+       [(rec)-[:SUPPLIED_BY]->(s:Supplier) | {id: s.id, name: s.name}] AS suppliers,
+       [(rec)-[:EARNED_BY]->(w:Worker) | {id: w.id, name: w.name, role: w.role}] AS workers,
+       [(pay:Payment)-[a:ALLOCATED_TO]->(rec) | {id: pay.id, ref: pay.source_record_id,
+         status: pay.status, paid_on: pay.paid_on, amount_paise: a.amount_paise,
+         source_id: a.source_id}] AS payments,
+       [(rec)-[:SUPPORTED_BY]->(src:Source) WHERE coalesce(src.status, 'active') = 'active'
+         | src.id] AS source_ids"""
+
+# M1: the contract, its customer, jobs and customer receipts.
+MF_CONTRACT = Query(
+    name="mf_contract",
+    cypher="""
+MATCH (c:Contract {id: $id})
+RETURN properties(c) AS contract,
+       [(c)-[pb:PLACED_BY]->(cu:Customer) | {id: cu.id, name: cu.name, source_id: pb.source_id}]
+         AS customers,
+       [(j:Job)-[po:PART_OF]->(c) | {id: j.id, ref: j.source_record_id, name: j.name,
+         status: j.status, started_on: j.started_on, completed_on: j.completed_on,
+         source_id: po.source_id}] AS jobs,
+       [(p:Payment)-[a:ALLOCATED_TO]->(c) | {id: p.id, ref: p.source_record_id,
+         status: p.status, received_on: p.received_on, method: p.method,
+         reference: p.reference, amount_paise: a.amount_paise, source_id: a.source_id}]
+         AS receipts,
+       [(c)-[:SUPPORTED_BY]->(s:Source) WHERE coalesce(s.status, 'active') = 'active' | s.id]
+         AS source_ids""",
+)
+
+# M2: every cost charged to the contract or one of its jobs, one row per charge, with
+# the traversed path and the record's supplier or worker, payments and sources.
+MF_CONTRACT_CHARGES = Query(
+    name="mf_contract_charges",
+    cypher=f"""
+MATCH path = (c:Contract {{id: $id}})<-[:PART_OF*0..1]-(t:Entity)<-[ch:CHARGED_TO]-(rec:Entity)
+WHERE rec.kind IN $cost_kinds
+RETURN rec.kind AS kind, properties(rec) AS record, t.id AS charged_to,
+       t.source_record_id AS charged_to_ref, ch.amount_paise AS charged_paise,
+       ch.source_id AS charge_source_id,
+       [r IN relationships(path) | {_REL_FIELDS}] AS rels,{_COST_RECORD_LINKS}
+ORDER BY rec.kind, rec.source_record_id, t.id
+LIMIT $limit""",
+)
+
+# M3: category totals computed by the graph (cross-checked against M2's rows).
+MF_CONTRACT_COST_TOTALS = Query(
+    name="mf_contract_cost_totals",
+    cypher="""
+MATCH (c:Contract {id: $id})<-[:PART_OF*0..1]-(t:Entity)<-[ch:CHARGED_TO]-(rec:Entity)
+WHERE rec.kind IN $cost_kinds AND coalesce(rec.status, 'recorded') <> 'void'
+RETURN rec.kind AS kind, toInteger(sum(ch.amount_paise)) AS charged_paise,
+       count(ch) AS charges,
+       toInteger(sum(CASE WHEN ch.amount_paise IS NULL THEN 1 ELSE 0 END))
+         AS charges_without_amount
+ORDER BY kind""",
+)
+
+# M4: costs the books associate with the contract or its jobs without an amount.
+MF_CONTRACT_NOTED = Query(
+    name="mf_contract_noted",
+    cypher=f"""
+MATCH (c:Contract {{id: $id}})<-[:PART_OF*0..1]-(t:Entity)<-[n:NOTED_FOR]-(rec:Entity)
+WHERE rec.kind IN $cost_kinds AND coalesce(rec.status, 'recorded') <> 'void'
+WITH rec, collect(DISTINCT t.id) AS noted_here, collect(DISTINCT n.source_id) AS note_sources
+RETURN rec.kind AS kind, properties(rec) AS record, noted_here, note_sources,{_COST_RECORD_LINKS}
+ORDER BY rec.source_record_id
+LIMIT $limit""",
+)
+
+# M5: company-wide cost records not (fully) charged to any job or contract.
+MF_UNALLOCATED = Query(
+    name="mf_unallocated",
+    cypher=f"""
+MATCH (rec:Entity)
+WHERE rec.kind IN $cost_kinds AND coalesce(rec.status, 'recorded') <> 'void'
+OPTIONAL MATCH (rec)-[ch:CHARGED_TO]->(:Entity)
+WITH rec, toInteger(sum(ch.amount_paise)) AS charged
+WHERE rec.amount_paise IS NULL OR charged < rec.amount_paise
+RETURN rec.kind AS kind, properties(rec) AS record, charged AS charged_paise,{_COST_RECORD_LINKS},
+       [(rec)-[:NOTED_FOR]->(xt:Entity) | {{id: xt.id, kind: xt.kind, ref: xt.source_record_id}}]
+         AS noted_targets
+ORDER BY rec.source_record_id
+LIMIT $limit""",
+)
+
+# M6: supplier payments not (fully) applied to any bill; $supplier_ids null = all.
+MF_UNAPPLIED_PAYMENTS = Query(
+    name="mf_unapplied_payments",
+    cypher="""
+MATCH (p:Payment)-[:PAID_TO]->(s:Supplier)
+WHERE $supplier_ids IS NULL OR s.id IN $supplier_ids
+OPTIONAL MATCH (p)-[a:ALLOCATED_TO]->(:Entity)
+WITH p, s, toInteger(sum(a.amount_paise)) AS applied
+WHERE applied < p.amount_paise
+RETURN p.id AS id, properties(p) AS payment, s.id AS supplier_id, s.name AS supplier_name,
+       applied AS applied_paise,
+       [(p)-[:SUPPORTED_BY]->(src:Source) | src.id] AS source_ids
+ORDER BY p.id""",
+)
+
+# M7: every contract with graph-computed recorded cost and cleared receipts.
+MF_CONTRACTS_OVERVIEW = Query(
+    name="mf_contracts_overview",
+    cypher="""
+MATCH (c:Contract)
+OPTIONAL MATCH (c)<-[:PART_OF*0..1]-(:Entity)<-[ch:CHARGED_TO]-(rec:Entity)
+WHERE coalesce(rec.status, 'recorded') <> 'void'
+WITH c, toInteger(sum(ch.amount_paise)) AS cost, count(ch) AS charge_lines,
+     toInteger(sum(CASE WHEN ch IS NOT NULL AND ch.amount_paise IS NULL THEN 1 ELSE 0 END))
+       AS charges_without_amount
+OPTIONAL MATCH (p:Payment)-[a:ALLOCATED_TO]->(c)
+WITH c, cost, charge_lines, charges_without_amount,
+     toInteger(sum(CASE WHEN p.status = 'cleared' THEN a.amount_paise ELSE 0 END)) AS received
+RETURN properties(c) AS contract,
+       [(c)-[:PLACED_BY]->(cu:Customer) | cu.name] AS customers,
+       [(j:Job)-[:PART_OF]->(c) | j.id] AS job_ids,
+       cost AS recorded_cost_paise, charge_lines, charges_without_amount,
+       received AS received_paise
+ORDER BY c.contract_date, c.id
+LIMIT $limit""",
+)
+
+# M8: cost records, payments and allocations added or changed after a timestamp.
+MF_CHANGED_SINCE = Query(
+    name="mf_changed_since",
+    cypher="""
+MATCH (rec:Entity)
+WHERE rec.kind IN $kinds AND rec.updated_at > $since
+RETURN 'record' AS change, rec.kind AS kind, properties(rec) AS record,
+       NULL AS target_id, NULL AS amount_paise
+UNION ALL
+MATCH (rec:Entity)-[o:CHARGED_TO]->(x:Entity)
+WHERE o.created_at > $since
+RETURN 'allocation' AS change, rec.kind AS kind, properties(rec) AS record,
+       x.id AS target_id, o.amount_paise AS amount_paise""",
+)
+
+
 def _connections(depth: int) -> Query:
     return Query(
         name=f"connections_depth_{depth}",
@@ -343,5 +601,17 @@ def all_queries() -> list[Query]:
         CURRENT_DECISIONS,
         DECISION_PROVENANCE,
         *CONNECTIONS.values(),
+        CF_RECEIVABLES,
+        CF_COMMITMENTS_DUE,
+        CF_DEPENDENCY_PATHS,
+        CF_SOURCES_BY_ID,
+        MF_CONTRACT,
+        MF_CONTRACT_CHARGES,
+        MF_CONTRACT_COST_TOTALS,
+        MF_CONTRACT_NOTED,
+        MF_UNALLOCATED,
+        MF_UNAPPLIED_PAYMENTS,
+        MF_CONTRACTS_OVERVIEW,
+        MF_CHANGED_SINCE,
     ]
     return queries
