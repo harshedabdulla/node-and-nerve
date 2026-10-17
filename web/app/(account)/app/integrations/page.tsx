@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { connectionFor, refreshPending, SHEETS, telegramChats } from "@/lib/integrations";
+import { connectionFor, refreshPending, SHEETS, telegramChats, ZOHO_BOOKS } from "@/lib/integrations";
 import { requireWorkspace } from "@/lib/workspace";
-import { connectSheets, disconnectSheets, unlinkTelegramChat } from "./actions";
+import { connectToolkit, disconnectToolkit, unlinkTelegramChat } from "./actions";
 import { TelegramLink } from "./telegram-link";
 
 export const metadata = { title: "Integrations: Node & Nerve" };
@@ -23,6 +23,8 @@ export default async function Integrations({
   const admin = role === "org:admin";
   const sheets = await refreshPending(workspace.id, await connectionFor(workspace.id, SHEETS), userId);
   const chats = await telegramChats(workspace.id);
+  const zoho = await refreshPending(workspace.id, await connectionFor(workspace.id, ZOHO_BOOKS), userId);
+  const zohoState = STATE[!zoho || zoho.status === "disconnected" ? "none" : zoho.status];
   const state = STATE[sheets?.status === "disconnected" || !sheets ? "none" : sheets.status];
 
   return (
@@ -50,7 +52,8 @@ export default async function Integrations({
                     Choose sheets
                   </Link>
                   {admin && (
-                    <form action={disconnectSheets}>
+                    <form action={disconnectToolkit}>
+                      <input type="hidden" name="toolkit" value={SHEETS} />
                       <button className="btn btn-quiet" type="submit">
                         Disconnect
                       </button>
@@ -58,7 +61,8 @@ export default async function Integrations({
                   )}
                 </>
               ) : admin ? (
-                <form action={connectSheets}>
+                <form action={connectToolkit}>
+                  <input type="hidden" name="toolkit" value={SHEETS} />
                   <button className="btn btn-primary" type="submit">
                     {sheets ? "Connect again" : "Connect Google Sheets"}
                   </button>
@@ -107,11 +111,36 @@ export default async function Integrations({
 
         <div className="connector">
           <span className="connector-name">Zoho Books</span>
-          <p>
-            The account connects through Composio, but it exposes no read actions for Zoho Books,
-            so nothing could be synced. Shown here so the gap is visible.
-          </p>
-          <span className="state state-blocked">Waiting on connector</span>
+          <div>
+            <p>
+              Invoices, bills, customer payments and contacts, so you can ask what is owed to you,
+              what you owe and what is overdue. Read-only. Connecting works now; syncing your books
+              into the graph is being built against a real account.
+            </p>
+            {zoho?.status === "error" && zoho.error && <p className="note">{zoho.error}</p>}
+            <div className="connector-actions">
+              {zoho?.status === "connected" ? (
+                admin && (
+                  <form action={disconnectToolkit}>
+                    <input type="hidden" name="toolkit" value={ZOHO_BOOKS} />
+                    <button className="btn btn-quiet" type="submit">
+                      Disconnect
+                    </button>
+                  </form>
+                )
+              ) : admin ? (
+                <form action={connectToolkit}>
+                  <input type="hidden" name="toolkit" value={ZOHO_BOOKS} />
+                  <button className="btn btn-primary" type="submit">
+                    {zoho ? "Connect again" : "Connect Zoho Books"}
+                  </button>
+                </form>
+              ) : (
+                <p className="note">Ask a workspace admin to connect it.</p>
+              )}
+            </div>
+          </div>
+          <span className={`state ${zohoState.tone}`}>{zohoState.label.replace("Google", "Zoho")}</span>
         </div>
       </div>
     </section>

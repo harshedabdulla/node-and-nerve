@@ -6,6 +6,50 @@ import { readSheet } from "@/lib/sheets";
 import { audit, type Workspace } from "@/lib/workspace";
 
 export const SHEETS = "googlesheets";
+export const ZOHO_BOOKS = "zoho_books";
+
+/** Toolkits a workspace can connect, and where each one's pages live. */
+export const CONNECTABLE = {
+  [SHEETS]: { name: "Google Sheets", path: "google-sheets" },
+  [ZOHO_BOOKS]: { name: "Zoho Books", path: "zoho-books" },
+} as const;
+export type Toolkit = keyof typeof CONNECTABLE;
+
+export function isToolkit(value: string): value is Toolkit {
+  return Object.hasOwn(CONNECTABLE, value);
+}
+
+/**
+ * After the provider's sign-in: check the workspace's pending connection with Composio
+ * (owner workspace, toolkit, status) and record the result. Nothing in the URL is trusted.
+ */
+export async function finishConnection(
+  workspaceId: string,
+  toolkit: Toolkit,
+  actor: string,
+): Promise<"connected" | "connecting" | "error" | "none"> {
+  const pending = await connectionFor(workspaceId, toolkit);
+  if (!pending) return "none";
+  let status: "connected" | "connecting" | "error" = "error";
+  let error: string | null = null;
+  try {
+    const account = await getAccount(pending.id);
+    if (account.user_id !== workspaceId || account.toolkit?.slug !== toolkit) {
+      error = "The returned connection does not belong to this workspace.";
+    } else if (account.status === "ACTIVE") {
+      status = "connected";
+    } else if (account.status === "INITIATED" || account.status === "INITIALIZING") {
+      status = "connecting";
+    } else {
+      error = account.status_reason || `Sign-in ended with status ${account.status.toLowerCase()}.`;
+    }
+  } catch (err) {
+    error = err instanceof Error ? err.message : "The connection could not be checked.";
+  }
+  await setConnection(workspaceId, pending.id, toolkit, status, actor, error);
+  if (status === "connected") await audit(workspaceId, actor, "connection.connected", { toolkit });
+  return status;
+}
 
 export interface Connection {
   id: string;

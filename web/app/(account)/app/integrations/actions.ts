@@ -4,7 +4,9 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { deleteAccount, startConnection } from "@/lib/composio";
 import {
+  CONNECTABLE,
   connectionFor,
+  isToolkit,
   newTelegramLink,
   SHEETS,
   saveSource,
@@ -34,26 +36,37 @@ async function origin(): Promise<string> {
   return `${proto}://${host}`;
 }
 
-export async function connectSheets() {
+export async function connectToolkit(form: FormData) {
   const { workspace, userId } = await requireAdmin();
-  const callback = `${await origin()}/app/integrations/google-sheets/callback`;
-  const { redirectUrl, accountId } = await startConnection(SHEETS, workspace.id, callback);
-  await setConnection(workspace.id, accountId, SHEETS, "connecting", userId);
-  await audit(workspace.id, userId, "connection.started", { toolkit: SHEETS });
-  redirect(redirectUrl);
+  const toolkit = String(form.get("toolkit") ?? "");
+  if (!isToolkit(toolkit)) redirect("/app/integrations");
+  const callback = `${await origin()}/app/integrations/${CONNECTABLE[toolkit].path}/callback`;
+  let target: string;
+  try {
+    const { redirectUrl, accountId } = await startConnection(toolkit, workspace.id, callback);
+    await setConnection(workspace.id, accountId, toolkit, "connecting", userId);
+    await audit(workspace.id, userId, "connection.started", { toolkit });
+    target = redirectUrl;
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "the connection could not start";
+    target = `/app/integrations?error=${encodeURIComponent(message)}`;
+  }
+  redirect(target);
 }
 
-export async function disconnectSheets() {
+export async function disconnectToolkit(form: FormData) {
   const { workspace, userId } = await requireAdmin();
-  const connection = await connectionFor(workspace.id, SHEETS);
+  const toolkit = String(form.get("toolkit") ?? "");
+  if (!isToolkit(toolkit)) redirect("/app/integrations");
+  const connection = await connectionFor(workspace.id, toolkit);
   if (connection) {
     try {
       await deleteAccount(connection.id);
     } catch {
       // Already gone at Composio; still mark it disconnected here.
     }
-    await setConnection(workspace.id, connection.id, SHEETS, "disconnected", userId);
-    await audit(workspace.id, userId, "connection.removed", { toolkit: SHEETS });
+    await setConnection(workspace.id, connection.id, toolkit, "disconnected", userId);
+    await audit(workspace.id, userId, "connection.removed", { toolkit });
   }
   redirect("/app/integrations");
 }
