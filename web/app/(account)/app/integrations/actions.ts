@@ -11,6 +11,7 @@ import {
   SHEETS,
   saveSource,
   setConnection,
+  syncBooks,
   syncSource,
   type TaskMapping,
   telegramChats,
@@ -135,4 +136,10 @@ export async function unlinkTelegramChat(form: FormData) {
     await audit(workspace.id, userId, "telegram.unlinked", { username: chat.username });
   }
   redirect("/app/integrations");
+}
+
+export async function syncBooksNow() {
+  const { workspace, userId } = await requireAdmin();
+  const result = await syncBooks(workspace, userId);
+  redirect("/app/integrations" + (result.ok ? "" : `?error=${encodeURIComponent(result.error)}`));
 }

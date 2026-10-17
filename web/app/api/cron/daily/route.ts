@@ -1,6 +1,6 @@
 import { timingSafeEqual } from "node:crypto";
 import { sql } from "@/lib/db";
-import { syncSource } from "@/lib/integrations";
+import { syncBooks, syncSource } from "@/lib/integrations";
 import type { Workspace } from "@/lib/workspace";
 
 // Daily: re-sync every connected sheet. Each sync then sends alerts for newly blocked or
@@ -25,10 +25,17 @@ export async function GET(request: Request) {
     JOIN connections c ON c.id = s.connection_id AND c.status = 'connected'
     JOIN workspaces w ON w.id = s.workspace_id
     ORDER BY s.id`) as (Workspace & { source_id: number })[];
-  const results = [];
+  const results: Record<string, unknown>[] = [];
   for (const { source_id, ...workspace } of rows) {
     const r = await syncSource(workspace, source_id, "scheduled sync");
     results.push({ source_id, ok: r.ok, ...(r.ok ? { tasks: r.report.tasks } : { error: r.error }) });
+  }
+  const books = (await sql()`SELECT DISTINCT w.id, w.clerk_org_id, w.name, w.created_at, w.onboarding
+    FROM connections c JOIN workspaces w ON w.id = c.workspace_id
+    WHERE c.toolkit = 'zoho_books' AND c.status = 'connected'`) as Workspace[];
+  for (const workspace of books) {
+    const r = await syncBooks(workspace, "scheduled sync");
+    results.push({ books: workspace.id, ok: r.ok, ...(r.ok ? {} : { error: r.error }) });
   }
   return Response.json({ synced: results.length, results });
 }

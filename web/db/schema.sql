@@ -94,3 +94,10 @@ CREATE TABLE IF NOT EXISTS alert_deliveries (
   sent_at       timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (workspace_id, chat_id, fingerprint)
 );
+
+-- Provider details found when a connection is first used (e.g. Zoho's data centre and
+-- organisation), and sync runs that belong to a whole connection rather than one sheet.
+ALTER TABLE connections ADD COLUMN IF NOT EXISTS config jsonb NOT NULL DEFAULT '{}'::jsonb;
+ALTER TABLE sync_runs ALTER COLUMN source_id DROP NOT NULL;
+ALTER TABLE sync_runs ADD COLUMN IF NOT EXISTS connection_id text REFERENCES connections(id) ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS sync_runs_connection ON sync_runs (connection_id, started_at DESC);

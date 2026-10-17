@@ -296,3 +296,80 @@ export async function runAlerts(workspaceId: string): Promise<{ sent: number } |
     return { error: err instanceof Error ? err.message : "alerts failed" };
   }
 }
+
+// ---------------------------------------------------------------- Zoho Books
+
+export interface BooksRun {
+  status: "running" | "succeeded" | "failed";
+  at: string;
+  report: (Record<string, unknown> & { warnings: string[] }) | null;
+  error: string | null;
+}
+
+export async function lastBooksRun(connectionId: string): Promise<BooksRun | null> {
+  const rows = (await sql()`SELECT status, COALESCE(finished_at, started_at) AS at, report, error
+    FROM sync_runs WHERE connection_id = ${connectionId} ORDER BY started_at DESC LIMIT 1`) as BooksRun[];
+  return rows[0] ?? null;
+}
+
+export async function syncBooks(
+  workspace: Workspace,
+  actor: string,
+): Promise<{ ok: true; report: Record<string, unknown> } | { ok: false; error: string }> {
+  const { locateBooks, readBooks } = await import("@/lib/books");
+  const db = sql();
+  const rows = (await db`SELECT id, config FROM connections WHERE workspace_id = ${workspace.id}
+    AND toolkit = ${ZOHO_BOOKS} AND status = 'connected' ORDER BY updated_at DESC LIMIT 1`) as {
+    id: string;
+    config: Record<string, string>;
+  }[];
+  const connection = rows[0];
+  if (!connection) return { ok: false, error: "Zoho Books is not connected." };
+  const started = (await db`INSERT INTO sync_runs (workspace_id, connection_id, status)
+    SELECT ${workspace.id}, ${connection.id}, 'running'
+    WHERE NOT EXISTS (SELECT 1 FROM sync_runs WHERE connection_id = ${connection.id}
+      AND status = 'running' AND started_at > now() - interval '10 minutes')
+    RETURNING id`) as { id: number }[];
+  if (!started[0]) return { ok: false, error: "A Zoho Books sync is already running." };
+  const runId = started[0].id;
+  try {
+    let at = connection.config?.organization_id
+      ? (connection.config as unknown as Awaited<ReturnType<typeof locateBooks>>)
+      : null;
+    if (!at) {
+      at = await locateBooks(workspace.id, connection.id);
+      await db`UPDATE connections SET config = ${JSON.stringify(at)}::jsonb WHERE id = ${connection.id}`;
+    }
+    const data = await readBooks(workspace.id, connection.id, at);
+    const res = await fetch(
+      `${process.env.NN_API_URL?.replace(/\/$/, "")}/v1/companies/${workspace.id}/imports/zoho-books`,
+      {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-api-key": process.env.NN_APP_API_KEY ?? "" },
+        body: JSON.stringify({
+          organization_id: at.organization_id,
+          data_centre: at.data_centre,
+          contacts: data.contacts,
+          invoices: data.invoices,
+          bills: data.bills,
+          customer_payments: data.customer_payments,
+          vendor_payments: data.vendor_payments,
+        }),
+        cache: "no-store",
+      },
+    );
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(body?.detail ? JSON.stringify(body.detail).slice(0, 300) : `graph API ${res.status}`);
+    const report = { ...body, warnings: [...data.notes, ...(body.warnings ?? [])] };
+    await db`UPDATE sync_runs SET status = 'succeeded', finished_at = now(),
+      report = ${JSON.stringify(report)}::jsonb WHERE id = ${runId}`;
+    await audit(workspace.id, actor, "books.synced", { invoices: body.invoices, bills: body.commitments });
+    return { ok: true, report };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "the sync failed";
+    await db`UPDATE sync_runs SET status = 'failed', finished_at = now(), error = ${message}
+      WHERE id = ${runId}`;
+    await audit(workspace.id, actor, "books.sync_failed", { error: message });
+    return { ok: false, error: message };
+  }
+}

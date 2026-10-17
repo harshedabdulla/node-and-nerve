@@ -1,7 +1,14 @@
 import Link from "next/link";
-import { connectionFor, refreshPending, SHEETS, telegramChats, ZOHO_BOOKS } from "@/lib/integrations";
+import {
+  connectionFor,
+  lastBooksRun,
+  refreshPending,
+  SHEETS,
+  telegramChats,
+  ZOHO_BOOKS,
+} from "@/lib/integrations";
 import { requireWorkspace } from "@/lib/workspace";
-import { connectToolkit, disconnectToolkit, unlinkTelegramChat } from "./actions";
+import { connectToolkit, disconnectToolkit, syncBooksNow, unlinkTelegramChat } from "./actions";
 import { TelegramLink } from "./telegram-link";
 
 export const metadata = { title: "Integrations: Node & Nerve" };
@@ -24,6 +31,7 @@ export default async function Integrations({
   const sheets = await refreshPending(workspace.id, await connectionFor(workspace.id, SHEETS), userId);
   const chats = await telegramChats(workspace.id);
   const zoho = await refreshPending(workspace.id, await connectionFor(workspace.id, ZOHO_BOOKS), userId);
+  const booksRun = zoho?.status === "connected" ? await lastBooksRun(zoho.id) : null;
   const zohoState = STATE[!zoho || zoho.status === "disconnected" ? "none" : zoho.status];
   const state = STATE[sheets?.status === "disconnected" || !sheets ? "none" : sheets.status];
 
@@ -114,19 +122,47 @@ export default async function Integrations({
           <div>
             <p>
               Invoices, bills, customer payments and contacts, so you can ask what is owed to you,
-              what you owe and what is overdue. Read-only. Connecting works now; syncing your books
-              into the graph is being built against a real account.
+              what you owe and what is overdue. Read-only; drafts are left out.
             </p>
             {zoho?.status === "error" && zoho.error && <p className="note">{zoho.error}</p>}
+            {booksRun?.status === "succeeded" && booksRun.report ? (
+              <p className="note">
+                Last synced {new Date(booksRun.at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}{" "}
+                IST: {String(booksRun.report.invoices)} invoices, {String(booksRun.report.commitments)}{" "}
+                bills, {String(booksRun.report.payments)} payments, {String(booksRun.report.customers)}{" "}
+                customers, {String(booksRun.report.suppliers)} suppliers
+                {Number(booksRun.report.skipped_drafts) ? `; ${booksRun.report.skipped_drafts} drafts left out` : ""}.
+              </p>
+            ) : booksRun?.status === "failed" ? (
+              <p className="note" style={{ color: "var(--inconsistency)" }}>
+                Last sync failed: {booksRun.error}
+              </p>
+            ) : zoho?.status === "connected" ? (
+              <p className="note">Not synced yet.</p>
+            ) : null}
+            {booksRun?.report && booksRun.report.warnings.length > 0 && (
+              <ul className="warnings">
+                {booksRun.report.warnings.slice(0, 8).map((w) => (
+                  <li key={w}>{w}</li>
+                ))}
+              </ul>
+            )}
             <div className="connector-actions">
               {zoho?.status === "connected" ? (
                 admin && (
-                  <form action={disconnectToolkit}>
-                    <input type="hidden" name="toolkit" value={ZOHO_BOOKS} />
-                    <button className="btn btn-quiet" type="submit">
-                      Disconnect
-                    </button>
-                  </form>
+                  <>
+                    <form action={syncBooksNow}>
+                      <button className="btn btn-primary" type="submit">
+                        Sync now
+                      </button>
+                    </form>
+                    <form action={disconnectToolkit}>
+                      <input type="hidden" name="toolkit" value={ZOHO_BOOKS} />
+                      <button className="btn btn-quiet" type="submit">
+                        Disconnect
+                      </button>
+                    </form>
+                  </>
                 )
               ) : admin ? (
                 <form action={connectToolkit}>

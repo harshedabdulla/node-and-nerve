@@ -90,3 +90,34 @@ export async function runTool<T = Record<string, unknown>>(
   if (!r.successful) throw new ComposioError(r.error ?? `${tool} failed`);
   return r.data;
 }
+
+/** Throws unless the connected account belongs to the workspace and is active. */
+export async function assertOwnAccount(workspaceId: string, accountId: string): Promise<void> {
+  const account = await getAccount(accountId);
+  if (account.user_id !== workspaceId) {
+    throw new ComposioError("this connection does not belong to the workspace");
+  }
+  if (account.status !== "ACTIVE") {
+    throw new ComposioError(`the connection is ${account.status.toLowerCase()}; reconnect it`);
+  }
+}
+
+/**
+ * A read-only GET to the provider's own API with a connected account. Call
+ * assertOwnAccount first: this does not repeat the ownership check on every page.
+ */
+export async function proxyGet(
+  workspaceId: string,
+  accountId: string,
+  url: string,
+  query: Record<string, string> = {},
+): Promise<{ status: number; data: unknown }> {
+  const r = await call<{ status: number; data: unknown }>("POST", "/tools/execute/proxy", {
+    endpoint: url,
+    method: "GET",
+    connected_account_id: accountId,
+    user_id: workspaceId,
+    parameters: Object.entries(query).map(([name, value]) => ({ name, value, type: "query" })),
+  });
+  return { status: r.status, data: r.data };
+}
