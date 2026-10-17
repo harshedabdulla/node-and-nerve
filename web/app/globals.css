@@ -1167,3 +1167,104 @@ button.btn-primary {
 .setup li span a {
   color: var(--paper);
 }
+
+/* evidence graph */
+
+.graph-canvas {
+  overflow-x: auto;
+  padding: 6px 0;
+}
+
+.graph-canvas svg {
+  display: block;
+  max-width: none;
+}
+
+.graph-label {
+  fill: var(--paper);
+  font-size: 13px;
+  font-family: var(--font-body);
+}
+
+.graph-edge-label {
+  fill: #7a7a74;
+  font-size: 11px;
+  text-anchor: middle;
+}
+
+.graph-node {
+  cursor: pointer;
+  outline: none;
+}
+
+.graph-node:focus-visible circle:first-child {
+  stroke: var(--paper);
+}
+
+.graph-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: graph-draw 600ms ease-out forwards;
+}
+
+.graph-fade {
+  opacity: 0;
+  animation: graph-fade 400ms ease-out forwards;
+}
+
+@keyframes graph-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes graph-fade {
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .graph-draw {
+    stroke-dashoffset: 0;
+  }
+  .graph-fade {
+    opacity: 1;
+  }
+}
+
+.graph-legend {
+  margin-top: 8px;
+}
+
+.ai-answer p,
+.ai-answer ul {
+  margin-top: 10px;
+  color: #dcd9d2;
+}
+
+.ai-answer ul {
+  padding-left: 18px;
+  list-style: disc;
+}
+
+.ai-answer strong {
+  color: var(--paper);
+}
+
+.cite {
+  display: inline-block;
+  font-size: 12px;
+  padding: 0 7px;
+  margin-left: 4px;
+  border-radius: 999px;
+  border: 1px solid #333;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+a.cite:hover {
+  color: var(--paper);
+  border-color: #555;
+}

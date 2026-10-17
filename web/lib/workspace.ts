@@ -144,3 +144,25 @@ export function readable(statement: string): string {
     )
     .replace(/\bin_progress\b/g, "in progress");
 }
+
+export interface AskResult {
+  answer: string | null;
+  model: string | null;
+  fallback_reason: string | null;
+  investigations: (Investigation & {
+    current_owners: { entity_id: string; owner_id: string; owner_kind: string; owner_name: string | null; source_id: string | null }[];
+    evidence_paths: {
+      id: string;
+      edges: { type: string; from_id: string; to_id: string; source_id: string | null }[];
+    }[];
+  })[];
+  labels: Record<string, { kind: string; ref: string; name: string | null; status: string | null }>;
+}
+
+/** A plain-language answer (or the deterministic one) with the graph behind it. */
+export function askWithModel(workspace: Workspace, question: string): Promise<AskResult | null> {
+  return graphApi<AskResult>(workspace, "/ask", {
+    method: "POST",
+    body: JSON.stringify({ question }),
+  });
+}
