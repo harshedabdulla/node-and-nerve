@@ -33,6 +33,7 @@ def test_model_answers_from_tool_results_with_citations(
     assert sent["messages"][0]["content"] == WORKSPACE_PROMPT
     assert {t["function"]["name"] for t in sent["tools"]} == {
         "investigate",
+        "money",
         "record_details",
         "what_needs_attention",
     }

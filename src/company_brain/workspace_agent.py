@@ -15,6 +15,7 @@ from typing import Any
 from company_brain import queries as q
 from company_brain.agent import AgentAnswer, ContractAgent, Transport, http_post_json
 from company_brain.alerts import attention, readable
+from company_brain.cashflow import CashflowInvestigator, CashflowRequest, inr
 from company_brain.graph import CompanyNotFound, GraphError, GraphStore
 from company_brain.ingest import EntityNotFound
 from company_brain.investigate import Investigator
@@ -32,7 +33,8 @@ Rules:
    cause. If the tools found nothing relevant, say so and suggest naming a project, task
    or person.
 2. Cite the record behind each point with the short labels in the `cite` fields, in
-   square brackets, e.g. [Sheet1!3]. Do not cite anything else.
+   square brackets, e.g. [Sheet1!3] or [INV-000001]. Do not cite anything else. Use rupee
+   amounts exactly as given; never add, subtract or convert them yourself.
 3. Only the items listed under `missing_information` are confirmed gaps in the records;
    report those plainly ("no owner is recorded for NN-3"). Anything else you do not see is
    simply not in these results: say "the results don't show" it, never that the records
@@ -79,6 +81,24 @@ TOOL_SPECS: list[dict[str, Any]] = [
                 "type": "object",
                 "properties": {"record": {"type": "string"}},
                 "required": ["record"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "money",
+            "description": "Money owed to the company (open invoices, what is overdue and by "
+            "how many days, payments applied) and what the company must pay soon (bills due "
+            "within the window), from the connected accounting books. Amounts are in rupees.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "days_ahead": {
+                        "type": "integer",
+                        "description": "Window for bills due, in days (default 7).",
+                    }
+                },
             },
         },
     },
@@ -140,6 +160,42 @@ class WorkspaceTools:
                 return {
                     "record": {k: v for k, v in view.entity.items() if k in keep},
                     "links": view.relationships[:20],
+                }
+            if name == "money":
+                days = max(1, min(int(arguments.get("days_ahead") or 7), 90))
+                cf = CashflowInvestigator(self.store, self.company_id).investigate(
+                    CashflowRequest(as_of=self.as_of, horizon_days=days)
+                )
+                cite = {s.id: s.source_record_id or s.name for s in cf.sources}
+                return {
+                    "as_of": cf.as_of.isoformat(),
+                    "bills_due_until": cf.window_end.isoformat(),
+                    "owed_to_us_rupees": inr(cf.summary.outstanding_paise),
+                    "overdue_rupees": inr(cf.summary.overdue_paise),
+                    "open_invoices": [
+                        {
+                            "invoice": r.ref,
+                            "customer": r.customer_name,
+                            "due": r.due_date,
+                            "outstanding": inr(r.outstanding_paise),
+                            "days_overdue": r.days_overdue,
+                            "cite": [r.ref],
+                        }
+                        for r in cf.receivables
+                    ],
+                    "bills_due": [
+                        {
+                            "bill": c.ref,
+                            "to": [o.get("name") for o in c.owed_to],
+                            "due": c.due_date,
+                            "amount": inr(c.amount_paise),
+                            "past_due": c.past_due,
+                            "cite": [c.ref],
+                        }
+                        for c in cf.commitments
+                    ],
+                    "missing_information": cf.missing_information,
+                    "sources": sorted(set(cite.values())),
                 }
             if name == "what_needs_attention":
                 results = attention(self.store, self.company_id, self.as_of)

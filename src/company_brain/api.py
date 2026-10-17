@@ -17,6 +17,7 @@ from company_brain.agent import AgentError, Transport, http_post_json
 from company_brain.alerts import PROJECT_LIMIT, run_alerts
 from company_brain.alerts import attention as workspace_attention
 from company_brain.auth import ApiKeys
+from company_brain.books import BooksImport, import_books
 from company_brain.cashflow import CashflowInvestigator, CashflowRequest, CashflowResponse
 from company_brain.config import Settings, get_settings
 from company_brain.contract_cost import (
@@ -240,6 +241,15 @@ def create_app(
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
         return asdict(report)
+
+    @app.post(
+        "/v1/companies/{company_id}/imports/zoho-books",
+        tags=["ingest"],
+        summary="Import Zoho Books contacts, invoices, bills and payments as customers, "
+        "suppliers, invoices, commitments and payments, each with its source",
+    )
+    def import_zoho_books(company_id: Company, body: BooksImport, s: Store) -> dict[str, Any]:
+        return asdict(import_books(s, company_id, body))
 
     @app.post(
         "/v1/companies/{company_id}/cashflow/imports",
