@@ -196,6 +196,10 @@ export async function syncSource(
       tasks: report.tasks,
       warnings: report.warnings.length,
     });
+    const alerts = await runAlerts(workspace.id);
+    if ("sent" in alerts && alerts.sent > 0) {
+      await audit(workspace.id, actor, "alerts.sent", { items: alerts.sent });
+    }
     return { ok: true, report };
   } catch (err) {
     const message = err instanceof Error ? err.message : "the sync failed";
@@ -203,5 +207,48 @@ export async function syncSource(
       WHERE id = ${runId}`;
     await audit(workspace.id, actor, "sheet.sync_failed", { error: message });
     return { ok: false, error: message };
+  }
+}
+
+// ---------------------------------------------------------------- Telegram
+
+export interface TelegramChat {
+  chat_id: string;
+  username: string | null;
+  alerts: boolean;
+  linked_at: string;
+  user_id: string;
+}
+
+export async function telegramChats(workspaceId: string): Promise<TelegramChat[]> {
+  return (await sql()`SELECT chat_id::text, username, alerts, linked_at, user_id
+    FROM telegram_chats WHERE workspace_id = ${workspaceId} ORDER BY linked_at`) as TelegramChat[];
+}
+
+/** A one-time code for t.me/<bot>?start=<code>. Only its hash is stored; it lasts 15 minutes. */
+export async function newTelegramLink(workspaceId: string, userId: string): Promise<string> {
+  const { createHash, randomBytes } = await import("node:crypto");
+  const code = randomBytes(18).toString("base64url");
+  const hash = createHash("sha256").update(code).digest("hex");
+  await sql()`INSERT INTO telegram_link_codes (code_hash, workspace_id, user_id, expires_at)
+    VALUES (${hash}, ${workspaceId}, ${userId}, now() + interval '15 minutes')`;
+  return code;
+}
+
+export async function unlinkTelegram(workspaceId: string, chatId: string): Promise<void> {
+  await sql()`DELETE FROM telegram_chats WHERE workspace_id = ${workspaceId} AND chat_id = ${chatId}::bigint`;
+}
+
+/** Ask the API to send alerts for newly blocked or overdue work to linked chats. */
+export async function runAlerts(workspaceId: string): Promise<{ sent: number } | { error: string }> {
+  try {
+    const res = await fetch(
+      `${process.env.NN_API_URL?.replace(/\/$/, "")}/v1/companies/${workspaceId}/alerts/run`,
+      { method: "POST", headers: { "x-api-key": process.env.NN_APP_API_KEY ?? "" }, cache: "no-store" },
+    );
+    if (!res.ok) return { error: `alerts answered ${res.status}` };
+    return { sent: Number((await res.json()).sent ?? 0) };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "alerts failed" };
   }
 }

@@ -63,3 +63,34 @@ CREATE TABLE IF NOT EXISTS sync_runs (
 );
 
 CREATE INDEX IF NOT EXISTS sync_runs_source ON sync_runs (source_id, started_at DESC);
+
+-- Telegram. The app issues a one-time code (only its hash is stored); the bot consumes it
+-- from "/start <code>" and binds that chat to the workspace.
+CREATE TABLE IF NOT EXISTS telegram_link_codes (
+  code_hash     text PRIMARY KEY,
+  workspace_id  text NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
+  user_id       text NOT NULL,
+  expires_at    timestamptz NOT NULL,
+  used_at       timestamptz
+);
+
+CREATE TABLE IF NOT EXISTS telegram_chats (
+  chat_id       bigint PRIMARY KEY,          -- a chat serves one workspace at a time
+  workspace_id  text NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
+  user_id       text NOT NULL,               -- Clerk user who linked it
+  username      text,
+  alerts        boolean NOT NULL DEFAULT true,
+  linked_at     timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS telegram_chats_workspace ON telegram_chats (workspace_id);
+
+-- One row per alert sent to a chat; the primary key is what stops repeats.
+CREATE TABLE IF NOT EXISTS alert_deliveries (
+  workspace_id  text NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
+  chat_id       bigint NOT NULL,
+  fingerprint   text NOT NULL,
+  statement     text NOT NULL,
+  sent_at       timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (workspace_id, chat_id, fingerprint)
+);

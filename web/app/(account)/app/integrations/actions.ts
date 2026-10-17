@@ -5,11 +5,14 @@ import { redirect } from "next/navigation";
 import { deleteAccount, startConnection } from "@/lib/composio";
 import {
   connectionFor,
+  newTelegramLink,
   SHEETS,
   saveSource,
   setConnection,
   syncSource,
   type TaskMapping,
+  telegramChats,
+  unlinkTelegram,
 } from "@/lib/integrations";
 import { audit, requireWorkspace } from "@/lib/workspace";
 
@@ -96,4 +99,27 @@ export async function syncNow(form: FormData) {
     "/app/integrations/google-sheets" +
       (result.ok ? "" : `?error=${encodeURIComponent(result.error)}`),
   );
+}
+
+// ---------------------------------------------------------------- Telegram
+
+export async function createTelegramLink(): Promise<{ url: string } | { error: string }> {
+  const { workspace, userId } = await requireWorkspace();
+  const bot = process.env.TELEGRAM_BOT_USERNAME;
+  if (!bot) return { error: "Telegram is not configured for this deployment." };
+  const code = await newTelegramLink(workspace.id, userId);
+  await audit(workspace.id, userId, "telegram.link_created", {});
+  return { url: `https://t.me/${bot}?start=${code}` };
+}
+
+export async function unlinkTelegramChat(form: FormData) {
+  const { workspace, userId, role } = await requireWorkspace();
+  const chatId = String(form.get("chat_id") ?? "");
+  const chats = await telegramChats(workspace.id);
+  const chat = chats.find((c) => c.chat_id === chatId);
+  if (chat && (role === "org:admin" || chat.user_id === userId)) {
+    await unlinkTelegram(workspace.id, chatId);
+    await audit(workspace.id, userId, "telegram.unlinked", { username: chat.username });
+  }
+  redirect("/app/integrations");
 }

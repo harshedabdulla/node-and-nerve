@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { connectionFor, refreshPending, SHEETS } from "@/lib/integrations";
+import { connectionFor, refreshPending, SHEETS, telegramChats } from "@/lib/integrations";
 import { requireWorkspace } from "@/lib/workspace";
-import { connectSheets, disconnectSheets } from "./actions";
+import { connectSheets, disconnectSheets, unlinkTelegramChat } from "./actions";
+import { TelegramLink } from "./telegram-link";
 
 export const metadata = { title: "Integrations: Node & Nerve" };
 
@@ -21,6 +22,7 @@ export default async function Integrations({
   const { error } = await searchParams;
   const admin = role === "org:admin";
   const sheets = await refreshPending(workspace.id, await connectionFor(workspace.id, SHEETS), userId);
+  const chats = await telegramChats(workspace.id);
   const state = STATE[sheets?.status === "disconnected" || !sheets ? "none" : sheets.status];
 
   return (
@@ -76,8 +78,31 @@ export default async function Integrations({
 
         <div className="connector">
           <span className="connector-name">Telegram</span>
-          <p>Get answers and alerts in a private chat with the Node &amp; Nerve bot.</p>
-          <span className="state state-blocked">Linking a chat is being built</span>
+          <div>
+            <p>
+              Ask about {workspace.name} in a private chat with the Node &amp; Nerve bot, and get an
+              alert when work becomes blocked or overdue. Each alert is sent once.
+            </p>
+            {chats.map((c) => (
+              <div className="row" key={c.chat_id}>
+                <span>
+                  {c.username ? `@${c.username}` : "A private chat"}, alerts {c.alerts ? "on" : "off"}
+                </span>
+                {(admin || c.user_id === userId) && (
+                  <form action={unlinkTelegramChat}>
+                    <input type="hidden" name="chat_id" value={c.chat_id} />
+                    <button className="btn btn-quiet" type="submit">
+                      Unlink
+                    </button>
+                  </form>
+                )}
+              </div>
+            ))}
+            <TelegramLink />
+          </div>
+          <span className={`state ${chats.length ? "state-live" : "state-blocked"}`}>
+            {chats.length ? `${chats.length} chat${chats.length > 1 ? "s" : ""} linked` : "Not linked"}
+          </span>
         </div>
 
         <div className="connector">

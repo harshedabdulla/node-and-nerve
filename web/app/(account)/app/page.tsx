@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { connectionFor, SHEETS, telegramChats } from "@/lib/integrations";
 import {
   attention,
   graphSummary,
@@ -18,6 +19,10 @@ const ACTIONS: Record<string, string> = {
   "sheet.synced": "Sheet synced",
   "sheet.sync_failed": "Sheet sync failed",
   "question.asked": "Question asked",
+  "telegram.link_created": "Telegram link created",
+  "telegram.linked": "Telegram chat linked",
+  "telegram.unlinked": "Telegram chat unlinked",
+  "alerts.sent": "Alerts sent to Telegram",
 };
 
 function Attention({ projects }: { projects: Investigation[] }) {
@@ -57,6 +62,11 @@ export default async function Overview() {
     recentActivity(workspace.id),
   ]);
   const synced = graph.ok && graph.g !== null && graph.g.total_nodes > 0;
+  const [sheets, chats] = await Promise.all([
+    connectionFor(workspace.id, SHEETS),
+    telegramChats(workspace.id),
+  ]);
+  const connected = sheets?.status === "connected";
   const needs = synced
     ? await attention(workspace).then(
         (a) => ({ ok: true as const, a: a ?? [] }),
@@ -109,17 +119,31 @@ export default async function Overview() {
           <h2>Setting up</h2>
           <ol className="setup">
             <li className="done">Create the workspace</li>
-            <li className={synced ? "done" : "next"}>
-              Connect a source and sync it
-              {!synced && <span>Google Sheets is the first source.</span>}
+            <li className={connected ? "done" : "next"}>
+              Connect Google Sheets
+              {!connected && (
+                <span>
+                  <Link href="/app/integrations">Connect it</Link> with your Google account.
+                </span>
+              )}
             </li>
-            <li>
-              Choose what to keep an eye on
-              <span>Available after the first sync.</span>
+            <li className={synced ? "done" : connected ? "next" : ""}>
+              Sync a task sheet
+              {!synced && (
+                <span>
+                  {connected ? <Link href="/app/integrations/google-sheets">Choose a sheet</Link> : "After connecting."}{" "}
+                  Rows need a task id and title; owner, status, due date, project and blockers help.
+                </span>
+              )}
             </li>
-            <li>
-              Choose where to be told
-              <span>Telegram first, after the first sync.</span>
+            <li className={chats.length ? "done" : synced ? "next" : ""}>
+              Link Telegram for answers and alerts
+              {!chats.length && (
+                <span>
+                  <Link href="/app/integrations">Link a private chat</Link>; alerts arrive when work
+                  becomes blocked or overdue.
+                </span>
+              )}
             </li>
           </ol>
         </div>

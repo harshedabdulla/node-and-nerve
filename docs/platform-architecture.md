@@ -82,7 +82,7 @@ A rule names a workspace, a check (an investigation plus a condition, for exampl
 | 2. Foundation (built) | Clerk sign-in, workspaces, Neon control plane, app shell at `/app`, `ws-*`-scoped API key | Verified with two test users on localhost: each sees only their own workspace; Clerk memberships, workspace rows and API key scopes checked |
 | 3. First integration (built, one live check left) | Composio Google Sheets connect, column mapping, sync runs with status and errors, `POST /imports/tasks` | Import and re-import verified against FalkorDB (tests); connect flow verified up to Google's sign-in page and the callback keeps an unfinished sign-in as "waiting". Not yet run: reading a real sheet through Composio |
 | 4. Onboarding | Short guided setup: name, what to watch, sources, channel | Completion is shown only after the first sync is verified in the graph |
-| 5. Investigation and alerts (investigation built) | `GET /attention` and `/app/ask` reuse the existing engine over any workspace graph; Telegram linked per workspace; rules and deliveries | Investigation verified on an imported table (blocked, blocker chain, owners, missing owners, sources). Alerts not built |
+| 5. Investigation and alerts (built) | `GET /attention`, `/app/ask`, Telegram linked per workspace (one-time code, private chats only), `/attention` and questions in Telegram, alerts after each sync and from a daily cron | Verified: first real Google Sheets sync (8 rows, 3 planted problems reported, re-sync unchanged); attention and Ask on that graph; linking, answering and alerts against the real control plane with alerts sent once and not repeated. The daily cron runs only on a production deployment, so it is untested |
 | 6. Hardening | Isolation, failure, reconnect, idempotency and duplicate-delivery tests; docs | All pass in CI against a real FalkorDB |
 
 ## Known gaps
@@ -90,6 +90,6 @@ A rule names a workspace, a check (an investigation plus a condition, for exampl
 - Clerk is a development instance. Production needs a domain (planned: `nodeandnerve.heyspindle.com`) and DNS records on the heyspindle.com Cloudflare zone.
 - Google sign-in uses Composio's managed OAuth app, so the consent screen names Composio. A Node & Nerve Google OAuth client should replace it before real customers.
 - Neon is in AWS us-east-1 while the functions and FalkorDB are in Mumbai; each control-plane query crosses that distance.
-- Syncing is manual ("Sync now"); scheduled syncs and Telegram alerts come next.
+- The daily sync runs once a day (Vercel Hobby limit) and only on production deployments.
 - Rows removed from a sheet are not removed from the graph yet; the sync reports what it read, not what disappeared.
 - People are matched by name, so two different people with the same name in one sheet become one person.
