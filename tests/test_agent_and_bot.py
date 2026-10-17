@@ -5,7 +5,9 @@ Tool results come from the real investigator against a real FalkorDB graph.
 
 from __future__ import annotations
 
+import http.client
 import json
+import urllib.request
 from pathlib import Path
 from typing import Any
 
@@ -16,9 +18,10 @@ from company_brain.agent import (
     AgentError,
     ContractAgent,
     ToolBox,
+    http_post_json,
 )
 from company_brain.contract_cost import ContractCostInvestigator
-from company_brain.graph import FalkorDBStore
+from company_brain.graph import FalkorDBStore, GraphUnavailable
 from company_brain.seed import seed_contracts
 from company_brain.telegram_bot import (
     Bot,
@@ -27,6 +30,7 @@ from company_brain.telegram_bot import (
     parse_chat_ids,
     split_message,
     strip_html,
+    telegram_call,
 )
 from company_brain.trace import refs_in, trace_link, verify
 from tests.conftest import FakeStore
@@ -113,6 +117,31 @@ def test_agent_runs_the_requested_tool_and_returns_the_answer(
     assert result["profitability_inr"]["label"].startswith("provisional")
     assert any(f["kind"] == "decision" for f in result["findings"])
     assert "cost_lines" not in result  # compacted for the model
+    # which jobs and entries make up the cost, summed by Node & Nerve, not the model
+    assert result["cost_by_job_inr"]["J-104C"]["total"] == "₹3,21,100"
+    assert {j: t["total"] for j, t in result["cost_by_job_inr"].items()} == {
+        "CT-104": "₹22,700",
+        "J-104A": "₹2,39,600",
+        "J-104B": "₹2,68,300",
+        "J-104C": "₹3,21,100",
+    }
+    assert (result["cost_breakdown_inr"]["book_entries"], len(result["cost_entries"])) == (27, 35)
+    tube = [e for e in result["cost_entries"] if e["entry"] == "PUR-2047"]
+    assert {(e["charged_to"], e["amount_charged_here"], e["entry_total"]) for e in tube} == {
+        ("J-104B", "₹46,000", "₹1,38,000"),
+        ("J-104C", "₹46,000", "₹1,38,000"),
+    }
+
+
+def test_a_cut_short_answer_says_so() -> None:
+    reply = {"choices": [{"message": {"content": "CT-104 cost"}, "finish_reason": "length"}]}
+    agent = ContractAgent(
+        tools=ToolBox(ContractCostInvestigator(FakeStore(), "x")),
+        api_key=SECRET,
+        model="m",
+        transport=FakeModel([reply]),
+    )
+    assert agent.ask("everything").text.endswith("(Answer cut short. Ask a narrower question.)")
 
 
 def test_tool_errors_are_returned_to_the_model_not_invented(
@@ -127,7 +156,9 @@ def test_tool_errors_are_returned_to_the_model_not_invented(
 
 
 def test_agent_requires_a_key_and_bounds_tool_rounds() -> None:
-    tools = ToolBox(ContractCostInvestigator(FakeStore(), "none"))
+    store = FakeStore()
+    store.companies.add("none")
+    tools = ToolBox(ContractCostInvestigator(store, "none"))
     with pytest.raises(AgentError, match="API key"):
         ContractAgent(tools=tools, api_key="", model="m").ask("hi")
     looping = FakeModel([_tool_call("list_contracts", {}) for _ in range(10)])
@@ -167,6 +198,9 @@ def test_commands_answer_from_the_graph_without_ai(real_store: FalkorDBStore, ka
     [brief] = bot.handle({"chat": {"id": 42}, "text": "/contract CT-104"})
     assert "Total ₹8,51,700" in brief and "Provisional profit ₹6,78,300" in brief
     assert "Needs your decision" in brief and "PUR-2053" in brief
+    # the shared bill's whole balance is in the total, and the brief says so
+    assert "Owed to suppliers ₹3,01,400 on 5 bills" in brief
+    assert "shared with other contracts: PUR-2047 ₹1,38,000 (also J-105A)" in brief
     assert "<b>" in brief and "**" not in brief
     [overview] = bot.handle({"chat": {"id": 42}, "text": "/contracts@kaveri_bot"})
     assert "CT-101" in overview and "CT-105" in overview
@@ -191,6 +225,91 @@ def test_poll_once_replies_in_the_asking_chat_and_advances_the_offset() -> None:
     assert bot.offset == 11
     messages = [p for m, p in sent if m == "sendMessage"]
     assert [m["chat_id"] for m in messages] == [7]
+
+
+class DownStore(FakeStore):
+    def company_exists(self, company_id: str) -> bool:
+        raise GraphUnavailable("down")
+
+
+def test_database_down_during_an_ai_question_is_not_answered() -> None:
+    """The model must not get to phrase an answer, and the reply must not claim the books."""
+    model = FakeModel(
+        [_tool_call("investigate_contract", {"contract": "CT-104"}), _text("CT-104: ₹5,00,000")]
+    )
+    investigator = ContractCostInvestigator(DownStore(), "x")
+    agent = ContractAgent(tools=ToolBox(investigator), api_key=SECRET, model="m", transport=model)
+    bot = Bot(lambda m, p: None, investigator, agent, frozenset({42}))
+    [reply] = bot.handle({"chat": {"id": 42}, "text": "What did CT-104 cost?"})
+    assert reply == "The records database is unavailable. Try again shortly."
+    assert len(model.requests) == 1  # no second round with an error for the model to word
+
+
+def test_answer_without_tool_calls_does_not_claim_the_books() -> None:
+    investigator = ContractCostInvestigator(FakeStore(), "x")
+    agent = ContractAgent(
+        tools=ToolBox(investigator), api_key=SECRET, model="m", transport=FakeModel([_text("Hi")])
+    )
+    bot = Bot(lambda m, p: None, investigator, agent, frozenset({42}))
+    [reply] = bot.handle({"chat": {"id": 42}, "text": "hello"})
+    assert "recorded books" not in reply
+    assert "No records were checked" in reply
+
+
+def test_an_unexpected_failure_answers_and_keeps_polling() -> None:
+    sent: list[tuple[str, dict[str, Any]]] = []
+
+    def call(method: str, params: dict[str, Any]) -> Any:
+        sent.append((method, params))
+        if method == "getUpdates":
+            return [{"update_id": 5, "message": {"chat": {"id": 42}, "text": "CT-104 cost?"}}]
+        return True
+
+    investigator = ContractCostInvestigator(FakeStore(), "x")
+    malformed = FakeModel([{"choices": [{}]}])  # no "message": KeyError inside the agent
+    agent = ContractAgent(
+        tools=ToolBox(investigator), api_key=SECRET, model="m", transport=malformed
+    )
+    bot = Bot(call, investigator, agent, frozenset({42}))
+    assert bot.poll_once(timeout=0) == 1
+    assert bot.offset == 6
+    [message] = [p for m, p in sent if m == "sendMessage"]
+    assert "Something went wrong" in message["text"]
+
+
+@pytest.mark.parametrize(
+    "failure",
+    [http.client.RemoteDisconnected("closed"), ConnectionResetError("reset"), b"not json"],
+)
+def test_network_failures_become_handled_errors(
+    monkeypatch: pytest.MonkeyPatch, failure: Exception | bytes
+) -> None:
+    """A dropped connection or garbled body must not escape and stop the polling loop."""
+
+    class Body:
+        def __enter__(self) -> Body:
+            return self
+
+        def __exit__(self, *args: object) -> None:
+            return None
+
+        def read(self) -> bytes:
+            assert isinstance(failure, bytes)
+            return failure
+
+    def urlopen(request: Any, timeout: float) -> Body:
+        if isinstance(failure, Exception):
+            raise failure
+        return Body()
+
+    monkeypatch.setattr(urllib.request, "urlopen", urlopen)
+    token = "123456:secret-bot-token-not-real"
+    with pytest.raises(RuntimeError) as tg:
+        telegram_call(token)("getUpdates", {})
+    assert token not in str(tg.value)
+    with pytest.raises(AgentError) as model:
+        http_post_json("https://example.invalid", {"Authorization": f"Bearer {SECRET}"}, {}, 1)
+    assert SECRET not in str(model.value)
 
 
 def test_helpers() -> None:
@@ -273,3 +392,37 @@ def test_trace_page_requires_a_valid_signature(settings: Any, kaveri: str) -> No
     assert client.get(link.replace("CT-104", "CT-105")).status_code == 403
     forged = link.split("sig=")[0] + "sig=" + "0" * 32
     assert client.get(forged).status_code == 403
+
+
+def test_telegram_webhook_requires_its_secret_and_answers() -> None:
+    from fastapi.testclient import TestClient
+    from pydantic import SecretStr
+
+    from company_brain.api import create_app
+    from company_brain.config import Settings
+
+    sent: list[tuple[str, dict[str, Any]]] = []
+
+    def factory(token: str) -> Any:
+        assert token == "123:tok"
+        return lambda method, params: sent.append((method, params)) or True
+
+    update = {"update_id": 1, "message": {"chat": {"id": 42}, "text": "/help"}}
+    off = TestClient(create_app(Settings(), store_factory=lambda s: FakeStore()))
+    assert off.post("/telegram/webhook", json=update).status_code == 404
+    settings = Settings(
+        telegram_bot_token=SecretStr("123:tok"),
+        telegram_webhook_secret=SecretStr("hook-secret-123"),
+        telegram_allowed_chat_ids="42",
+    )
+    client = TestClient(
+        create_app(settings, store_factory=lambda s: FakeStore(), telegram_call_factory=factory)
+    )
+    header = "X-Telegram-Bot-Api-Secret-Token"
+    assert client.post("/telegram/webhook", json=update).status_code == 403
+    assert client.post("/telegram/webhook", json=update, headers={header: "x"}).status_code == 403
+    assert sent == []
+    r = client.post("/telegram/webhook", json=update, headers={header: "hook-secret-123"})
+    assert r.status_code == 200 and r.json() == {"ok": True}
+    [message] = [p for m, p in sent if m == "sendMessage"]
+    assert message["chat_id"] == 42 and "/contract CT-104" in message["text"]

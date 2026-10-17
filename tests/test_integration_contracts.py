@@ -101,7 +101,7 @@ def test_contract_cost_and_provisional_profit(real_store: FalkorDBStore, kaveri:
         1_180_000,
         850_000,
     )
-    assert b.total_paise == 85_170_000 and b.entries == 35
+    assert b.total_paise == 85_170_000 and (b.entries, b.charges) == (27, 35)
     assert sum(ln.charged_paise or 0 for ln in r.cost_lines) == b.total_paise
     assert p.contract_value_paise == 153_000_000
     assert p.provisional_profit_paise == 153_000_000 - 85_170_000
@@ -147,6 +147,32 @@ def test_every_cost_is_counted_exactly_once(real_store: FalkorDBStore, kaveri: s
     in_contracts = sum(c.recorded_cost_paise for c in investigator.overview().contracts)
     unallocated = investigator.unallocated().total_unallocated_paise
     assert in_contracts + unallocated == recorded
+
+
+def test_costs_on_a_job_without_contract_are_not_lost(
+    real_store: FalkorDBStore, kaveri: str, raw_graph: Any
+) -> None:
+    """A job that loses its PART_OF link must not make its costs vanish from every total."""
+    investigator = ContractCostInvestigator(real_store, kaveri)
+    before = investigator.overview()
+    raw_graph(kaveri).query("MATCH (:Job {id: 'job:j-104c'})-[r:PART_OF]->() DELETE r")
+    after = investigator.overview()
+    unallocated = investigator.unallocated()
+    moved = sum(c.recorded_cost_paise for c in before.contracts) - sum(
+        c.recorded_cost_paise for c in after.contracts
+    )
+    assert moved > 0
+    unlinked = [i for i in unallocated.items if i.classification == "unlinked"]
+    assert sum(i.unallocated_paise or 0 for i in unlinked) == moved
+    assert all(i.unlinked_targets == ["job:j-104c"] for i in unlinked)
+    assert after.unallocated_overhead_paise == before.unallocated_overhead_paise
+    r = _investigate(real_store, kaveri)
+    assert any("J-104C" in m and "not linked to any contract" in m for m in r.missing_information)
+    assert not any(
+        f.category == "unallocated_overheads"
+        and set(f.entity_ids) & {i.record_id for i in unlinked}
+        for f in r.findings
+    )
 
 
 def test_payments_settle_bills_but_never_add_cost(real_store: FalkorDBStore, kaveri: str) -> None:

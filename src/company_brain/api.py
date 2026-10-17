@@ -1,5 +1,6 @@
 """HTTP API. Thin: validation and auth here, graph work in the services."""
 
+import hmac
 import logging
 from collections.abc import Callable
 from datetime import date, datetime
@@ -45,6 +46,8 @@ from company_brain.models import (
     iso,
 )
 from company_brain.schema import COMPANY_ID_RE, KIND_PROPERTIES, RELATIONSHIP_RULES, Kind
+from company_brain.seed import CONTRACTS_AS_OF
+from company_brain.telegram_bot import Bot, Call, build_bot, telegram_call
 from company_brain.trace import render_trace_page, verify
 
 log = logging.getLogger("company_brain")
@@ -81,6 +84,7 @@ class CsvImportRequest(BaseModel):
 def create_app(
     settings: Settings | None = None,
     store_factory: Callable[[Settings], GraphStore] = FalkorDBStore,
+    telegram_call_factory: Callable[[str], Call] = telegram_call,
 ) -> FastAPI:
     settings = settings or get_settings()
     keys = ApiKeys.parse(settings.company_brain_api_keys.get_secret_value())
@@ -292,6 +296,31 @@ def create_app(
         )
         refs = [part for part in focus.split(",") if part][:50]
         return HTMLResponse(render_trace_page(s, company_id, response, refs))
+
+    bots: list[Bot] = []
+
+    @app.post("/telegram/webhook", include_in_schema=False)
+    def telegram_webhook(
+        update: dict[str, Any],
+        s: Store,
+        x_telegram_bot_api_secret_token: Annotated[str | None, Header()] = None,
+    ) -> dict[str, bool]:
+        """Webhook mode for serverless hosting: Telegram posts each update here."""
+        secret = settings.telegram_webhook_secret.get_secret_value()
+        token = settings.telegram_bot_token.get_secret_value()
+        if not secret or not token:
+            raise HTTPException(status_code=404, detail="Not Found")
+        if not hmac.compare_digest(
+            (x_telegram_bot_api_secret_token or "").encode(), secret.encode()
+        ):
+            raise HTTPException(status_code=403, detail="forbidden")
+        if not bots:
+            bots.append(build_bot(settings, s, telegram_call_factory(token), CONTRACTS_AS_OF))
+        try:
+            bots[0].process_update(update)
+        except RuntimeError as exc:  # a failed send; a retry by Telegram would answer twice
+            log.warning("telegram webhook: %s", exc)
+        return {"ok": True}
 
     @app.get(
         "/v1/companies/{company_id}/entities/{entity_id}",

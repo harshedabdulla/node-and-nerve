@@ -98,6 +98,7 @@ class FalkorDBStore:
                     port=s.falkordb_port,
                     username=s.falkordb_username or None,
                     password=s.falkordb_password.get_secret_value() or None,
+                    ssl=s.falkordb_ssl,
                     socket_timeout=s.falkordb_socket_timeout_s,
                     socket_connect_timeout=s.falkordb_connect_timeout_s,
                 )

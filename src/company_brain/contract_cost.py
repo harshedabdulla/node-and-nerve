@@ -153,7 +153,8 @@ class CostBreakdown(BaseModel):
     machinery_paise: int
     other_paise: int
     total_paise: int
-    entries: int
+    entries: int = Field(description="Distinct book entries charged to this contract.")
+    charges: int = Field(description="Charge lines; a bill split across bodies counts per body.")
     excluded_void: list[str]
     excluded_without_amount: list[str]
 
@@ -258,7 +259,10 @@ class UnallocatedItem(BaseModel):
     noted_for: list[str]
     counterparty: str | None
     source_ids: list[str]
-    classification: Literal["needs_split", "unassigned", "overhead"]
+    unlinked_targets: list[str] = Field(
+        default=[], description="Jobs it is charged to that are not linked to any contract."
+    )
+    classification: Literal["needs_split", "unlinked", "unassigned", "overhead"]
 
 
 class UnallocatedResponse(BaseModel):
@@ -393,7 +397,8 @@ class ContractCostInvestigator:
             kind="calculation",
             category="recorded_direct_cost",
             statement=f"Recorded direct cost so far: {inr(breakdown.total_paise)} from "
-            f"{breakdown.entries} charged entries: materials {inr(breakdown.materials_paise)}, "
+            f"{breakdown.entries} book entries ({breakdown.charges} charges, as some are split "
+            f"across bodies): materials {inr(breakdown.materials_paise)}, "
             f"labour {inr(breakdown.labour_paise)}, machinery "
             f"{inr(breakdown.machinery_paise)}, other direct {inr(breakdown.other_paise)}.",
             entity_ids=[cid],
@@ -419,13 +424,26 @@ class ContractCostInvestigator:
                 f"{summary.ref}" + (f" versus {', '.join(map(_short, others))}." if others else ".")
             )
         pending_paise = sum(p.unallocated_paise or 0 for p in pending)
+        unlinked = [r for r in unallocated_rows if not r["noted_targets"] and r["unlinked_targets"]]
+        for r in unlinked:
+            jobs = ", ".join(_short(t) for t in sorted(r["unlinked_targets"]))
+            run.missing.append(
+                f"{_ref(r['record'])} is charged to {jobs}, which is not linked to any contract; "
+                f"{inr(int(r['record'].get('amount_paise') or 0) - int(r['charged_paise'] or 0))}"
+                " of it is not counted in any contract."
+            )
         overheads = [
             r
             for r in unallocated_rows
-            if not r["noted_targets"] and r["kind"] != "wage" and r["record"].get("amount_paise")
+            if not r["noted_targets"]
+            and not r["unlinked_targets"]
+            and r["kind"] != "wage"
+            and r["record"].get("amount_paise")
         ]
         unassigned_labour = [
-            r for r in unallocated_rows if not r["noted_targets"] and r["kind"] == "wage"
+            r
+            for r in unallocated_rows
+            if not r["noted_targets"] and not r["unlinked_targets"] and r["kind"] == "wage"
         ]
         for r in unassigned_labour:
             rec = r["record"]
@@ -622,7 +640,8 @@ class ContractCostInvestigator:
             machinery_paise=totals["machinery"],
             other_paise=totals["other"],
             total_paise=sum(totals.values()),
-            entries=len(lines),
+            entries=len({ln.record_id for ln in lines}),
+            charges=len(lines),
             excluded_void=sorted(set(void)),
             excluded_without_amount=sorted(set(no_amount)),
         )
@@ -982,8 +1001,14 @@ class ContractCostInvestigator:
             amount = rec.get("amount_paise")
             charged = int(row["charged_paise"] or 0)
             noted = [t["ref"] or t["id"] for t in row["noted_targets"]]
-            classification: Literal["needs_split", "unassigned", "overhead"] = (
-                "needs_split" if noted else "unassigned" if row["kind"] == "wage" else "overhead"
+            classification: Literal["needs_split", "unlinked", "unassigned", "overhead"] = (
+                "needs_split"
+                if noted
+                else "unlinked"
+                if row["unlinked_targets"]
+                else "unassigned"
+                if row["kind"] == "wage"
+                else "overhead"
             )
             items.append(
                 UnallocatedItem(
@@ -1001,6 +1026,7 @@ class ContractCostInvestigator:
                     )
                     or None,
                     source_ids=row["source_ids"],
+                    unlinked_targets=sorted(row["unlinked_targets"]),
                     classification=classification,
                 )
             )
@@ -1071,7 +1097,7 @@ class ContractCostInvestigator:
         overhead = sum(
             int(u["record"]["amount_paise"] or 0)
             for u in unallocated
-            if not u["noted_targets"] and u["kind"] != "wage"
+            if not u["noted_targets"] and not u["unlinked_targets"] and u["kind"] != "wage"
         )
         return OverviewResponse(
             company_id=self.company_id,

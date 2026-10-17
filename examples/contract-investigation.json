@@ -1,5 +1,5 @@
 {
-  "investigation_id": "ccr_49d37a8891e44226",
+  "investigation_id": "ccr_43e58912024f40ba",
   "company_id": "kaveri-body-works",
   "as_of": "2026-10-16",
   "contract": {
@@ -47,7 +47,8 @@
     "machinery_paise": 1180000,
     "other_paise": 850000,
     "total_paise": 85170000,
-    "entries": 35,
+    "entries": 27,
+    "charges": 35,
     "excluded_void": [
       "PUR-2056"
     ],
@@ -1007,7 +1008,7 @@
       "id": "finding-5",
       "kind": "calculation",
       "category": "recorded_direct_cost",
-      "statement": "Recorded direct cost so far: ₹8,51,700 from 35 charged entries: materials ₹7,59,900, labour ₹71,500, machinery ₹11,800, other direct ₹8,500.",
+      "statement": "Recorded direct cost so far: ₹8,51,700 from 27 book entries (35 charges, as some are split across bodies): materials ₹7,59,900, labour ₹71,500, machinery ₹11,800, other direct ₹8,500.",
       "entity_ids": [
         "contract:ct-104"
       ],

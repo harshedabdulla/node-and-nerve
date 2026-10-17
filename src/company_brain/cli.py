@@ -414,7 +414,7 @@ def print_contract(r: ContractCostResponse) -> None:
         print(f"  {label:<14}{inr(value):>14}")
     excluded = b.excluded_void + b.excluded_without_amount
     print(
-        f"  ({b.entries} charged entries"
+        f"  ({b.entries} book entries, {b.charges} charges"
         + (f"; excluded: {', '.join(excluded)}" if excluded else "")
         + ")"
     )
@@ -650,7 +650,7 @@ def make_trace_url(company: str) -> Callable[[str, list[str]], str] | None:
 def cmd_telegram(args: argparse.Namespace) -> int:
     import logging
 
-    from company_brain.telegram_bot import Bot, parse_chat_ids, telegram_call
+    from company_brain.telegram_bot import build_bot, telegram_call
 
     settings = get_settings()
     token = settings.telegram_bot_token.get_secret_value()
@@ -659,19 +659,32 @@ def cmd_telegram(args: argparse.Namespace) -> int:
         return 2
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
     call = telegram_call(token)
+    if args.delete_webhook:
+        call("deleteWebhook", {})
+        print("webhook removed; long polling works again")
+        return 0
+    if args.webhook:
+        secret = settings.telegram_webhook_secret.get_secret_value()
+        if not secret:
+            print("error: set TELEGRAM_WEBHOOK_SECRET (letters, digits, _ and -)")
+            return 2
+        call(
+            "setWebhook",
+            {"url": args.webhook, "secret_token": secret, "allowed_updates": ["message"]},
+        )
+        print(f"Telegram now delivers messages to {args.webhook}")
+        return 0
     me = call("getMe", {})
-    allowed = parse_chat_ids(settings.telegram_allowed_chat_ids)
-    agent = make_agent(args.company) if settings.open_router_api_key.get_secret_value() else None
-    company = args.company or settings.agent_company_id
+    if args.company:
+        settings = settings.model_copy(update={"agent_company_id": args.company})
+    bot = build_bot(settings, _store(), call, CASHFLOW_AS_OF)
     print(
-        f"bot @{me['username']} serving company {company}; AI agent: "
-        f"{settings.openrouter_model if agent else 'off'}; allowed chats: "
-        f"{sorted(allowed) or 'none yet (send /start to see your chat id)'}"
+        f"bot @{me['username']} serving company {settings.agent_company_id}; AI agent: "
+        f"{settings.openrouter_model if bot.agent else 'off'}; allowed chats: "
+        f"{sorted(bot.allowed_chat_ids) or 'none yet (send /start to see your chat id)'}"
     )
-    trace_url = make_trace_url(company)
-    if trace_url is None:
+    if bot.trace_url is None:
         print("note: set TRACE_LINK_SECRET to add evidence-graph links to replies")
-    bot = Bot(call, ContractCostInvestigator(_store(), company), agent, allowed, trace_url)
     try:
         bot.run_forever()
     except KeyboardInterrupt:
@@ -751,6 +764,8 @@ def main(argv: list[str] | None = None) -> int:
     p_ask.add_argument("question")
     p_ask.set_defaults(func=cmd_ask)
     p_tg = sub.add_parser("telegram", help="run the Telegram bot (needs TELEGRAM_BOT_TOKEN)")
+    p_tg.add_argument("--webhook", metavar="URL", help="register a webhook URL and exit")
+    p_tg.add_argument("--delete-webhook", action="store_true", help="remove the webhook and exit")
     p_tg.set_defaults(func=cmd_telegram)
 
     p_ct = sub.add_parser("contracts", help="contract cost investigation for a manufacturer")

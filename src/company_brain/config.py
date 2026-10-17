@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     falkordb_port: int = 6379
     falkordb_username: str = ""
     falkordb_password: SecretStr = SecretStr("")
+    falkordb_ssl: bool = False  # FalkorDB Cloud instances with TLS enabled
     falkordb_query_timeout_ms: int = Field(default=5000, ge=100, le=30000)
     falkordb_socket_timeout_s: float = Field(default=10.0, gt=0)
     falkordb_connect_timeout_s: float = Field(default=3.0, gt=0)
@@ -28,6 +29,9 @@ class Settings(BaseSettings):
     telegram_bot_token: SecretStr = SecretStr("")
     # Comma-separated Telegram chat ids allowed to talk to the bot. Empty = nobody.
     telegram_allowed_chat_ids: str = ""
+    # Webhook mode (serverless hosting): Telegram sends this in X-Telegram-Bot-Api-Secret-Token.
+    # Empty disables POST /telegram/webhook.
+    telegram_webhook_secret: SecretStr = SecretStr("")
     agent_company_id: str = "kaveri-body-works"
     # Trace links: where the API is reachable from the reader's browser, and the secret
     # used to sign links (they open without an API key, so they are signed and expire).

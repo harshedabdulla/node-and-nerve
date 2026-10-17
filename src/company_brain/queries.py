@@ -503,16 +503,21 @@ ORDER BY rec.source_record_id
 LIMIT $limit""",
 )
 
-# M5: company-wide cost records not (fully) charged to any job or contract.
+# M5: company-wide cost records not (fully) charged to any job or contract. A charge only
+# counts if it reaches a contract (directly or via PART_OF); others are unlinked_targets.
 MF_UNALLOCATED = Query(
     name="mf_unallocated",
     cypher=f"""
 MATCH (rec:Entity)
 WHERE rec.kind IN $cost_kinds AND coalesce(rec.status, 'recorded') <> 'void'
-OPTIONAL MATCH (rec)-[ch:CHARGED_TO]->(:Entity)
-WITH rec, toInteger(sum(ch.amount_paise)) AS charged
+OPTIONAL MATCH (rec)-[ch:CHARGED_TO]->(t:Entity)
+WITH rec, ch, t, t:Contract OR size([(t)-[:PART_OF]->(lc:Contract) | lc]) > 0 AS linked
+WITH rec, toInteger(sum(CASE WHEN linked THEN ch.amount_paise ELSE 0 END)) AS charged,
+     [x IN collect(CASE WHEN ch IS NOT NULL AND NOT linked THEN t.id END) WHERE x IS NOT NULL]
+       AS unlinked_targets
 WHERE rec.amount_paise IS NULL OR charged < rec.amount_paise
-RETURN rec.kind AS kind, properties(rec) AS record, charged AS charged_paise,{_COST_RECORD_LINKS},
+RETURN rec.kind AS kind, properties(rec) AS record, charged AS charged_paise,
+       unlinked_targets,{_COST_RECORD_LINKS},
        [(rec)-[:NOTED_FOR]->(xt:Entity) | {{id: xt.id, kind: xt.kind, ref: xt.source_record_id}}]
          AS noted_targets
 ORDER BY rec.source_record_id

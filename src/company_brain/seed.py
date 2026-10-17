@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from importlib import resources
 from typing import Any
 
@@ -93,6 +93,7 @@ def seed_cashflow(
 
 
 CONTRACTS_COMPANY = "kaveri-body-works"
+CONTRACTS_AS_OF = date(2026, 10, 16)  # reporting date of the synthetic books
 
 
 def seed_contracts(

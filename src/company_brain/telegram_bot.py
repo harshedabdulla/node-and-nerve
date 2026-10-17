@@ -1,4 +1,4 @@
-"""Telegram front end for the contract investigation (long polling, standard library).
+"""Telegram front end for the contract investigation (long polling or webhook, standard library).
 
 Only chats listed in ``TELEGRAM_ALLOWED_CHAT_IDS`` get answers; anyone else is told
 their chat id and nothing more, because the bot exposes company financial records.
@@ -26,18 +26,20 @@ import urllib.parse
 import urllib.request
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import date
 from typing import Any
 
-from company_brain.agent import AgentError, ContractAgent
+from company_brain.agent import AgentError, ContractAgent, ToolBox
 from company_brain.cashflow import inr
+from company_brain.config import Settings
 from company_brain.contract_cost import (
     ContractCostInvestigator,
     ContractCostRequest,
     ContractCostResponse,
 )
-from company_brain.graph import CompanyNotFound, GraphError
+from company_brain.graph import CompanyNotFound, GraphError, GraphStore
 from company_brain.ingest import EntityNotFound
-from company_brain.trace import refs_in
+from company_brain.trace import refs_in, trace_link
 
 log = logging.getLogger(__name__)
 
@@ -61,8 +63,10 @@ def telegram_call(token: str, timeout: float = 40.0) -> Call:
         except urllib.error.HTTPError as exc:
             # Never include the URL: it contains the bot token.
             raise RuntimeError(f"Telegram {method} failed with HTTP {exc.code}") from None
-        except (urllib.error.URLError, TimeoutError) as exc:
+        except OSError as exc:  # URLError, timeouts, dropped or reset connections
             raise RuntimeError(f"Telegram {method} unreachable: {type(exc).__name__}") from None
+        except ValueError:
+            raise RuntimeError(f"Telegram {method} returned an unreadable reply") from None
         if not body.get("ok"):
             raise RuntimeError(f"Telegram {method} error: {body.get('description')}")
         return body["result"]
@@ -131,7 +135,7 @@ def contract_brief(r: ContractCostResponse, trace_url: str | None = None) -> str
         f"Labour {inr(b.labour_paise)}",
         f"Machinery {inr(b.machinery_paise)}",
         f"Other {inr(b.other_paise)}",
-        f"<b>Total {inr(b.total_paise)}</b> · {b.entries} entries",
+        f"<b>Total {inr(b.total_paise)}</b> · {b.entries} book entries",
         "",
         f"<b>Provisional profit {inr(p.provisional_profit_paise)} "
         f"({p.provisional_margin_percent}%)</b>",
@@ -160,6 +164,17 @@ def contract_brief(r: ContractCostResponse, trace_url: str | None = None) -> str
                 else ""
             )
         )
+        shared = [x for x in owed if x.shared_with]
+        if shared:
+            lines.append(
+                "  <i>Includes whole bills shared with other contracts: "
+                + ", ".join(
+                    f"{_e(x.ref)} {inr(x.outstanding_paise)} (also "
+                    f"{_e(', '.join(t.split(':', 1)[-1].upper() for t in x.shared_with))})"
+                    for x in shared
+                )
+                + "</i>"
+            )
     sections = [
         ("Needs your decision", [f.statement for f in r.findings if f.kind == "decision"]),
         (
@@ -260,6 +275,7 @@ class Bot:
                 u = self.investigator.unallocated()
                 groups = {
                     "needs_split": "Waiting for a split",
+                    "unlinked": "Job not linked to a contract",
                     "unassigned": "No job recorded",
                     "overhead": "Workshop overheads",
                 }
@@ -301,9 +317,10 @@ class Bot:
                 dict.fromkeys(_TOOL_NAMES.get(c["tool"], c["tool"]) for c in answer.tool_calls)
             )
             footer.append(
-                "<i>Answered from your recorded books"
-                + (f" ({_e(checked)})" if checked else "")
-                + ". Figures are provisional.</i>"
+                f"<i>Answered from your recorded books ({_e(checked)}). "
+                "Figures are provisional.</i>"
+                if checked
+                else "<i>No records were checked for this reply.</i>"
             )
             return [md_to_html(answer.text) + "\n\n" + "\n".join(footer)]
         except EntityNotFound as exc:
@@ -341,9 +358,13 @@ class Bot:
         )
         for update in updates:
             self.offset = max(self.offset, int(update["update_id"]) + 1)
-            message = update.get("message")
-            if not message or "chat" not in message:
-                continue
+            self.process_update(update)
+        return len(updates)
+
+    def process_update(self, update: dict[str, Any]) -> None:
+        """Answer one Telegram update (from getUpdates or a webhook)."""
+        message = update.get("message")
+        if message and "chat" in message:
             chat_id = int(message["chat"]["id"])
             first_word = (message.get("text") or "").split(" ", 1)[0]
             log.info(
@@ -355,11 +376,15 @@ class Bot:
             with contextlib.suppress(RuntimeError):  # the typing hint is optional
                 self.call("sendChatAction", {"chat_id": chat_id, "action": "typing"})
             started = time.monotonic()
-            for reply in self.handle(message):
+            try:
+                replies = self.handle(message)
+            except Exception as exc:  # one bad message must not stop the bot
+                log.exception("failed to answer chat %s: %s", chat_id, type(exc).__name__)
+                replies = ["Something went wrong answering that. /contract CT-104 still works."]
+            for reply in replies:
                 log.info("replying to %s after %.1fs", chat_id, time.monotonic() - started)
                 for part in split_message(reply):
                     self._send(chat_id, part)
-        return len(updates)
 
     def run_forever(self) -> None:
         log.info("Telegram bot polling; allowed chats: %s", sorted(self.allowed_chat_ids) or "none")
@@ -376,3 +401,26 @@ def parse_chat_ids(raw: str) -> frozenset[int]:
     for part in filter(None, (p.strip() for p in raw.split(","))):
         ids.add(int(part))
     return frozenset(ids)
+
+
+def build_bot(settings: Settings, store: GraphStore, call: Call, as_of: date) -> Bot:
+    """The bot as configured by settings: agent if a model key is set, trace links if signed."""
+    company = settings.agent_company_id
+    investigator = ContractCostInvestigator(store, company)
+    key = settings.open_router_api_key.get_secret_value()
+    agent = (
+        ContractAgent(
+            tools=ToolBox(investigator, as_of=as_of), api_key=key, model=settings.openrouter_model
+        )
+        if key
+        else None
+    )
+    secret = settings.trace_link_secret.get_secret_value()
+
+    def url(contract: str, focus: list[str]) -> str:
+        return trace_link(
+            settings.public_base_url, secret, company, contract, as_of=as_of, focus=focus
+        )
+
+    allowed = parse_chat_ids(settings.telegram_allowed_chat_ids)
+    return Bot(call, investigator, agent, allowed, url if secret else None)

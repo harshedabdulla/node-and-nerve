@@ -14,6 +14,7 @@ from __future__ import annotations
 import json
 import urllib.error
 import urllib.request
+from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import date
@@ -26,7 +27,6 @@ from company_brain.contract_cost import (
     ContractCostRequest,
     ContractCostResponse,
 )
-from company_brain.graph import GraphError
 from company_brain.ingest import EntityNotFound
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
@@ -70,8 +70,9 @@ TOOLS: list[dict[str, Any]] = [
         "type": "function",
         "function": {
             "name": "investigate_contract",
-            "description": "Recorded direct cost, provisional profit, money owed, and missing "
-            "or conflicting information for one manufacturing contract, with sources.",
+            "description": "Recorded direct cost (by category, by job and per book entry), "
+            "provisional profit, money owed, and missing or conflicting information for one "
+            "manufacturing contract, with sources.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -141,23 +142,29 @@ def http_post_json(
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode(errors="replace")[:300]
         raise AgentError(f"model endpoint returned HTTP {exc.code}: {detail}") from None
-    except (urllib.error.URLError, TimeoutError) as exc:
-        raise AgentError(f"model endpoint unreachable: {exc}") from None
+    except OSError as exc:  # URLError, timeouts, dropped or reset connections
+        raise AgentError(f"model endpoint unreachable: {type(exc).__name__}: {exc}") from None
+    except ValueError:
+        raise AgentError("model endpoint returned an unreadable reply") from None
 
 
 # ---------------------------------------------------------------- tool results
 
 
 def compact_contract(r: ContractCostResponse) -> dict[str, Any]:
-    """The parts of an investigation an agent needs, without per-entry detail."""
+    """The parts of an investigation an agent needs, without graph paths or raw ids."""
     label = {s.id: str(s.source_record_id or s.id) for s in r.sources}
 
     def cite(ids: list[str] | set[str]) -> list[str]:
         return sorted({label.get(i, i) for i in ids})
 
     record_sources: dict[str, set[str]] = {}
+    by_job: dict[str, dict[str, int]] = {}
     for line in r.cost_lines:
         record_sources.setdefault(line.record_id, set()).update(line.source_ids)
+        job = by_job.setdefault(line.charged_to_ref or line.charged_to, defaultdict(int))
+        job[line.category] += line.charged_paise or 0
+        job["total"] += line.charged_paise or 0
     return {
         "contract": r.contract.model_dump(exclude={"jobs"})
         | {"jobs": [f"{j.ref} ({j.status})" for j in r.contract.jobs]},
@@ -168,9 +175,27 @@ def compact_contract(r: ContractCostResponse) -> dict[str, Any]:
             "machinery": inr(r.cost_breakdown.machinery_paise),
             "other_direct": inr(r.cost_breakdown.other_paise),
             "total_recorded_direct_cost": inr(r.cost_breakdown.total_paise),
-            "charged_entries": r.cost_breakdown.entries,
+            "book_entries": r.cost_breakdown.entries,
+            "charges": r.cost_breakdown.charges,
             "excluded_void": r.cost_breakdown.excluded_void,
         },
+        # Totals per job (or the contract itself), summed by Node & Nerve.
+        "cost_by_job_inr": {
+            ref: {k: inr(v) for k, v in sorted(totals.items())} for ref, totals in by_job.items()
+        },
+        "cost_entries": [
+            {
+                "entry": ln.ref,
+                "category": ln.category,
+                "charged_to": ln.charged_to_ref or ln.charged_to,
+                "amount_charged_here": inr(ln.charged_paise),
+                "entry_total": inr(ln.record_amount_paise),
+                "description": ln.description,
+                "from": ln.counterparty,
+                "cite": cite(ln.source_ids),
+            }
+            for ln in r.cost_lines
+        ],
         "profitability_inr": {
             "label": r.profitability.label,
             "contract_value": inr(r.profitability.contract_value_paise),
@@ -256,10 +281,10 @@ class ToolBox:
             if name == "list_changes_since":
                 return {"changes": self.investigator.changed_since(str(arguments["since"]))}
             return {"error": f"unknown tool {name!r}"}
+        # GraphError propagates: with the records unreachable there is nothing for the model
+        # to word, and the caller says so plainly.
         except EntityNotFound as exc:
             return {"error": f"not found: {', '.join(exc.missing)}"}
-        except GraphError as exc:
-            return {"error": f"graph database error: {exc}"}
         except (ValueError, KeyError) as exc:
             return {"error": f"invalid arguments: {exc}"}
 
@@ -298,8 +323,11 @@ class ContractAgent:
             message = reply["choices"][0]["message"]
             tool_calls = message.get("tool_calls") or []
             if not tool_calls:
+                text = message.get("content") or ""
+                if reply["choices"][0].get("finish_reason") == "length":
+                    text += "\n\n(Answer cut short. Ask a narrower question.)"
                 return AgentAnswer(
-                    text=message.get("content") or "",
+                    text=text,
                     tool_calls=calls,
                     model=self.model,
                     contracts=list(dict.fromkeys(self.tools.contracts)),
@@ -334,7 +362,7 @@ class ContractAgent:
             "messages": messages,
             "tools": TOOLS,
             "temperature": 0,
-            "max_tokens": 1500,
+            "max_tokens": 2500,
         }
         headers = {
             "Authorization": f"Bearer {self.api_key}",

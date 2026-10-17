@@ -43,6 +43,23 @@ class FakeStore:
             raise GraphUnavailable("down")
 
 
+_SECRET_ENV = (
+    "COMPANY_BRAIN_API_KEYS",
+    "OPEN_ROUTER_API_KEY",
+    "TELEGRAM_BOT_TOKEN",
+    "TELEGRAM_ALLOWED_CHAT_IDS",
+    "TRACE_LINK_SECRET",
+)
+
+
+@pytest.fixture(autouse=True)
+def _hermetic_settings(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Tests never read the developer's .env or real credentials. FALKORDB_* still apply."""
+    monkeypatch.setitem(Settings.model_config, "env_file", None)
+    for name in _SECRET_ENV:
+        monkeypatch.delenv(name, raising=False)
+
+
 @pytest.fixture
 def fake_store() -> FakeStore:
     return FakeStore()
@@ -50,6 +67,7 @@ def fake_store() -> FakeStore:
 
 def _settings() -> Settings:
     return Settings(
+        _env_file=None,  # session-scoped: built before the autouse fixture above applies
         falkordb_host=os.environ.get("FALKORDB_HOST", "localhost"),
         falkordb_port=int(os.environ.get("FALKORDB_PORT", "6379")),
     )

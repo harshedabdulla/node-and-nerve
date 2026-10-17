@@ -20,6 +20,8 @@ uv run company-brain contracts unallocated          # costs not charged to any c
 uv run company-brain contracts demo                 # seed, re-seed (no change), new entries, diff
 ```
 
+`contracts demo` reloads the default tenant and leaves it with the 16 Oct updates applied (CT-104 at ₹8,80,780). Run `contracts seed --reset` afterwards to return to the base figures used below, or pass `--company demo-check` before `contracts` to run it on a scratch tenant.
+
 `--json` prints the full response; `--as-of YYYY-MM-DD` sets the reporting date (default 2026-10-16); `--company ID` before `contracts` selects another tenant (default `kaveri-body-works`). Full JSON for CT-104: [examples/contract-investigation.json](../examples/contract-investigation.json).
 
 API (same API-key scoping as the rest of the service):
@@ -137,7 +139,7 @@ CT-104 on 16 Oct 2026, from the seed data:
 | Labour | ₹71,500 |
 | Machinery | ₹11,800 |
 | Other direct | ₹8,500 |
-| **Recorded direct cost** | **₹8,51,700** (35 charged entries; PUR-2056 void excluded) |
+| **Recorded direct cost** | **₹8,51,700** (27 book entries, 35 charges as split bills count per body; PUR-2056 void excluded) |
 | Contract value | ₹15,30,000 |
 | **Provisional profit** | **₹6,78,300 (44.3%)** |
 | Unsplit costs noted for it | ₹32,100 (PUR-2053, WG-413); lower bound ₹6,46,200 |
@@ -188,7 +190,7 @@ The graph also:
 
 - computes category totals (`mf_contract_cost_totals`), which are cross-checked against the itemised rows;
 - finds costs that are noted for the contract but unsplit (`mf_contract_noted`);
-- finds costs not fully charged anywhere, computing the charged sum per entry (`mf_unallocated`);
+- finds costs not fully charged anywhere, computing the charged sum per entry (`mf_unallocated`). Only charges that reach a contract count; a charge to a job with no `PART_OF` link is reported as `unlinked`, so a broken link moves the cost to "not counted anywhere" instead of losing it;
 - finds supplier payments not applied to any bill (`mf_unapplied_payments`);
 - summarizes every contract's recorded cost and cleared receipts (`mf_contracts_overview`);
 - lists what changed since a timestamp (`mf_changed_since`).
@@ -242,7 +244,9 @@ uv run company-brain telegram
 - rings on decision, unknown and inconsistency items,
 - the items named in the answer, highlighted.
 
-Tapping a node shows its links and which page asserted each. Links open without an API key, so they are HMAC-signed over company, contract and expiry (7 days) with `TRACE_LINK_SECRET`. A forged, extended or re-targeted link gets 403. Run the API (`uv run uvicorn --factory company_brain.api:app`) where `PUBLIC_BASE_URL` points. `localhost` works when Telegram runs on the same computer; for a phone, expose the API through a tunnel.
+Tapping a node shows its links and which page asserted each. Links open without an API key, so they are HMAC-signed over company, contract and expiry (7 days) with `TRACE_LINK_SECRET`. A forged, extended or re-targeted link gets 403. Run the API (`uv run uvicorn --factory company_brain.api:app`) where `PUBLIC_BASE_URL` points. `localhost` works when Telegram runs on the same computer; for a phone, expose the API through a tunnel. A Cloudflare quick tunnel (`cloudflared tunnel --url http://localhost:8000`) gets a new random URL each time it starts and can expire; set `PUBLIC_BASE_URL` to the current URL and restart the bot, or links in replies will not open.
+
+If FalkorDB is unreachable, the bot replies "The records database is unavailable" and the model is not asked to word an answer. Any other failure on one message gets a short error reply; the bot keeps polling.
 
 Tested live during development: the agent against OpenRouter, the bot against Telegram with one allowed chat, and the trace page rendered in Chrome. Automated tests use fake model and Telegram transports and a real FalkorDB.
 
@@ -254,3 +258,4 @@ Tested live during development: the agent against OpenRouter, the bot against Te
 - Shared bills report supplier outstanding for the whole bill; the balance is not apportioned to contracts.
 - An updated entry keeps only its latest values. Allocation decisions are added as new `CHARGED_TO` edges, and the earlier `NOTED_FOR` stays as history.
 - Up to 1,000 charge rows per contract (warning if reached).
+- Telegram shows the "typing" hint once per question (about 5 seconds); AI answers took 3 to 13 seconds in testing. Messages are answered one at a time.
