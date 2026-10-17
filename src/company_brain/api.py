@@ -3,6 +3,7 @@
 import hmac
 import logging
 from collections.abc import Callable
+from dataclasses import asdict
 from datetime import date, datetime
 from typing import Annotated, Any
 
@@ -48,6 +49,7 @@ from company_brain.models import (
 )
 from company_brain.schema import COMPANY_ID_RE, KIND_PROPERTIES, RELATIONSHIP_RULES, Kind
 from company_brain.seed import CONTRACTS_AS_OF
+from company_brain.tables import TaskTableImport, import_task_table
 from company_brain.telegram_bot import Bot, Call, build_bot, telegram_call
 from company_brain.trace import render_trace_page, verify
 
@@ -211,6 +213,19 @@ def create_app(
         company_id: Company, body: InvestigationRequest, s: Store
     ) -> InvestigationResponse:
         return Investigator(s, company_id).investigate(body)
+
+    @app.post(
+        "/v1/companies/{company_id}/imports/tasks",
+        tags=["ingest"],
+        summary="Import a task table (sheet rows plus a column mapping) as tickets, owners, "
+        "projects and blockers, each row kept as a source",
+    )
+    def import_tasks(company_id: Company, body: TaskTableImport, s: Store) -> dict[str, Any]:
+        try:
+            report = import_task_table(s, company_id, body)
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        return asdict(report)
 
     @app.post(
         "/v1/companies/{company_id}/cashflow/imports",
