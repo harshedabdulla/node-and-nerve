@@ -94,3 +94,53 @@ export async function graphSummary(workspace: Workspace): Promise<GraphSummary |
   if (!res.ok) throw new Error(`the graph API answered ${res.status}`);
   return (await res.json()) as GraphSummary;
 }
+
+// ---------------------------------------------------------------- investigations
+
+export interface Investigation {
+  question: string;
+  matched_entities: { id: string; name: string }[];
+  findings: { category: string; statement: string; supported: boolean; source_ids: string[] }[];
+  missing_information: string[];
+  warnings: string[];
+  sources: { id: string; name: string; uri: string | null; source_record_id: string | null }[];
+  queries_executed: string[];
+}
+
+async function graphApi<T>(workspace: Workspace, path: string, init?: RequestInit): Promise<T | null> {
+  const base = process.env.NN_API_URL?.replace(/\/$/, "");
+  const key = process.env.NN_APP_API_KEY;
+  if (!base || !key) throw new Error("the graph API is not configured");
+  const res = await fetch(`${base}/v1/companies/${workspace.id}${path}`, {
+    ...init,
+    headers: { "x-api-key": key, "content-type": "application/json" },
+    cache: "no-store",
+  });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`the graph API answered ${res.status}`);
+  return (await res.json()) as T;
+}
+
+/** The investigation for each project in the workspace graph; null if there is no graph. */
+export async function attention(workspace: Workspace): Promise<Investigation[] | null> {
+  const r = await graphApi<{ projects: Investigation[] }>(workspace, "/attention");
+  return r ? r.projects : null;
+}
+
+export function ask(workspace: Workspace, question: string): Promise<Investigation | null> {
+  return graphApi<Investigation>(workspace, "/investigations", {
+    method: "POST",
+    body: JSON.stringify({ question }),
+  });
+}
+
+/** Engine statements name graph ids; show people by name and records by their reference. */
+export function readable(statement: string): string {
+  return statement
+    .replace(/\b(?:person|team):[a-z0-9._-]+ \(([^)]+)\)/g, "$1")
+    .replace(/\bticket:([a-z0-9._-]+)/g, (_, s: string) => s.toUpperCase())
+    .replace(/\b(?:project|decision|incident|component|team|person):([a-z0-9._-]+)/g, (_, s: string) =>
+      s.replace(/-/g, " ").replace(/^./, (c) => c.toUpperCase()),
+    )
+    .replace(/\bin_progress\b/g, "in progress");
+}

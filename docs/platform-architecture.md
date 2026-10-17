@@ -1,6 +1,6 @@
 # Node & Nerve platform: current architecture and the path to workspaces
 
-Status: 17 Oct 2026. Phase 1 is done; phases 2 to 6 are planned, not built.
+Status: 17 Oct 2026. Phase 1 is in production. Phases 2 and 3 and the first part of 5 are built on the `platform` branch and run on a Vercel preview; the Google Sheets read path still needs one live run with a real Google account. Phases 4 and 6 and Telegram alerts are not built.
 
 ## What runs today
 
@@ -79,14 +79,17 @@ A rule names a workspace, a check (an investigation plus a condition, for exampl
 | Phase | Deliverable | Done when |
 | --- | --- | --- |
 | 1. Stabilize (done) | Validation fixes, cloud deployment, monorepo, redesigned landing, separate `/demo` | CT-104 figures match an independent oracle on FalkorDB Cloud; site and bot run on it |
-| 2. Foundation | Clerk sign-in, workspaces, Neon control plane, app shell at `/app`, service-key calls with membership checks | A user can sign up, create a workspace and see an empty state; a second user cannot read it (tested) |
-| 3. First integration | Composio Google Sheets connect, column mapping, sync runs with status and errors, records in the workspace graph | A real sheet's rows appear as graph nodes with sources; re-sync writes nothing; disconnect works |
+| 2. Foundation (built) | Clerk sign-in, workspaces, Neon control plane, app shell at `/app`, `ws-*`-scoped API key | Verified with two test users on localhost: each sees only their own workspace; Clerk memberships, workspace rows and API key scopes checked |
+| 3. First integration (built, one live check left) | Composio Google Sheets connect, column mapping, sync runs with status and errors, `POST /imports/tasks` | Import and re-import verified against FalkorDB (tests); connect flow verified up to Google's sign-in page and the callback keeps an unfinished sign-in as "waiting". Not yet run: reading a real sheet through Composio |
 | 4. Onboarding | Short guided setup: name, what to watch, sources, channel | Completion is shown only after the first sync is verified in the graph |
-| 5. Investigation and alerts | "What needs attention" over any workspace; Telegram linked per workspace; rules and deliveries | An alert fires once for a new blocked task and not again |
+| 5. Investigation and alerts (investigation built) | `GET /attention` and `/app/ask` reuse the existing engine over any workspace graph; Telegram linked per workspace; rules and deliveries | Investigation verified on an imported table (blocked, blocker chain, owners, missing owners, sources). Alerts not built |
 | 6. Hardening | Isolation, failure, reconnect, idempotency and duplicate-delivery tests; docs | All pass in CI against a real FalkorDB |
 
-## What is needed to start phase 2
+## Known gaps
 
-- A Clerk application (publishable and secret keys), with Organizations enabled.
-- A Neon database added to the `node-and-nerve` Vercel project.
-- A Composio project for Node & Nerve (`COMPOSIO_API_KEY`), needed in phase 3.
+- Clerk is a development instance. Production needs a domain (planned: `nodeandnerve.heyspindle.com`) and DNS records on the heyspindle.com Cloudflare zone.
+- Google sign-in uses Composio's managed OAuth app, so the consent screen names Composio. A Node & Nerve Google OAuth client should replace it before real customers.
+- Neon is in AWS us-east-1 while the functions and FalkorDB are in Mumbai; each control-plane query crosses that distance.
+- Syncing is manual ("Sync now"); scheduled syncs and Telegram alerts come next.
+- Rows removed from a sheet are not removed from the graph yet; the sync reports what it read, not what disappeared.
+- People are matched by name, so two different people with the same name in one sheet become one person.

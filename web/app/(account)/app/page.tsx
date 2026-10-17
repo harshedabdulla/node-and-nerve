@@ -1,11 +1,51 @@
 import Link from "next/link";
-import { graphSummary, recentActivity, requireWorkspace } from "@/lib/workspace";
+import {
+  attention,
+  graphSummary,
+  type Investigation,
+  readable,
+  recentActivity,
+  requireWorkspace,
+} from "@/lib/workspace";
 
 export const metadata = { title: "Overview: Node & Nerve" };
 
 const ACTIONS: Record<string, string> = {
   "workspace.created": "Workspace created",
+  "connection.started": "Google Sheets sign-in started",
+  "connection.connected": "Google Sheets connected",
+  "connection.removed": "Google Sheets disconnected",
+  "sheet.synced": "Sheet synced",
+  "sheet.sync_failed": "Sheet sync failed",
+  "question.asked": "Question asked",
 };
+
+function Attention({ projects }: { projects: Investigation[] }) {
+  if (projects.length === 0) {
+    return <p className="note">No projects are recorded yet, so there is nothing to group work by.</p>;
+  }
+  return (
+    <>
+      {projects.map((p) => (
+        <div key={p.matched_entities[0]?.id ?? p.question} style={{ marginTop: 14 }}>
+          <p style={{ fontWeight: 600 }}>{p.matched_entities[0]?.name}</p>
+          <ul className="findings">
+            {p.findings
+              .filter((f) => f.category !== "expertise")
+              .map((f) => (
+                <li key={f.statement}>{readable(f.statement)}</li>
+              ))}
+            {p.missing_information.map((m) => (
+              <li key={m} style={{ "--kind-color": "var(--unknown)" } as React.CSSProperties}>
+                {readable(m)}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </>
+  );
+}
 
 export default async function Overview() {
   const { workspace, role } = await requireWorkspace();
@@ -17,6 +57,12 @@ export default async function Overview() {
     recentActivity(workspace.id),
   ]);
   const synced = graph.ok && graph.g !== null && graph.g.total_nodes > 0;
+  const needs = synced
+    ? await attention(workspace).then(
+        (a) => ({ ok: true as const, a: a ?? [] }),
+        (e: Error) => ({ ok: false as const, error: e.message }),
+      )
+    : null;
 
   return (
     <section className="app-section">
@@ -77,6 +123,21 @@ export default async function Overview() {
             </li>
           </ol>
         </div>
+
+        {needs && (
+          <div className="panel wide">
+            <h2>Needs attention</h2>
+            {needs.ok ? (
+              <Attention projects={needs.a} />
+            ) : (
+              <p className="note">The investigation could not run ({needs.error}).</p>
+            )}
+            <p className="note" style={{ marginTop: 14 }}>
+              Found by following owners, blockers and due dates in the graph. Amber items are
+              missing from your records, not problems that were confirmed.
+            </p>
+          </div>
+        )}
 
         <div className="panel wide">
           <h2>Activity</h2>
