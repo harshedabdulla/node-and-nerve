@@ -607,6 +607,15 @@ RETURN n.kind AS kind, count(n) AS count, max(n.updated_at) AS last_updated
 ORDER BY kind""",
 )
 
+GRAPH_PROJECTS = Query(
+    name="graph_projects",
+    cypher="""
+MATCH (p:Project)
+RETURN p.id AS id, p.name AS name
+ORDER BY p.name
+LIMIT $limit""",
+)
+
 GRAPH_RELATIONSHIP_COUNTS = Query(
     name="graph_relationship_counts",
     cypher="""
@@ -650,5 +659,6 @@ def all_queries() -> list[Query]:
         MF_LABELS,
         GRAPH_NODE_COUNTS,
         GRAPH_RELATIONSHIP_COUNTS,
+        GRAPH_PROJECTS,
     ]
     return queries

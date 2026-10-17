@@ -121,3 +121,30 @@ def test_import_builds_a_traversable_graph_and_is_idempotent(
         ["ticket:t-3", "in_progress", None],
         ["ticket:t-4", None, "2026-11-12"],
     ]
+
+
+def test_attention_runs_the_investigation_per_project(
+    settings: Any, real_store: FalkorDBStore, company: str
+) -> None:
+    from fastapi.testclient import TestClient
+    from pydantic import SecretStr
+
+    from company_brain.api import create_app
+
+    import_task_table(real_store, company, _request())
+    key = "attention-key-0123456789"
+    app = create_app(
+        settings.model_copy(update={"company_brain_api_keys": SecretStr(f"{key}={company}")})
+    )
+    r = TestClient(app).get(
+        f"/v1/companies/{company}/attention?as_of=2026-10-30", headers={"X-API-Key": key}
+    )
+    assert r.status_code == 200
+    projects = {p["matched_entities"][0]["id"]: p for p in r.json()["projects"]}
+    assert set(projects) == {"project:launch", "project:marketing"}
+    launch = projects["project:launch"]
+    statements = " ".join(f["statement"] for f in launch["findings"])
+    assert "ticket:t-2" in statements and "blocked and overdue" in statements
+    assert "is blocked by ticket:t-3" in statements
+    assert "No current owner is recorded for ticket:t-3." in launch["missing_information"]
+    assert launch["sources"], "findings cite the sheet rows they came from"

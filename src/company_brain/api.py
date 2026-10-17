@@ -369,6 +369,39 @@ def create_app(
         )
 
     @app.get(
+        "/v1/companies/{company_id}/attention",
+        tags=["investigations"],
+        summary="What needs attention: the investigation run for each project in the graph",
+    )
+    def attention(
+        company_id: Company,
+        s: Store,
+        as_of: Annotated[
+            date | None, Query(description="Reporting date. Defaults to today.")
+        ] = None,
+    ) -> dict[str, Any]:
+        if not s.company_exists(company_id):
+            raise CompanyNotFound(company_id)
+        projects = s.run(company_id, q.GRAPH_PROJECTS, {"limit": 10})
+        investigator = Investigator(s, company_id)
+        results = [
+            investigator.investigate(
+                InvestigationRequest(
+                    question=f"What needs attention in {p['name']}?",
+                    focus_ids=[p["id"]],
+                    as_of=as_of,
+                )
+            )
+            for p in projects
+        ]
+        return {
+            "company_id": company_id,
+            "as_of": (as_of or date.today()).isoformat(),
+            "projects": [r.model_dump(mode="json") for r in results],
+            "project_limit": 10,
+        }
+
+    @app.get(
         "/v1/companies/{company_id}/entities/{entity_id}",
         tags=["lookup"],
         response_model=EntityView,
