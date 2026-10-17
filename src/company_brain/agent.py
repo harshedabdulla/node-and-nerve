@@ -18,7 +18,7 @@ from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import date
-from typing import Any
+from typing import Any, Protocol
 
 from company_brain import queries as q
 from company_brain.cashflow import inr
@@ -300,20 +300,34 @@ class AgentAnswer:
     contracts: list[str] = field(default_factory=list)  # contracts investigated
 
 
+class Tools(Protocol):
+    """What the loop needs from a tool box: run a tool, and the contracts it looked at."""
+
+    contracts: list[str]
+    as_of: date | None
+
+    def run(self, name: str, arguments: dict[str, Any]) -> dict[str, Any]: ...
+
+
 @dataclass
 class ContractAgent:
-    tools: ToolBox
+    """A small tool-calling loop. Defaults are the contract tools; other tool boxes and
+    prompts (for example the workspace agent) reuse the same loop."""
+
+    tools: Tools
     api_key: str
     model: str
     url: str = OPENROUTER_URL
     transport: Transport = http_post_json
     timeout_s: float = 90.0
+    system_prompt: str = SYSTEM_PROMPT
+    tool_specs: list[dict[str, Any]] = field(default_factory=lambda: TOOLS)
 
     def ask(self, question: str) -> AgentAnswer:
         if not self.api_key:
             raise AgentError("no model API key configured (OPEN_ROUTER_API_KEY)")
         messages: list[dict[str, Any]] = [
-            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "system", "content": self.system_prompt},
             {"role": "user", "content": question},
         ]
         calls: list[dict[str, Any]] = []
@@ -360,7 +374,7 @@ class ContractAgent:
         body = {
             "model": self.model,
             "messages": messages,
-            "tools": TOOLS,
+            "tools": self.tool_specs,
             "temperature": 0,
             "max_tokens": 2500,
         }

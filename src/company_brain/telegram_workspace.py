@@ -18,15 +18,17 @@ import hashlib
 import html
 import json
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
+from company_brain.agent import AgentError
 from company_brain.alerts import attention, readable
 from company_brain.controlplane import ControlPlane
 from company_brain.graph import CompanyNotFound, GraphError, GraphStore
 from company_brain.investigate import Investigator
 from company_brain.models import InvestigationRequest, InvestigationResponse
-from company_brain.telegram_bot import Bot, Call, split_message
+from company_brain.telegram_bot import Bot, Call, md_to_html, split_message
 
 log = logging.getLogger(__name__)
 
@@ -70,6 +72,8 @@ class TelegramRouter:
     store: GraphStore
     control: ControlPlane | None
     demo: Bot | None = None
+    # (workspace id, question) -> answer text written by the language model; optional.
+    answer: Callable[[str, str], str] | None = None
 
     # ------------------------------------------------------------ transport
 
@@ -195,6 +199,17 @@ class TelegramRouter:
         )
 
     def _ask(self, ws: str, question: str) -> str:
+        if self.answer is not None:
+            try:
+                text = self.answer(ws, question)
+                return (
+                    md_to_html(text)
+                    + "\n\n<i>Written by AI from your records. Ask the app for the evidence.</i>"
+                )
+            except AgentError as exc:
+                log.warning("telegram: model failed, answering without it: %s", exc)
+            except CompanyNotFound:
+                return "Nothing has been synced into this workspace yet."
         try:
             r = Investigator(self.store, ws).investigate(InvestigationRequest(question=question))
         except CompanyNotFound:

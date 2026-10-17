@@ -13,6 +13,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from company_brain import __version__
 from company_brain import queries as q
+from company_brain.agent import AgentError, Transport, http_post_json
 from company_brain.alerts import PROJECT_LIMIT, run_alerts
 from company_brain.alerts import attention as workspace_attention
 from company_brain.auth import ApiKeys
@@ -56,6 +57,7 @@ from company_brain.tables import TaskTableImport, import_task_table
 from company_brain.telegram_bot import Call, build_bot, telegram_call
 from company_brain.telegram_workspace import TelegramRouter
 from company_brain.trace import render_trace_page, verify
+from company_brain.workspace_agent import WorkspaceTools, ask_workspace, graph_labels
 
 log = logging.getLogger("company_brain")
 
@@ -67,6 +69,12 @@ CompanyId = Annotated[
         examples=["northstar"],
     ),
 ]
+
+
+class AskRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    question: str = Field(min_length=1, max_length=500)
 
 
 class GraphSummary(BaseModel):
@@ -102,6 +110,7 @@ def create_app(
     store_factory: Callable[[Settings], GraphStore] = FalkorDBStore,
     telegram_call_factory: Callable[[str], Call] = telegram_call,
     control_plane_factory: Callable[[str], ControlPlane] = NeonHttp,
+    agent_transport: Transport = http_post_json,
 ) -> FastAPI:
     settings = settings or get_settings()
     keys = ApiKeys.parse(settings.company_brain_api_keys.get_secret_value())
@@ -351,7 +360,19 @@ def create_app(
         if not routers:
             call = telegram_call_factory(token)
             demo = build_bot(settings, s, call, CONTRACTS_AS_OF)
-            routers.append(TelegramRouter(call, s, control_plane(), demo))
+            key = settings.open_router_api_key.get_secret_value()
+
+            def answer(ws: str, question: str) -> str:
+                return ask_workspace(
+                    s,
+                    ws,
+                    question,
+                    api_key=key,
+                    model=settings.openrouter_model,
+                    transport=agent_transport,
+                ).answer.text
+
+            routers.append(TelegramRouter(call, s, control_plane(), demo, answer if key else None))
         try:
             routers[0].process_update(update)
         except RuntimeError as exc:  # a failed send; a retry by Telegram would answer twice
@@ -397,6 +418,49 @@ def create_app(
             "as_of": (as_of or date.today()).isoformat(),
             "projects": [r.model_dump(mode="json") for r in results],
             "project_limit": PROJECT_LIMIT,
+        }
+
+    @app.post(
+        "/v1/companies/{company_id}/ask",
+        tags=["investigations"],
+        summary="Plain-language answer written by a language model from the investigation "
+        "tools, with the evidence paths and labels behind it (deterministic if no model)",
+    )
+    def ask(company_id: Company, body: AskRequest, s: Store) -> dict[str, Any]:
+        if not s.company_exists(company_id):
+            raise CompanyNotFound(company_id)
+        key = settings.open_router_api_key.get_secret_value()
+        reason = "no language model is configured"
+        if key:
+            try:
+                wa = ask_workspace(
+                    s,
+                    company_id,
+                    body.question,
+                    api_key=key,
+                    model=settings.openrouter_model,
+                    transport=agent_transport,
+                )
+                return {
+                    "answer": wa.answer.text,
+                    "model": wa.answer.model,
+                    "tool_calls": wa.answer.tool_calls,
+                    "investigations": [r.model_dump(mode="json") for r in wa.investigations],
+                    "labels": wa.labels,
+                    "fallback_reason": None,
+                }
+            except AgentError as exc:
+                log.warning("ask: model failed: %s", exc)
+                reason = "the language model could not answer just now"
+        tools = WorkspaceTools(s, company_id)
+        tools.run("investigate", {"question": body.question})
+        return {
+            "answer": None,
+            "model": None,
+            "tool_calls": [],
+            "investigations": [r.model_dump(mode="json") for r in tools.investigations],
+            "labels": graph_labels(s, company_id, tools),
+            "fallback_reason": reason,
         }
 
     @app.post(

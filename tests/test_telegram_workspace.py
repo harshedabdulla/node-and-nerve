@@ -188,3 +188,29 @@ def test_alerts_with_no_linked_chat_do_nothing() -> None:
 @pytest.mark.parametrize("command", ["/attention", "anything"])
 def test_without_a_control_plane_everything_goes_to_the_demo_bot(command: str) -> None:
     assert TelegramRouter(Sent(), FakeStore(), None).handle(_msg(7, command)) is None
+
+
+def test_linked_chat_question_uses_the_model_and_falls_back_without_it(
+    real_store: FalkorDBStore, company: str
+) -> None:
+    from company_brain.agent import AgentError
+
+    import_task_table(real_store, company, _request())
+    control = FakeControl()
+    control.workspaces[company] = "Acme Traders"
+    control.chats[7] = {"ws": company, "user": "u", "username": "o", "alerts": True}
+
+    def model(ws: str, question: str) -> str:
+        assert ws == company
+        return "**Launch**\n- T-2 waits on T-3 [Tasks!3]"
+
+    [reply] = TelegramRouter(Sent(), real_store, control, answer=model).handle(_msg(7, "Why late?"))  # type: ignore[misc]
+    assert "<b>Launch</b>" in reply and "Written by AI" in reply
+
+    def broken(ws: str, question: str) -> str:
+        raise AgentError("model endpoint unreachable")
+
+    [fallback] = TelegramRouter(Sent(), real_store, control, answer=broken).handle(  # type: ignore[misc]
+        _msg(7, "Why is the Launch project late?")
+    )
+    assert "About Launch" in fallback and "Written by AI" not in fallback
