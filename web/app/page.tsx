@@ -152,16 +152,16 @@ export default async function Home() {
                 what is still missing.
               </p>
               <div className="hero-actions">
-                <Link href="/demo" className="btn btn-primary">
+                <Link href="/sign-up" className="btn btn-primary">
+                  Create an account
+                </Link>
+                <Link href="/demo" className="btn btn-quiet">
                   Open the live demo
                 </Link>
-                <a href="#how" className="btn btn-quiet">
-                  See how it works
-                </a>
               </div>
               <p className="hero-note">
-                Accounts and company workspaces are being built next. Today you can explore two
-                fictional companies.
+                Create a workspace for your company and connect Google Sheets, or explore two
+                fictional companies without signing in.
               </p>
             </div>
             {r ? <HeroTrace r={r} /> : <TraceUnavailable error={"error" in live ? live.error : ""} />}

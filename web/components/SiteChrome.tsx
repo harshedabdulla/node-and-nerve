@@ -45,6 +45,9 @@ export function SiteHeader({ current }: { current: "home" | "demo" }) {
           <a href={REPO} target="_blank" rel="noreferrer" className="nav-optional">
             GitHub
           </a>
+          <Link href="/app" className="nav-signin">
+            Sign in
+          </Link>
         </nav>
       </div>
     </header>
