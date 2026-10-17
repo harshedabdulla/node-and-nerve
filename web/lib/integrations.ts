@@ -1,5 +1,6 @@
 import "server-only";
 
+import { getAccount } from "@/lib/composio";
 import { sql } from "@/lib/db";
 import { readSheet } from "@/lib/sheets";
 import { audit, type Workspace } from "@/lib/workspace";
@@ -56,6 +57,33 @@ export async function connectionFor(workspaceId: string, toolkit: string): Promi
     WHERE workspace_id = ${workspaceId} AND toolkit = ${toolkit} AND status <> 'disconnected'
     ORDER BY updated_at DESC LIMIT 1`) as Connection[];
   return rows[0] ?? null;
+}
+
+/**
+ * A connection still "connecting" is re-checked with Composio, so a sign-in that was
+ * abandoned or failed shows as such instead of waiting forever.
+ */
+export async function refreshPending(
+  workspaceId: string,
+  connection: Connection | null,
+  actor: string,
+): Promise<Connection | null> {
+  if (!connection || connection.status !== "connecting") return connection;
+  try {
+    const account = await getAccount(connection.id);
+    if (account.user_id !== workspaceId) return connection;
+    if (account.status === "ACTIVE") {
+      await setConnection(workspaceId, connection.id, connection.toolkit, "connected", actor);
+      return { ...connection, status: "connected", error: null };
+    }
+    if (account.status === "INITIATED" || account.status === "INITIALIZING") return connection;
+    const error =
+      account.status_reason || `Google sign-in ended with status ${account.status.toLowerCase()}.`;
+    await setConnection(workspaceId, connection.id, connection.toolkit, "error", actor, error);
+    return { ...connection, status: "error", error };
+  } catch {
+    return connection; // Composio unreachable: keep the last known state
+  }
 }
 
 export async function setConnection(

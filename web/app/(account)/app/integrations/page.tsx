@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { connectionFor, SHEETS } from "@/lib/integrations";
+import { connectionFor, refreshPending, SHEETS } from "@/lib/integrations";
 import { requireWorkspace } from "@/lib/workspace";
 import { connectSheets, disconnectSheets } from "./actions";
 
@@ -17,10 +17,10 @@ export default async function Integrations({
 }: {
   searchParams: Promise<{ error?: string }>;
 }) {
-  const { workspace, role } = await requireWorkspace();
+  const { workspace, role, userId } = await requireWorkspace();
   const { error } = await searchParams;
   const admin = role === "org:admin";
-  const sheets = await connectionFor(workspace.id, SHEETS);
+  const sheets = await refreshPending(workspace.id, await connectionFor(workspace.id, SHEETS), userId);
   const state = STATE[sheets?.status === "disconnected" || !sheets ? "none" : sheets.status];
 
   return (
