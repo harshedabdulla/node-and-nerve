@@ -13,6 +13,8 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from company_brain import __version__
 from company_brain import queries as q
+from company_brain.alerts import PROJECT_LIMIT, run_alerts
+from company_brain.alerts import attention as workspace_attention
 from company_brain.auth import ApiKeys
 from company_brain.cashflow import CashflowInvestigator, CashflowRequest, CashflowResponse
 from company_brain.config import Settings, get_settings
@@ -23,6 +25,7 @@ from company_brain.contract_cost import (
     OverviewResponse,
     UnallocatedResponse,
 )
+from company_brain.controlplane import ControlPlane, NeonHttp
 from company_brain.csv_import import FILES, MAX_FILE_CHARS, CsvImporter, ImportReport
 from company_brain.graph import (
     CompanyNotFound,
@@ -50,7 +53,8 @@ from company_brain.models import (
 from company_brain.schema import COMPANY_ID_RE, KIND_PROPERTIES, RELATIONSHIP_RULES, Kind
 from company_brain.seed import CONTRACTS_AS_OF
 from company_brain.tables import TaskTableImport, import_task_table
-from company_brain.telegram_bot import Bot, Call, build_bot, telegram_call
+from company_brain.telegram_bot import Call, build_bot, telegram_call
+from company_brain.telegram_workspace import TelegramRouter
 from company_brain.trace import render_trace_page, verify
 
 log = logging.getLogger("company_brain")
@@ -97,6 +101,7 @@ def create_app(
     settings: Settings | None = None,
     store_factory: Callable[[Settings], GraphStore] = FalkorDBStore,
     telegram_call_factory: Callable[[str], Call] = telegram_call,
+    control_plane_factory: Callable[[str], ControlPlane] = NeonHttp,
 ) -> FastAPI:
     settings = settings or get_settings()
     keys = ApiKeys.parse(settings.company_brain_api_keys.get_secret_value())
@@ -322,7 +327,11 @@ def create_app(
         refs = [part for part in focus.split(",") if part][:50]
         return HTMLResponse(render_trace_page(s, company_id, response, refs))
 
-    bots: list[Bot] = []
+    routers: list[TelegramRouter] = []
+
+    def control_plane() -> ControlPlane | None:
+        url = settings.database_url.get_secret_value()
+        return control_plane_factory(url) if url else None
 
     @app.post("/telegram/webhook", include_in_schema=False)
     def telegram_webhook(
@@ -339,10 +348,12 @@ def create_app(
             (x_telegram_bot_api_secret_token or "").encode(), secret.encode()
         ):
             raise HTTPException(status_code=403, detail="forbidden")
-        if not bots:
-            bots.append(build_bot(settings, s, telegram_call_factory(token), CONTRACTS_AS_OF))
+        if not routers:
+            call = telegram_call_factory(token)
+            demo = build_bot(settings, s, call, CONTRACTS_AS_OF)
+            routers.append(TelegramRouter(call, s, control_plane(), demo))
         try:
-            bots[0].process_update(update)
+            routers[0].process_update(update)
         except RuntimeError as exc:  # a failed send; a retry by Telegram would answer twice
             log.warning("telegram webhook: %s", exc)
         return {"ok": True}
@@ -380,26 +391,25 @@ def create_app(
             date | None, Query(description="Reporting date. Defaults to today.")
         ] = None,
     ) -> dict[str, Any]:
-        if not s.company_exists(company_id):
-            raise CompanyNotFound(company_id)
-        projects = s.run(company_id, q.GRAPH_PROJECTS, {"limit": 10})
-        investigator = Investigator(s, company_id)
-        results = [
-            investigator.investigate(
-                InvestigationRequest(
-                    question=f"What needs attention in {p['name']}?",
-                    focus_ids=[p["id"]],
-                    as_of=as_of,
-                )
-            )
-            for p in projects
-        ]
+        results = workspace_attention(s, company_id, as_of)
         return {
             "company_id": company_id,
             "as_of": (as_of or date.today()).isoformat(),
             "projects": [r.model_dump(mode="json") for r in results],
-            "project_limit": 10,
+            "project_limit": PROJECT_LIMIT,
         }
+
+    @app.post(
+        "/v1/companies/{company_id}/alerts/run",
+        tags=["investigations"],
+        summary="Send Telegram alerts for newly blocked or overdue work (each finding once)",
+    )
+    def alerts_run(company_id: Company, s: Store) -> dict[str, Any]:
+        control = control_plane()
+        token = settings.telegram_bot_token.get_secret_value()
+        if control is None or not token:
+            raise HTTPException(status_code=503, detail="alerts are not configured")
+        return asdict(run_alerts(s, control, telegram_call_factory(token), company_id))
 
     @app.get(
         "/v1/companies/{company_id}/entities/{entity_id}",

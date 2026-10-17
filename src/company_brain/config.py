@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     # Webhook mode (serverless hosting): Telegram sends this in X-Telegram-Bot-Api-Secret-Token.
     # Empty disables POST /telegram/webhook.
     telegram_webhook_secret: SecretStr = SecretStr("")
+    # Control-plane Postgres (Neon), shared with the web app: Telegram links and alerts.
+    database_url: SecretStr = SecretStr("")
     agent_company_id: str = "kaveri-body-works"
     # Trace links: where the API is reachable from the reader's browser, and the secret
     # used to sign links (they open without an API key, so they are signed and expire).
