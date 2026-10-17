@@ -884,3 +884,150 @@ body {
     animation: none !important;
   }
 }
+
+/* ---------------------------------------------------------------- app */
+
+.auth-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 28px;
+  padding: 40px 16px;
+}
+
+.auth-brand {
+  font-size: 18px;
+}
+
+.app {
+  min-height: 100vh;
+}
+
+.app-bar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 14px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+}
+
+.app-nav {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+  overflow-x: auto;
+}
+
+.app-nav a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 14.5px;
+  font-weight: 500;
+  padding: 7px 12px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.app-nav a:hover {
+  color: var(--paper);
+}
+
+.app-nav a[aria-current="page"] {
+  color: var(--paper);
+  background: #161616;
+}
+
+.app-bar-end {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+@media (max-width: 760px) {
+  .app-bar {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .app-nav {
+    order: 3;
+    flex-basis: 100%;
+  }
+}
+
+.app-main {
+  max-width: var(--page);
+  margin-inline: auto;
+  padding: 40px var(--gutter) 96px;
+}
+
+.app-section.narrow {
+  max-width: 640px;
+}
+
+.app-title {
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+.app-lede {
+  margin-top: 10px;
+  color: #bdbab3;
+  max-width: var(--measure);
+}
+
+.app-grid {
+  margin-top: 32px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .app-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.empty-title {
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.setup {
+  margin: 0;
+  padding-left: 22px;
+  list-style: decimal;
+}
+
+.setup li {
+  padding: 8px 0 8px 4px;
+  color: var(--muted);
+}
+
+.setup li span {
+  display: block;
+  font-size: 14px;
+  color: var(--faint);
+}
+
+.setup li.done {
+  color: var(--paper);
+}
+
+.setup li.done::marker {
+  color: #8fd19e;
+}
+
+.setup li.next {
+  color: var(--paper);
+  font-weight: 600;
+}
+
+.setup li.next span {
+  color: var(--muted);
+  font-weight: 400;
+}
