@@ -1,7 +1,8 @@
 """Minimal API-key authorization with per-key company scopes.
 
-``COMPANY_BRAIN_API_KEYS="key-a=northstar|acme,key-b=*"`` grants key-a access to two
-companies and key-b to all. When unset, authentication is disabled; this is meant
+``COMPANY_BRAIN_API_KEYS="key-a=northstar|acme,key-b=*,key-c=ws-*"`` grants key-a access
+to two companies, key-b to all, and key-c to every company whose id starts with ``ws-``
+(user workspaces, never the demo companies). When unset, authentication is disabled; this is meant
 only for local development. This is not a replacement for real identity, rotation
 or audit; see SECURITY.md.
 """
@@ -32,6 +33,9 @@ class ApiKeys:
             if len(key.strip()) < 16:
                 raise ValueError("API keys must be at least 16 characters")
             scope = frozenset(c.strip() for c in companies.split("|") if c.strip())
+            for c in scope:
+                if c != "*" and "*" in c[:-1]:
+                    raise ValueError("'*' may only end a company prefix, e.g. 'ws-*'")
             grants.append((key.strip(), scope))
         return cls(tuple(grants))
 
@@ -48,4 +52,9 @@ class ApiKeys:
 
     def allows(self, presented: str | None, company_id: str) -> bool:
         scope = self.companies_for(presented)
-        return scope is not None and ("*" in scope or company_id in scope)
+        if scope is None:
+            return False
+        return any(
+            s == "*" or s == company_id or (s.endswith("*") and company_id.startswith(s[:-1]))
+            for s in scope
+        )

@@ -598,6 +598,24 @@ LIMIT $limit""",
 CONNECTIONS: dict[int, Query] = {d: _connections(d) for d in range(1, MAX_PATH_DEPTH + 1)}
 
 
+# W1/W2: what a workspace graph holds, for status pages. Counts only; no record content.
+GRAPH_NODE_COUNTS = Query(
+    name="graph_node_counts",
+    cypher="""
+MATCH (n:Entity)
+RETURN n.kind AS kind, count(n) AS count, max(n.updated_at) AS last_updated
+ORDER BY kind""",
+)
+
+GRAPH_RELATIONSHIP_COUNTS = Query(
+    name="graph_relationship_counts",
+    cypher="""
+MATCH (:Entity)-[r]->(:Entity)
+RETURN type(r) AS type, count(r) AS count
+ORDER BY type""",
+)
+
+
 def all_queries() -> list[Query]:
     """Every Cypher string this service can ever execute."""
     queries: list[Query] = [*UPSERT_ENTITY.values(), *UPSERT_RELATIONSHIP.values()]
@@ -630,5 +648,7 @@ def all_queries() -> list[Query]:
         MF_CONTRACTS_OVERVIEW,
         MF_CHANGED_SINCE,
         MF_LABELS,
+        GRAPH_NODE_COUNTS,
+        GRAPH_RELATIONSHIP_COUNTS,
     ]
     return queries

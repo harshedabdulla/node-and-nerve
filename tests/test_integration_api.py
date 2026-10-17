@@ -128,3 +128,24 @@ def test_service_reports_unavailable_database_instead_of_inventing_results() -> 
     )
     assert r.status_code == 503
     assert r.json() == {"detail": "graph database unavailable"}
+
+
+def test_graph_summary_counts_what_was_written(settings: Settings, seeded: str) -> None:
+    from company_brain.seed import load_dataset
+
+    key = "summary-key-0123456789"
+    app_settings = settings.model_copy(
+        update={"company_brain_api_keys": SecretStr(f"{key}={seeded}")}
+    )
+    client = TestClient(create_app(app_settings))
+    h = {"X-API-Key": key}
+    data = load_dataset()
+    r = client.get(f"/v1/companies/{seeded}/summary", headers=h)
+    assert r.status_code == 200
+    body = r.json()
+    assert body["total_nodes"] == len(data["entities"]) + len(data["sources"])
+    assert body["nodes_by_kind"]["source"] == len(data["sources"])
+    assert body["total_relationships"] == sum(body["relationships_by_type"].values()) > 0
+    assert body["last_updated"]
+    other = client.get("/v1/companies/northstar/summary", headers=h)
+    assert other.status_code == 403

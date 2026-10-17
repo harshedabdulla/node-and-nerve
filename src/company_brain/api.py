@@ -11,6 +11,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 from company_brain import __version__
+from company_brain import queries as q
 from company_brain.auth import ApiKeys
 from company_brain.cashflow import CashflowInvestigator, CashflowRequest, CashflowResponse
 from company_brain.config import Settings, get_settings
@@ -60,6 +61,15 @@ CompanyId = Annotated[
         examples=["northstar"],
     ),
 ]
+
+
+class GraphSummary(BaseModel):
+    company_id: str
+    nodes_by_kind: dict[str, int]
+    relationships_by_type: dict[str, int]
+    total_nodes: int
+    total_relationships: int
+    last_updated: str | None = Field(description="Newest record write, ISO timestamp.")
 
 
 class CsvImportRequest(BaseModel):
@@ -321,6 +331,27 @@ def create_app(
         except RuntimeError as exc:  # a failed send; a retry by Telegram would answer twice
             log.warning("telegram webhook: %s", exc)
         return {"ok": True}
+
+    @app.get(
+        "/v1/companies/{company_id}/summary",
+        tags=["lookup"],
+        response_model=GraphSummary,
+        summary="What the company graph holds: counts by kind and relationship type",
+    )
+    def graph_summary(company_id: Company, s: Store) -> GraphSummary:
+        if not s.company_exists(company_id):
+            raise CompanyNotFound(company_id)
+        nodes = s.run(company_id, q.GRAPH_NODE_COUNTS)
+        rels = s.run(company_id, q.GRAPH_RELATIONSHIP_COUNTS)
+        stamps = [str(r["last_updated"]) for r in nodes if r["last_updated"]]
+        return GraphSummary(
+            company_id=company_id,
+            nodes_by_kind={str(r["kind"]): int(r["count"]) for r in nodes},
+            relationships_by_type={str(r["type"]): int(r["count"]) for r in rels},
+            total_nodes=sum(int(r["count"]) for r in nodes),
+            total_relationships=sum(int(r["count"]) for r in rels),
+            last_updated=max(stamps) if stamps else None,
+        )
 
     @app.get(
         "/v1/companies/{company_id}/entities/{entity_id}",

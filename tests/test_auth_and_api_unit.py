@@ -113,3 +113,15 @@ def test_question_terms_drop_stopwords_deterministically() -> None:
         "webhook",
         "failures",
     ]
+
+
+def test_prefix_scopes_cover_workspaces_only() -> None:
+    keys = ApiKeys.parse("app-key-0123456789=ws-*,demo-key-012345678=northstar")
+    assert keys.allows("app-key-0123456789", "ws-3k9x2m7q1p0a")
+    assert not keys.allows("app-key-0123456789", "northstar")
+    assert not keys.allows("app-key-0123456789", "kaveri-body-works")
+    assert not keys.allows("app-key-0123456789", "w")
+    assert not keys.allows("demo-key-012345678", "ws-3k9x2m7q1p0a")
+    for bad in ["k-0123456789abcdef=w*s", "k-0123456789abcdef=*ws"]:
+        with pytest.raises(ValueError, match="prefix"):
+            ApiKeys.parse(bad)
