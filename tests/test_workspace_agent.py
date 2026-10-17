@@ -99,3 +99,21 @@ def test_ask_endpoint_uses_the_model_when_configured(
         "/v1/companies/ws-nothing00000/ask", json={"question": "x"}, headers={"X-API-Key": KEY}
     )
     assert unknown.status_code == 403
+
+
+def test_ask_response_edges_use_the_field_names_the_web_app_reads(
+    settings: Any, real_store: FalkorDBStore, company: str
+) -> None:
+    import_task_table(real_store, company, _request())
+    app = create_app(
+        settings.model_copy(update={"company_brain_api_keys": SecretStr(f"{KEY}={company}")})
+    )
+    body = (
+        TestClient(app)
+        .post(
+            f"/v1/companies/{company}/ask", json={"question": "Launch"}, headers={"X-API-Key": KEY}
+        )
+        .json()
+    )
+    edge = body["investigations"][0]["evidence_paths"][0]["edges"][0]
+    assert {"type", "from_id", "to_id", "source_id"} <= set(edge)  # contract with web/ask
