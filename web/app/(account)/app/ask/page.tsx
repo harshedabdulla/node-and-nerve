@@ -16,10 +16,12 @@ export default async function Ask({ searchParams }: { searchParams: Promise<{ q?
       error = e instanceof Error ? e.message : "the investigation failed";
     }
   }
-  const history = (await sql()`SELECT DISTINCT ON (detail->>'question') detail->>'question' AS q, at
-    FROM audit_log WHERE workspace_id = ${workspace.id} AND action = 'question.asked'
-    ORDER BY detail->>'question', at DESC`) as { q: string; at: string }[];
-  history.sort((a, b) => b.at.localeCompare(a.at));
+  // Latest distinct questions, newest first. Ordered in SQL: timestamps arrive as Date objects.
+  const history = (await sql()`SELECT q FROM (
+      SELECT DISTINCT ON (detail->>'question') detail->>'question' AS q, at
+      FROM audit_log WHERE workspace_id = ${workspace.id} AND action = 'question.asked'
+      ORDER BY detail->>'question', at DESC
+    ) latest ORDER BY at DESC LIMIT 8`) as { q: string }[];
 
   return (
     <section className="app-section">
@@ -94,7 +96,7 @@ export default async function Ask({ searchParams }: { searchParams: Promise<{ q?
       {history.length > 0 && (
         <div className="panel" style={{ marginTop: 20 }}>
           <h2>Asked before</h2>
-          {history.slice(0, 8).map((h) => (
+          {history.map((h) => (
             <div className="row" key={h.q}>
               <a href={`/app/ask?q=${encodeURIComponent(h.q)}`} style={{ color: "var(--paper)" }}>
                 {h.q}
