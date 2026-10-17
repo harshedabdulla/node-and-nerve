@@ -148,3 +148,20 @@ def test_attention_runs_the_investigation_per_project(
     assert "is blocked by ticket:t-3" in statements
     assert "No current owner is recorded for ticket:t-3." in launch["missing_information"]
     assert launch["sources"], "findings cite the sheet rows they came from"
+
+
+def test_attention_names_projects_and_never_prints_none(
+    real_store: FalkorDBStore, company: str
+) -> None:
+    from company_brain.investigate import Investigator
+    from company_brain.models import InvestigationRequest
+
+    import_task_table(real_store, company, _request())
+    r = Investigator(real_store, company).investigate(
+        InvestigationRequest(
+            question="What needs attention?", focus_ids=["project:launch"], as_of=date(2026, 10, 30)
+        )
+    )
+    assert r.matched_entities[0].name == "Launch"
+    text = " ".join(f.statement for f in r.findings) + " ".join(r.missing_information)
+    assert "None" not in text

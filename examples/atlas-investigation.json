@@ -877,7 +877,7 @@
     }
   ],
   "missing_information": [
-    "ticket:atlas-147 is overdue but the graph records no blocker, incident or status explaining the delay.",
+    "ticket:atlas-147 is overdue but the graph records no open blocker, incident or status explaining the delay.",
     "No current owner is recorded for ticket:atlas-147."
   ],
   "warnings": [

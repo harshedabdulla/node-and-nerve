@@ -306,7 +306,7 @@ The full response is in [examples/atlas-investigation.json](examples/atlas-inves
     {"id": "decision:dec-002", "current": false, "superseded_by": ["decision:dec-004"]}
   ],
   "missing_information": [
-    "ticket:atlas-147 is overdue but the graph records no blocker, incident or status explaining the delay.",
+    "ticket:atlas-147 is overdue but the graph records no open blocker, incident or status explaining the delay.",
     "No current owner is recorded for ticket:atlas-147."
   ],
   "warnings": ["source:vendor-status-0922 contradicts incident:inc-009; review before relying on it"],

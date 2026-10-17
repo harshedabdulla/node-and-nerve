@@ -272,7 +272,12 @@ class Investigator:
                 if fid not in found:
                     run.warnings.append(f"focus entity {fid} does not exist in this company graph")
             refs = [
-                EntityRef(id=i, kind=found[i]["kind"], match_reason="requested focus")
+                EntityRef(
+                    id=i,
+                    kind=found[i]["kind"],
+                    name=found[i].get("name"),
+                    match_reason="requested focus",
+                )
                 for i in request.focus_ids
                 if i in found
             ]
@@ -383,7 +388,7 @@ class Investigator:
         run.add_finding(
             category="overdue_work" if p["overdue"] else "blocked_work",
             statement=f"{tid} '{t.get('name')}' is {' and '.join(state)}; "
-            f"status: {t.get('status')}",
+            f"status: {t.get('status') or 'not recorded'}",
             entity_ids=[tid],
             path_ids=[run.add_path(f"{tid} is in scope", base_edges)] if base_edges else [],
             source_ids=support.get(tid, []),
@@ -400,7 +405,7 @@ class Investigator:
             run.add_finding(
                 category="blocker_dependency",
                 statement=f"{tid} is blocked by {b['id']} '{b.get('name')}' "
-                f"(status: {b.get('status')})",
+                f"(status: {b.get('status') or 'not recorded'})",
                 entity_ids=[tid, b["id"]],
                 path_ids=[path_id],
                 source_ids=[b["edge_source_id"]] if b.get("edge_source_id") else [],
@@ -409,7 +414,7 @@ class Investigator:
         unexplained = not p["blockers"] and tid not in explained
         if p["overdue"] and unexplained and t.get("status") != "blocked":
             run.missing.append(
-                f"{tid} is overdue but the graph records no blocker, incident or status "
+                f"{tid} is overdue but the graph records no open blocker, incident or status "
                 "explaining the delay."
             )
         if t.get("status") == "blocked" and not p["blockers"]:

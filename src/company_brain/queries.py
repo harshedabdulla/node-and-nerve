@@ -103,7 +103,7 @@ ENTITIES_EXIST = Query(
     cypher="""
 UNWIND $ids AS eid
 MATCH (n:Entity {id: eid})
-RETURN n.id AS id, n.kind AS kind""",
+RETURN n.id AS id, n.kind AS kind, n.name AS name""",
 )
 
 GET_ENTITY = Query(
