@@ -1,58 +1,34 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Schibsted_Grotesk } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
+const schibsted = Schibsted_Grotesk({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
-  variable: "--font-inter",
+  variable: "--font-schibsted",
   display: "swap",
 });
 
+const description =
+  "Node & Nerve connects the records your business already keeps into one graph on FalkorDB, " +
+  "then answers questions with the entries, links and sources behind every figure.";
+
 export const metadata: Metadata = {
-  title: "Node & Nerve | Graph-Powered Company Intelligence",
-  description:
-    "Connect business context, operational records and decisions into a graph that helps AI agents investigate how everything relates.",
-  keywords: [
-    "Node & Nerve",
-    "FalkorDB",
-    "Company Brain",
-    "Graph Database",
-    "AI Agents",
-    "Knowledge Graph",
-    "Organizational Context",
-  ],
-  authors: [{ name: "Spindle / Node & Nerve" }],
-  openGraph: {
-    title: "Node & Nerve | Graph-Powered Company Intelligence",
-    description:
-      "Connect business context, operational records and decisions into a graph that helps AI agents investigate how everything relates.",
-    type: "website",
-  },
+  title: "Node & Nerve: answers from your connected company records",
+  description,
+  openGraph: { title: "Node & Nerve", description, type: "website" },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   themeColor: "#000000",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`dark ${inter.variable}`}>
+    <html lang="en" className={schibsted.variable}>
       <head>
-        {/* BubbledotICG-FinePos font CDN */}
-        <link
-          rel="stylesheet"
-          href="https://db.onlinewebfonts.com/c/8cb707a9b8a73f8a7403336b861c3074?family=BubbledotICG-FinePos"
-        />
-        {/* Preload local fonts */}
         <link
           rel="preload"
           href="/fonts/BubbledotICG-FinePos.woff2"
@@ -60,17 +36,8 @@ export default function RootLayout({
           type="font/woff2"
           crossOrigin="anonymous"
         />
-        <link
-          rel="preload"
-          href="/fonts/GeistPixel-Circle.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
       </head>
-      <body className="bg-black text-white antialiased min-h-screen selection:bg-white selection:text-black">
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

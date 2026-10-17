@@ -400,10 +400,12 @@ Ideas for connectors (Jira/GitHub issues, Slack, documents, CRM) are in [docs/co
 
 ## Live deployment
 
-- Site: https://node-and-nerve.vercel.app ("Explore Node & Nerve" runs the CT-104 investigation live)
+- Site: https://node-and-nerve.vercel.app (source in [`web/`](web/); `/demo` runs the CT-104 and Project Atlas investigations live on fictional data)
 - API: https://node-and-nerve-api.vercel.app (`/docs` for OpenAPI; contract endpoints need an API key)
 - Graph: FalkorDB Cloud (AWS Mumbai); API functions run in Vercel `bom1` next to it
 - Telegram: `@node_and_nerve_bot` in webhook mode (`POST /telegram/webhook`, checked against `TELEGRAM_WEBHOOK_SECRET`); private to allow-listed chats
+
+Where the product is going (accounts, workspaces, connectors, notifications) and what is built versus planned: [docs/platform-architecture.md](docs/platform-architecture.md).
 
 Deploy your own: `vercel.json` and `api/index.py` serve the FastAPI app as a Vercel Python function. Seed the cloud graph from your machine with the cloud `FALKORDB_*` values exported (`company-brain seed --reset`, `contracts seed --reset`, `cashflow seed --reset`), set the same variables plus `COMPANY_BRAIN_API_KEYS`, `TRACE_LINK_SECRET`, `PUBLIC_BASE_URL` and the Telegram ones in the Vercel project, then `vercel deploy --prod` and `company-brain telegram --webhook <api>/telegram/webhook`. `company-brain telegram --delete-webhook` switches back to local polling.
 
