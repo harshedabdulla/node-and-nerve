@@ -176,7 +176,7 @@ Recorded direct cost (provisional)
   Machinery            ₹11,800
   Other direct          ₹8,500
   Total              ₹8,51,700
-  (35 charged entries; excluded: PUR-2056)
+  (27 book entries, 35 charges; excluded: PUR-2056)
 
 Profitability (provisional, recorded direct costs only)
   Contract value           ₹15,30,000
@@ -397,6 +397,15 @@ Company Brain returns evidence; the caller decides what to do with it. A typical
 This works the same from Python, TypeScript, Go or a shell script, since it is plain JSON over HTTP. A future integration with [Spindle](https://heyspindle.com/)'s agent engine would call the same API; nothing here depends on Spindle.
 
 Ideas for connectors (Jira/GitHub issues, Slack, documents, CRM) are in [docs/connectors.md](docs/connectors.md).
+
+## Live deployment
+
+- Site: https://node-and-nerve.vercel.app ("Explore Node & Nerve" runs the CT-104 investigation live)
+- API: https://node-and-nerve-api.vercel.app (`/docs` for OpenAPI; contract endpoints need an API key)
+- Graph: FalkorDB Cloud (AWS Mumbai); API functions run in Vercel `bom1` next to it
+- Telegram: `@node_and_nerve_bot` in webhook mode (`POST /telegram/webhook`, checked against `TELEGRAM_WEBHOOK_SECRET`); private to allow-listed chats
+
+Deploy your own: `vercel.json` and `api/index.py` serve the FastAPI app as a Vercel Python function. Seed the cloud graph from your machine with the cloud `FALKORDB_*` values exported (`company-brain seed --reset`, `contracts seed --reset`, `cashflow seed --reset`), set the same variables plus `COMPANY_BRAIN_API_KEYS`, `TRACE_LINK_SECRET`, `PUBLIC_BASE_URL` and the Telegram ones in the Vercel project, then `vercel deploy --prod` and `company-brain telegram --webhook <api>/telegram/webhook`. `company-brain telegram --delete-webhook` switches back to local polling.
 
 ## Hackathon submission
 

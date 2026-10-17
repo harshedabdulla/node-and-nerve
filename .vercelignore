@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+.venv
+.run
+.serena
+.mypy_cache
+.pytest_cache
+.ruff_cache
+tests
+examples
+docs

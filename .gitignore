@@ -13,3 +13,10 @@ build/
 .DS_Store
 .idea/
 .vscode/
+.run/
+
+.vercel
+.env.deploy
+.env.vercel
+.env*
+!.env.example
