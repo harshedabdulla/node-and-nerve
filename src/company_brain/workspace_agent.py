@@ -16,7 +16,9 @@ from company_brain import queries as q
 from company_brain.agent import AgentAnswer, ContractAgent, Transport, http_post_json
 from company_brain.alerts import attention, readable
 from company_brain.graph import CompanyNotFound, GraphError, GraphStore
+from company_brain.ingest import EntityNotFound
 from company_brain.investigate import Investigator
+from company_brain.lookup import Lookup
 from company_brain.models import InvestigationRequest, InvestigationResponse
 
 WORKSPACE_PROMPT = """\
@@ -63,6 +65,20 @@ TOOL_SPECS: list[dict[str, Any]] = [
                     },
                 },
                 "required": ["question"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "record_details",
+            "description": "One record's own fields (status, due date, priority, owner and "
+            "other links) by task reference such as NN-2 or by graph id such as "
+            "project:kochi-showroom.",
+            "parameters": {
+                "type": "object",
+                "properties": {"record": {"type": "string"}},
+                "required": ["record"],
             },
         },
     },
@@ -116,6 +132,15 @@ class WorkspaceTools:
                 )
                 self.investigations.append(r)
                 return compact(r)
+            if name == "record_details":
+                ref = str(arguments.get("record") or "").strip()
+                rid = ref if ":" in ref else f"ticket:{ref.lower()}"
+                view = Lookup(self.store, self.company_id).entity(rid)
+                keep = {"id", "name", "kind", "status", "due_date", "priority", "source_record_id"}
+                return {
+                    "record": {k: v for k, v in view.entity.items() if k in keep},
+                    "links": view.relationships[:20],
+                }
             if name == "what_needs_attention":
                 results = attention(self.store, self.company_id, self.as_of)
                 self.investigations += results
@@ -123,6 +148,8 @@ class WorkspaceTools:
             return {"error": f"unknown tool {name!r}"}
         except CompanyNotFound:
             return {"error": "nothing has been synced into this workspace yet"}
+        except EntityNotFound:
+            return {"error": f"no record {arguments.get('record')!r} in this workspace"}
         except (ValueError, KeyError) as exc:
             return {"error": f"invalid arguments: {exc}"}
         # GraphError propagates: with the graph unreachable there is nothing to word.

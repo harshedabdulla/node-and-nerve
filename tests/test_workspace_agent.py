@@ -31,7 +31,11 @@ def test_model_answers_from_tool_results_with_citations(
     assert wa.answer.text == "T-2 waits on T-3."
     sent = model.requests[0][2]
     assert sent["messages"][0]["content"] == WORKSPACE_PROMPT
-    assert {t["function"]["name"] for t in sent["tools"]} == {"investigate", "what_needs_attention"}
+    assert {t["function"]["name"] for t in sent["tools"]} == {
+        "investigate",
+        "record_details",
+        "what_needs_attention",
+    }
     result = json.loads(model.requests[1][2]["messages"][-1]["content"])
     blocked = next(f for f in result["findings"] if f["category"] == "blocker_dependency")
     assert blocked["statement"].startswith("T-2 is blocked by T-3") and blocked["cite"] == [
@@ -117,3 +121,16 @@ def test_ask_response_edges_use_the_field_names_the_web_app_reads(
     )
     edge = body["investigations"][0]["evidence_paths"][0]["edges"][0]
     assert {"type", "from_id", "to_id", "source_id"} <= set(edge)  # contract with web/ask
+
+
+def test_record_details_gives_a_task_its_own_fields(
+    real_store: FalkorDBStore, company: str
+) -> None:
+    from company_brain.workspace_agent import WorkspaceTools
+
+    import_task_table(real_store, company, _request())
+    tools = WorkspaceTools(real_store, company)
+    t2 = tools.run("record_details", {"record": "T-2"})
+    assert t2["record"]["due_date"] == "2026-10-25" and t2["record"]["status"] == "blocked"
+    assert t2["links"]
+    assert "error" in tools.run("record_details", {"record": "T-99"})
