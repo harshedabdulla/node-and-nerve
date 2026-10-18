@@ -8,13 +8,16 @@ An open-source, graph-powered organizational context service for AI agents. Conn
 
 Company Brain is a small HTTP service. You load people, teams, projects, tickets, incidents, decisions and source records into a FalkorDB graph, then ask questions like *"Why is Project Atlas behind schedule, who owns the blockers, and what evidence supports that?"* The service answers with **structured, source-backed evidence** retrieved by fixed Cypher queries. It does not generate a narrative. An LLM (or a person) can reason over the result; the service makes sure the facts and their sources are real.
 
-No LLM, API key, agent framework or particular frontend is required.
+The engine needs no LLM, API key, agent framework or particular frontend. The hosted platform optionally adds a language model, which can only call the deterministic investigations and word what they return.
+
+**Live:** https://nodeandnerve.heyspindle.com · sign up, create a workspace, connect Google Sheets and Zoho Books, ask about your company, and get answers and alerts in Telegram. The fictional demo companies run at [/demo](https://nodeandnerve.heyspindle.com/demo) without signing in.
 
 The repository contains the reusable engine (the `company_brain` package, also called **Node & Nerve**) and applications of it that share one graph engine, one evidence model and one API:
 
 - **Project Atlas** (organizational context): why is a project late, who owns the blockers, what evidence supports it. Described below.
 - **[Contract cost investigation](docs/contract-costing.md)** (manufacturing): how much has a lorry-body contract cost so far, what is its provisional profit, and what is missing. [Jump to the section](#contract-cost-investigation-manufacturing).
 - **[Cashflow Radar](docs/cashflow-radar.md)** (small-business receivables): which customers owe money, and which supplier payments or commitments due this week have a *documented* dependency on those collections. [Jump to the section](#cashflow-radar).
+- **The platform** (any company): accounts and workspaces, Google Sheets and Zoho Books syncing into each workspace's own graph, "what needs attention" and questions answered over it, Telegram answers and alerts. [Jump to the section](#the-platform-workspaces-integrations-and-alerts).
 
 ---
 
@@ -242,7 +245,7 @@ Not established by the records
     relies on incoming payments is not recorded.
 ```
 
-Full JSON: [examples/cashflow-investigation.json](examples/cashflow-investigation.json). Google Sheets and Telegram were evaluated and documented, not built ([details](docs/cashflow-radar.md#integrations-evaluated-not-implemented)).
+Full JSON: [examples/cashflow-investigation.json](examples/cashflow-investigation.json). Zoho Books now feeds this investigation in the platform (below).
 
 ## API
 
@@ -398,16 +401,28 @@ This works the same from Python, TypeScript, Go or a shell script, since it is p
 
 Ideas for connectors (Jira/GitHub issues, Slack, documents, CRM) are in [docs/connectors.md](docs/connectors.md).
 
+## The platform: workspaces, integrations and alerts
+
+The engine above, run for real companies. Code: [`web/`](web/) (Next.js) and the `company_brain` API.
+
+- **Accounts and workspaces**: Clerk sign-in; each Clerk organization is a workspace with admin and member roles, stored in a Postgres control plane (Neon). Each workspace gets its own FalkorDB graph named from an opaque id (`ws-…`). The workspace is always taken from the verified session, never from the browser, and the app's API key is scoped to `ws-*`, so it can never read the demo companies or another tenant.
+- **Google Sheets** (Composio OAuth): pick a sheet, confirm the column mapping, sync. [`tables.py`](src/company_brain/tables.py) turns rows into `Ticket`, `Person` and `Project` nodes joined by `OWNS`, `PART_OF` and `BLOCKED_BY`, with each row kept as a `Source`. Unknown status words, ambiguous dates and blockers that name missing tasks become warnings, never guesses. Re-syncing writes the same ids.
+- **Zoho Books** (Composio OAuth plus Composio's proxy to Zoho's own API, read-only): [`books.py`](src/company_brain/books.py) maps contacts, invoices, bills and payments onto `Customer`, `Supplier`, `Invoice` (`BILLED_TO`), `Payment` (`RECEIVED_FROM`, `ALLOCATED_TO {amount}`) and `Commitment` (`OWED_TO`), each with a source linking back to Zoho. The Cashflow Radar investigation then answers who owes what and what is due, in exact paise.
+- **What needs attention** (`GET /v1/companies/{id}/attention`) runs the existing project investigation for every project in a workspace graph: blocked and overdue work, `BLOCKED_BY` chains, owners, and what is not recorded.
+- **Ask** (`POST /v1/companies/{id}/ask`): a language model with four read-only tools (investigate, record details, money, what needs attention) writes the answer, cites the rows behind each point, and must report gaps as gaps. The page draws the evidence paths the answer used as an animated graph. Without a model it falls back to the deterministic answer.
+- **Telegram**: a private chat links to a workspace with a one-time code; it then gets `/attention`, plain-language answers, and alerts when work becomes blocked or overdue. Each alert is sent once per chat (a delivery row is claimed before sending and released if the send fails).
+- **Sync**: on demand, and daily by Vercel Cron.
+
+Design, decisions and what is still open: [docs/platform-architecture.md](docs/platform-architecture.md).
+
 ## Live deployment
 
-- Site: https://node-and-nerve.vercel.app (source in [`web/`](web/); `/demo` runs the CT-104 and Project Atlas investigations live on fictional data)
-- API: https://node-and-nerve-api.vercel.app (`/docs` for OpenAPI; contract endpoints need an API key)
-- Graph: FalkorDB Cloud (AWS Mumbai); API functions run in Vercel `bom1` next to it
-- Telegram: `@node_and_nerve_bot` in webhook mode (`POST /telegram/webhook`, checked against `TELEGRAM_WEBHOOK_SECRET`); private to allow-listed chats
+- Site and app: https://nodeandnerve.heyspindle.com (source in [`web/`](web/)). `/demo` runs the CT-104 and Project Atlas investigations live on fictional data; `/sign-up` creates a workspace.
+- API: https://node-and-nerve-api.vercel.app (`/docs` for OpenAPI; company endpoints need a company-scoped API key)
+- Graph: FalkorDB Cloud (AWS Mumbai); API and site functions run in Vercel `bom1` next to it
+- Telegram: `@node_and_nerve_bot` in webhook mode (`POST /telegram/webhook`, checked against `TELEGRAM_WEBHOOK_SECRET`); answers only chats linked to a workspace (and the demo allow-list)
 
-Where the product is going (accounts, workspaces, connectors, notifications) and what is built versus planned: [docs/platform-architecture.md](docs/platform-architecture.md).
-
-Deploy your own: `vercel.json` and `api/index.py` serve the FastAPI app as a Vercel Python function. Seed the cloud graph from your machine with the cloud `FALKORDB_*` values exported (`company-brain seed --reset`, `contracts seed --reset`, `cashflow seed --reset`), set the same variables plus `COMPANY_BRAIN_API_KEYS`, `TRACE_LINK_SECRET`, `PUBLIC_BASE_URL` and the Telegram ones in the Vercel project, then `vercel deploy --prod` and `company-brain telegram --webhook <api>/telegram/webhook`. `company-brain telegram --delete-webhook` switches back to local polling.
+Deploy your own: `vercel.json` and `api/index.py` serve the FastAPI app as a Vercel Python function. Seed the cloud graph from your machine with the cloud `FALKORDB_*` values exported (`company-brain seed --reset`, `contracts seed --reset`, `cashflow seed --reset`), set the same variables plus `COMPANY_BRAIN_API_KEYS`, `TRACE_LINK_SECRET`, `PUBLIC_BASE_URL`, `DATABASE_URL` and the Telegram ones in the Vercel project, then `vercel deploy --prod` and `company-brain telegram --webhook <api>/telegram/webhook`. The web app needs `NN_API_URL`, `NN_API_KEY`, `NN_APP_API_KEY`, `NN_TRACE_SECRET`, `DATABASE_URL`, `COMPOSIO_API_KEY`, the Clerk keys and `CRON_SECRET`; apply the control-plane schema with `npm run db:migrate` in `web/`.
 
 ## Hackathon submission
 
@@ -415,7 +430,7 @@ Deploy your own: `vercel.json` and `api/index.py` serve the FastAPI app as a Ver
 - **Track**: 03 — Company Brain.
 - **Timeline**: this repository was created and all code was written during the hackathon window, starting October 15, 2026. No pre-existing code was used apart from the open-source libraries listed in `pyproject.toml`.
 - **Data**: all data is synthetic. Northstar Systems, Varsha Electricals and Kaveri Body Works, their people, customers, suppliers, workers, vehicle numbers, amounts, documents and URIs (`*.example`) are fictional.
-- **Cashflow Radar** and the **manufacturing contract cost investigation** were added on October 16, 2026, on top of the engine built on October 15.
+- **Cashflow Radar** and the **manufacturing contract cost investigation** were added on October 16, 2026, on top of the engine built on October 15. The **platform** (accounts and workspaces, Google Sheets, Zoho Books, Telegram per workspace, AI answers with the evidence graph, alerts) was built on October 17–18.
 - **AI assistance disclosure**: built with the help of an AI coding assistant (Claude Code, by Anthropic), which wrote much of the code and documentation under the author's direction. The author reviewed the design, graph model, queries and results, and can explain them.
 
 ## License

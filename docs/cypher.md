@@ -201,6 +201,40 @@ The Project → Ticket → Incident → Source → Decision → Person chain is 
 
 The `mf_*` templates (contract, charges, category totals, noted-but-unsplit costs, unallocated costs, unapplied payments, overview, changes since) are described with their Cypher in [contract-costing.md](contract-costing.md#how-falkordb-does-the-work). Dialect point found while building them: reusing a variable name across pattern comprehensions in one `RETURN` made later comprehensions come back empty, so each comprehension uses its own variable names.
 
+## Platform reads (any workspace)
+
+Workspace graphs reuse the investigation templates above; these three exist for the app.
+
+```cypher
+// graph_node_counts: is a workspace graph empty or synced? Counts only, no record content.
+MATCH (n:Entity)
+RETURN n.kind AS kind, count(n) AS count, max(n.updated_at) AS last_updated
+ORDER BY kind
+
+// graph_relationship_counts
+MATCH (:Entity)-[r]->(:Entity)
+RETURN type(r) AS type, count(r) AS count
+ORDER BY type
+
+// graph_projects: the projects "what needs attention" investigates, each focused by id
+MATCH (p:Project)
+RETURN p.id AS id, p.name AS name
+ORDER BY p.name
+LIMIT $limit
+```
+
+Imports write through the same `MERGE` templates as every other record, so a re-sync writes the same ids. `mf_unallocated` counts only charges that reach a contract (directly or through `PART_OF`); charges to a job with no contract are returned as `unlinked_targets` instead of disappearing:
+
+```cypher
+OPTIONAL MATCH (rec)-[ch:CHARGED_TO]->(t:Entity)
+WITH rec, ch, t, t:Contract OR size([(t)-[:PART_OF]->(lc:Contract) | lc]) > 0 AS linked
+WITH rec, toInteger(sum(CASE WHEN linked THEN ch.amount_paise ELSE 0 END)) AS charged,
+     [x IN collect(CASE WHEN ch IS NOT NULL AND NOT linked THEN t.id END) WHERE x IS NOT NULL]
+       AS unlinked_targets
+```
+
+(FalkorDB rejects `exists((t)-[:PART_OF]->(:Contract))` and pattern predicates inside a pattern comprehension's `WHERE`, so the link test is a `size()` of a pattern comprehension.)
+
 ## FalkorDB dialect notes (v4.20.7)
 
 Found while building this; each one shaped a query above.

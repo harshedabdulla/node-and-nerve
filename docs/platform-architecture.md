@@ -1,6 +1,6 @@
 # Node & Nerve platform: current architecture and the path to workspaces
 
-Status: 17 Oct 2026. Phase 1 is in production. Phases 2 and 3 and the first part of 5 are built on the `platform` branch and run on a Vercel preview; the Google Sheets read path still needs one live run with a real Google account. Phases 4 and 6 and Telegram alerts are not built.
+Status: 18 Oct 2026. Phases 1 to 3 and 5 are in production at https://nodeandnerve.heyspindle.com (accounts, workspaces, Google Sheets, Zoho Books, attention, Ask with a language model and evidence graph, Telegram answers and alerts). Phase 4 (a guided onboarding beyond the setup checklist) and part of 6 (automated end-to-end isolation tests) are open.
 
 ## What runs today
 
@@ -15,8 +15,8 @@ Telegram ──webhook (secret header)──────────────
 | Site | `web/`, https://node-and-nerve.vercel.app | Landing page and `/demo`. Server components call the API with a key that is never sent to the browser. Demo pages read only the synthetic tenants `kaveri-body-works` and `northstar`. |
 | API | `src/company_brain`, `api/index.py`, https://node-and-nerve-api.vercel.app | Ingest (entities, relationships, sources, events, CSV), three investigations (Atlas, Cashflow Radar, contract costing), trace pages, Telegram webhook. |
 | Graph | FalkorDB Cloud | One graph per company (`company_brain__<id>`), the isolation boundary. |
-| Auth | `COMPANY_BRAIN_API_KEYS` | Static keys scoped to companies. There are no users, sessions or workspaces yet. |
-| Bot | `telegram_bot.py` | One bot, one company (`AGENT_COMPANY_ID`), one allow-list. |
+| Auth | Clerk (production, heyspindle.com) + `COMPANY_BRAIN_API_KEYS` | People sign in with Clerk; organizations are workspaces. Server-to-server calls use company-scoped keys (the app's key is `ws-*`). |
+| Bot | `telegram_bot.py`, `telegram_workspace.py` | One bot; each private chat is linked to one workspace with a one-time code. The CT-104 demo bot still answers its allow-listed chat when it is not linked. |
 
 What is already company-agnostic: tenant-per-graph isolation and company id validation; the ingest layer (MERGE on stable ids, older data never overwrites newer, `SUPPORTED_BY` provenance, CSV validate-then-write); typed relationship rules; fixed, parameterized query templates with an executed-query log; the finding model (`fact`, `calculation`, `unknown`, `inconsistency`, `decision`) with evidence paths; signed trace links; the agent's tool loop.
 
@@ -62,7 +62,7 @@ Verified status (from the Spindle Composio gateway, early October 2026; to be re
 | --- | --- | --- | --- |
 | Telegram | Native bot (exists) | Messages to the bot | Notification channel first. Composio is not needed. |
 | Google Sheets | Composio `googlesheets`, OAuth | `GOOGLESHEETS_BATCH_GET` | First ingestion connector. The user picks a sheet and maps columns. |
-| Zoho Books / Inventory | Composio `zoho_books`, `zoho_inventory` | None | The account connects, but Composio exposes zero tools for these toolkits. Shown as "waiting on connector". |
+| Zoho Books | Composio `zoho_books` OAuth + `POST /tools/execute/proxy` to Zoho's own API | contacts, invoices, bills, customer and vendor payments (with applied invoices) | Composio still exposes zero Zoho Books tools, so the proxy signs read-only GETs to `https://www.zohoapis.<dc>/books/v3`. Composio hides the data centre, so it is detected once per connection and stored. Verified on a real organisation (India). |
 
 Sheets has no push events through Composio, so syncing is scheduled polling: one run per connection on a fixed interval, skipped if the previous run is still going, with a hash per row so unchanged rows write nothing.
 
@@ -87,7 +87,7 @@ A rule names a workspace, a check (an investigation plus a condition, for exampl
 
 ## Known gaps
 
-- Clerk is a development instance. Production needs a domain (planned: `nodeandnerve.heyspindle.com`) and DNS records on the heyspindle.com Cloudflare zone.
+- Clerk production runs on heyspindle.com; previews use the development instance.
 - Google sign-in uses Composio's managed OAuth app, so the consent screen names Composio. A Node & Nerve Google OAuth client should replace it before real customers.
 - Neon is in AWS us-east-1 while the functions and FalkorDB are in Mumbai; each control-plane query crosses that distance.
 - The daily sync runs once a day (Vercel Hobby limit) and only on production deployments.
