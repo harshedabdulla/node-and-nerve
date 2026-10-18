@@ -3,20 +3,21 @@ import { ClerkProvider } from "@clerk/nextjs";
 // Clerk loads only for sign-in, sign-up and the app; the public pages stay free of it.
 const appearance = {
   variables: {
-    colorPrimary: "#e9e7e2",
+    colorPrimary: "#ffffff",
     colorPrimaryForeground: "#000000",
-    colorBackground: "#0d0d0d",
-    colorForeground: "#e9e7e2",
-    colorMutedForeground: "#8a8a86",
-    colorInput: "#151515",
-    colorInputForeground: "#e9e7e2",
-    colorBorder: "#2a2a2a",
-    colorNeutral: "#e9e7e2",
-    colorDanger: "#ff6e5e",
+    colorBackground: "#0a0d18",
+    colorForeground: "#ffffff",
+    colorMutedForeground: "#8f9bc2",
+    colorInput: "#10131f",
+    colorInputForeground: "#ffffff",
+    colorBorder: "#262c44",
+    colorNeutral: "#c8d0ec",
+    colorDanger: "#e8796b",
     colorSuccess: "#8fd19e",
-    colorWarning: "#f0b43c",
-    borderRadius: "10px",
-    fontFamily: "var(--font-schibsted), Helvetica Neue, Arial, sans-serif",
+    colorWarning: "#e3a93c",
+    colorRing: "#7091e6",
+    borderRadius: "12px",
+    fontFamily: "var(--font-sans-family), Inter, system-ui, sans-serif",
   },
 };
 

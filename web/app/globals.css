@@ -1,42 +1,50 @@
 @import "tailwindcss";
 
-@font-face {
-  font-family: "Bubbledot";
-  src: url("/fonts/BubbledotICG-FinePos.woff2") format("woff2");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
 
-/* Colour is information here: the five finding kinds the engine returns. */
+
+/* Spindle's palette (DESIGN.md in the Spindle app), plus Node & Nerve's finding kinds,
+   which are information: fact, calculation, unknown, inconsistency, decision. */
 :root {
   --ink: #000000;
-  --paper: #e9e7e2;
-  --muted: #8a8a86;
-  --faint: #55554f;
-  --rule: #232323;
-  --raised: #0d0d0d;
+  --paper: #ffffff;
+  --muted: #8f9bc2;
+  --faint: #4a5378;
+  --rule: rgba(255, 255, 255, 0.1);
+  --raised: rgba(255, 255, 255, 0.03);
 
-  --fact: #e9e7e2;
-  --calculation: #93a8ff;
-  --unknown: #f0b43c;
-  --inconsistency: #ff6e5e;
-  --decision: #c9a2ff;
+  --indigo: #3d52a0;
+  --indigo-deep: #25356f;
+  --accent: #7091e6;
+  --accent-light: #adbbda;
+  --on-dark-muted: #c8d0ec;
+  --line: rgba(255, 255, 255, 0.14);
 
-  --font-display: "Bubbledot", ui-monospace, monospace;
-  --font-body: var(--font-schibsted), "Helvetica Neue", Arial, sans-serif;
+  --fact: #ffffff;
+  --calculation: #7091e6;
+  --unknown: #e3a93c;
+  --inconsistency: #e8796b;
+  --decision: #b9a6f2;
 
-  --measure: 68ch;
-  --gutter: clamp(20px, 5vw, 56px);
-  --page: 1180px;
+  --font-body: var(--font-sans-family), "Inter", system-ui, sans-serif;
+  --font-serif: var(--font-serif-family), "Times New Roman", Georgia, serif;
+  --font-mono: var(--font-mono-family), "SFMono-Regular", Consolas, monospace;
+  --font-display: var(--font-body);
+
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --measure: 66ch;
+  --gutter: clamp(20px, 5vw, 40px);
+  --page: 1200px;
 }
 
 html {
   background: var(--ink);
   color: var(--paper);
   font-family: var(--font-body);
-  font-size: 17px;
+  font-size: 16px;
   line-height: 1.55;
+  letter-spacing: -0.005em;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -51,14 +59,17 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid var(--paper);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 /* Lining, proportional figures: this face's tabular set gives commas a full digit width. */
+/* Figures in Geist Mono, as in Spindle. */
 .num {
-  font-variant-numeric: lining-nums proportional-nums;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
 }
 
 .wrap {
@@ -74,7 +85,8 @@ body {
   position: fixed;
   inset: 0 0 auto 0;
   z-index: 40;
-  padding-block: 16px;
+  padding-block: 14px;
+  pointer-events: none;
 }
 
 .site-header .wrap {
@@ -82,6 +94,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  pointer-events: auto;
 }
 
 .brand {
@@ -92,12 +105,12 @@ body {
   color: var(--paper);
   text-decoration: none;
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 .brand-mark {
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   border-radius: 999px;
   background: var(--paper);
   color: var(--ink);
@@ -105,36 +118,47 @@ body {
   place-items: center;
 }
 
+/* Spindle's pill navbar: glass at the top of the page, indigo once you scroll. */
 .nav {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px;
-  border-radius: 999px;
-  background: rgba(233, 231, 226, 0.92);
-  backdrop-filter: blur(8px);
+  gap: 2px;
+  padding: 5px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px);
+  transition: background-color 240ms var(--ease-smooth), border-color 240ms var(--ease-smooth);
+}
+
+.is-scrolled .nav {
+  background: rgba(61, 82, 160, 0.94);
+  border-color: rgba(255, 255, 255, 0.16);
 }
 
 .nav a {
-  color: #262626;
+  color: rgba(255, 255, 255, 0.82);
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
-  padding: 7px 14px;
-  border-radius: 999px;
+  padding: 7px 13px;
+  border-radius: 11px;
+  transition: background-color 160ms var(--ease-smooth), color 160ms var(--ease-smooth);
 }
 
 .nav a:hover {
-  background: rgba(0, 0, 0, 0.07);
+  color: var(--paper);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .nav a.nav-signin {
-  background: var(--ink);
-  color: var(--paper);
+  background: #ede8f5;
+  color: #0a0e1e;
+  margin-left: 4px;
 }
 
 .nav a[aria-current="page"] {
-  background: var(--ink);
+  background: rgba(37, 53, 111, 0.9);
   color: var(--paper);
 }
 
@@ -150,44 +174,69 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-height: 46px;
-  padding: 0 22px;
-  border-radius: 999px;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 24px;
+  border-radius: 14px;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
+  letter-spacing: -0.01em;
   text-decoration: none;
-  transition: background-color 150ms ease, color 150ms ease;
+  transition: background-color 160ms var(--ease-smooth), border-color 160ms var(--ease-smooth),
+    transform 160ms var(--ease-smooth);
+}
+
+.btn-primary::after {
+  content: "→";
+  transition: transform 160ms var(--ease-smooth);
+}
+
+.btn-primary:hover::after {
+  transform: translateX(3px);
 }
 
 .btn-primary {
   background: var(--paper);
-  color: var(--ink);
+  color: #000;
 }
 
 .btn-primary:hover {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .btn-quiet {
   color: var(--paper);
-  border: 1px solid rgba(233, 231, 226, 0.35);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(8px);
 }
 
 .btn-quiet:hover {
-  border-color: var(--paper);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 /* ---------------------------------------------------------------- hero */
 
+/* The hero is a framed card inset on black, the way Spindle frames its scenes. */
 .hero {
   position: relative;
   isolation: isolate;
-  min-height: 100svh;
+  min-height: calc(100svh - 48px);
+  margin: 24px;
+  border-radius: 22px;
   display: flex;
-  align-items: center;
-  padding-block: 120px 72px;
+  align-items: flex-end;
+  padding-block: 120px 64px;
   overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 720px) {
+  .hero {
+    margin: 10px;
+    border-radius: 18px;
+    padding-block: 104px 40px;
+  }
 }
 
 .hero-video,
@@ -206,15 +255,15 @@ body {
 
 .hero-shade {
   background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.55) 55%, rgba(0, 0, 0, 0.75) 100%),
-    linear-gradient(180deg, transparent 70%, var(--ink) 100%);
+    linear-gradient(90deg, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.45) 55%, rgba(0, 0, 0, 0.6) 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, transparent 40%, rgba(0, 0, 0, 0.75) 100%);
 }
 
 .hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
   gap: clamp(32px, 5vw, 72px);
-  align-items: center;
+  align-items: end;
 }
 
 @media (max-width: 960px) {
@@ -224,21 +273,22 @@ body {
 }
 
 .display {
-  font-family: var(--font-display);
-  font-weight: normal;
-  font-size: clamp(42px, 6.3vw, 90px);
-  line-height: 0.95;
-  letter-spacing: -0.01em;
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: clamp(44px, 6.4vw, 92px);
+  line-height: 0.98;
+  letter-spacing: -0.05em;
   color: var(--paper);
   text-wrap: balance;
 }
 
 .lede {
-  margin-top: 28px;
-  max-width: 34ch;
-  font-size: clamp(18px, 1.6vw, 21px);
-  line-height: 1.5;
-  color: #cfccc5;
+  margin-top: 24px;
+  max-width: 40ch;
+  font-size: clamp(17px, 1.4vw, 19px);
+  font-weight: 300;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.86);
 }
 
 .hero-actions {
@@ -249,19 +299,19 @@ body {
 }
 
 .hero-note {
-  margin-top: 20px;
-  font-size: 14px;
-  color: var(--muted);
+  margin-top: 18px;
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 /* ---------------------------------------------------------------- trace (the hero's evidence) */
 
 .trace {
-  background: rgba(8, 8, 8, 0.82);
-  border: 1px solid #2c2c2c;
+  background: rgba(5, 8, 20, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 20px;
   padding: 22px;
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(14px);
 }
 
 .trace-question {
@@ -311,13 +361,15 @@ body {
   left: 8px;
   top: -18px;
   height: 36px;
-  border-left: 1px solid #4a4a46;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .trace-edge {
   display: block;
-  font-size: 12px;
-  color: var(--calculation);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--accent);
   margin-bottom: 2px;
 }
 
@@ -343,9 +395,10 @@ body {
 }
 
 .trace-result strong {
+  font-family: var(--font-mono);
   font-size: 26px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-weight: 500;
+  letter-spacing: -0.03em;
 }
 
 .trace-foot {
@@ -362,23 +415,40 @@ body {
 
 .section {
   padding-block: clamp(72px, 10vw, 128px);
-  border-top: 1px solid var(--rule);
 }
 
 .section-head {
   max-width: var(--measure);
 }
 
+/* Section titles in Instrument Serif; the <em> phrase takes Spindle's indigo italic. */
 .h2 {
-  font-size: clamp(30px, 3.6vw, 46px);
-  line-height: 1.08;
-  letter-spacing: -0.025em;
-  font-weight: 600;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(34px, 4.4vw, 56px);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+}
+
+.h2 em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 18px;
 }
 
 .section-head p {
   margin-top: 18px;
-  color: #bdbab3;
+  color: #b8c1e0;
   font-size: 18px;
 }
 
@@ -418,11 +488,11 @@ body {
 }
 
 .step::before {
-  content: counter(step);
-  font-family: var(--font-display);
-  font-size: 40px;
-  line-height: 1;
-  color: var(--faint);
+  content: counter(step, decimal-leading-zero);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--accent);
   display: block;
   margin-bottom: 18px;
 }
@@ -435,7 +505,7 @@ body {
 
 .step p {
   margin-top: 10px;
-  color: #b4b1aa;
+  color: #aeb7d6;
   font-size: 16px;
 }
 
@@ -443,8 +513,9 @@ body {
 
 .connectors {
   margin-top: 48px;
-  border: 1px solid var(--rule);
-  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--raised);
+  border-radius: 20px;
   overflow: hidden;
 }
 
@@ -472,7 +543,7 @@ body {
 }
 
 .connector p {
-  color: #b4b1aa;
+  color: #aeb7d6;
   font-size: 15.5px;
 }
 
@@ -550,7 +621,7 @@ body {
 }
 
 .kind p {
-  color: #cfccc5;
+  color: var(--on-dark-muted);
   max-width: var(--measure);
 }
 
@@ -642,7 +713,7 @@ body {
 .plain-list li {
   padding: 12px 0;
   border-top: 1px solid var(--rule);
-  color: #cfccc5;
+  color: var(--on-dark-muted);
 }
 
 /* scenarios */
@@ -661,29 +732,32 @@ body {
 }
 
 .scenario {
-  border: 1px solid var(--rule);
-  border-radius: 16px;
-  padding: 26px;
+  border: 1px solid var(--line);
+  background: var(--raised);
+  border-radius: 20px;
+  padding: 28px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   color: var(--paper);
   text-decoration: none;
-  transition: border-color 150ms ease;
+  transition: border-color 240ms var(--ease-smooth), background-color 240ms var(--ease-smooth);
 }
 
 .scenario:hover {
-  border-color: #5a5a55;
+  border-color: rgba(112, 145, 230, 0.6);
+  background: rgba(61, 82, 160, 0.08);
 }
 
 .scenario h3 {
-  font-size: 21px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 1.1;
 }
 
 .scenario p {
-  color: #b4b1aa;
+  color: #aeb7d6;
   font-size: 16px;
 }
 
@@ -730,16 +804,17 @@ body {
 
 .demo-title {
   margin-top: 28px;
-  font-size: clamp(32px, 4.2vw, 54px);
-  line-height: 1.05;
-  letter-spacing: -0.03em;
-  font-weight: 600;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(36px, 4.6vw, 60px);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
   max-width: 22ch;
 }
 
 .demo-question {
   margin-top: 16px;
-  color: #bdbab3;
+  color: #b8c1e0;
   font-size: 18px;
   max-width: var(--measure);
 }
@@ -764,7 +839,7 @@ body {
 
 .tabs a[aria-current="page"] {
   background: var(--paper);
-  color: var(--ink);
+  color: #0a0e1e;
 }
 
 .ledger {
@@ -781,17 +856,20 @@ body {
 }
 
 .panel {
-  border: 1px solid var(--rule);
-  border-radius: 16px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
   padding: 22px 24px;
   background: var(--raised);
 }
 
 .panel h2 {
-  font-size: 15px;
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--muted);
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .row {
@@ -803,7 +881,7 @@ body {
 }
 
 .row span:first-child {
-  color: #b4b1aa;
+  color: #aeb7d6;
 }
 
 .row.total {
@@ -818,9 +896,10 @@ body {
 }
 
 .big {
-  font-size: 34px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-family: var(--font-mono);
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
 }
 
 .note {
@@ -842,7 +921,7 @@ body {
   padding: 11px 0;
   border-top: 1px solid var(--rule);
   font-size: 15px;
-  color: #cfccc5;
+  color: var(--on-dark-muted);
 }
 
 .findings li:first-child {
@@ -868,7 +947,7 @@ body {
 }
 
 .queries code {
-  color: #cfccc5;
+  color: var(--on-dark-muted);
   font-size: 13px;
 }
 
@@ -909,12 +988,20 @@ body {
   min-height: 100vh;
 }
 
+/* Spindle's app bar: a glass pill inset from the edges. */
 .app-bar {
+  position: sticky;
+  top: 12px;
+  z-index: 30;
   display: flex;
   align-items: center;
-  gap: 24px;
-  padding: 14px var(--gutter);
-  border-bottom: 1px solid var(--rule);
+  gap: 20px;
+  margin: 12px var(--gutter) 0;
+  padding: 8px 10px 8px 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
 }
 
 .app-nav {
@@ -940,7 +1027,7 @@ body {
 
 .app-nav a[aria-current="page"] {
   color: var(--paper);
-  background: #161616;
+  background: rgba(61, 82, 160, 0.55);
 }
 
 .app-bar-end {
@@ -971,15 +1058,16 @@ body {
 }
 
 .app-title {
-  font-size: clamp(28px, 3vw, 38px);
-  font-weight: 600;
-  letter-spacing: -0.025em;
-  line-height: 1.1;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(34px, 4vw, 52px);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
 }
 
 .app-lede {
   margin-top: 10px;
-  color: #bdbab3;
+  color: #b8c1e0;
   max-width: var(--measure);
 }
 
@@ -1072,16 +1160,16 @@ button.btn-primary {
   display: grid;
   gap: 6px;
   font-size: 14.5px;
-  color: #cfccc5;
+  color: var(--on-dark-muted);
 }
 
 .mapping select {
   font: inherit;
   color: var(--paper);
-  background: #151515;
-  border: 1px solid #2a2a2a;
-  border-radius: 10px;
-  padding: 9px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 10px 12px;
 }
 
 .preview {
@@ -1136,7 +1224,7 @@ button.btn-primary {
 }
 
 .pick a:hover {
-  background: #111;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .warnings {
@@ -1157,11 +1245,23 @@ button.btn-primary {
   flex: 1;
   min-width: 0;
   font: inherit;
+  font-size: 15px;
   color: var(--paper);
-  background: #121212;
-  border: 1px solid #2a2a2a;
-  border-radius: 999px;
-  padding: 11px 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  padding: 12px 16px;
+  transition: border-color 160ms var(--ease-smooth), box-shadow 160ms var(--ease-smooth);
+}
+
+.ask-form input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.ask-form input:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--accent);
 }
 
 .setup li span a {
@@ -1187,7 +1287,7 @@ button.btn-primary {
 }
 
 .graph-edge-label {
-  fill: #7a7a74;
+  fill: #8f9bc2;
   font-size: 11px;
   text-anchor: middle;
 }
@@ -1240,7 +1340,7 @@ button.btn-primary {
 .ai-answer p,
 .ai-answer ul {
   margin-top: 10px;
-  color: #dcd9d2;
+  color: #d9dff0;
 }
 
 .ai-answer ul {
@@ -1254,11 +1354,12 @@ button.btn-primary {
 
 .cite {
   display: inline-block;
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
   padding: 0 7px;
   margin-left: 4px;
   border-radius: 999px;
-  border: 1px solid #333;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: var(--muted);
   text-decoration: none;
   white-space: nowrap;
@@ -1266,5 +1367,59 @@ button.btn-primary {
 
 a.cite:hover {
   color: var(--paper);
-  border-color: #555;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Once scrolled, the logo moves into the centred indigo pill, as on Spindle. */
+.nav-brand {
+  display: none !important;
+}
+
+.is-scrolled .brand {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.brand {
+  transition: opacity 240ms var(--ease-smooth);
+}
+
+.is-scrolled .wrap {
+  justify-content: center;
+}
+
+.is-scrolled .nav-brand {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--paper) !important;
+  padding-right: 16px !important;
+  margin-right: 4px;
+  border-right: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 0 !important;
+}
+
+.is-scrolled .nav-brand:hover {
+  background: none !important;
+}
+
+.is-scrolled .brand {
+  position: absolute;
+}
+
+.brand-mark.small {
+  width: 22px;
+  height: 22px;
+}
+
+.brand-mark.small svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* In a ledger row only the figure is mono; the label stays in the sans. */
+.row.num span:first-child {
+  font-family: var(--font-body);
+  letter-spacing: -0.005em;
 }

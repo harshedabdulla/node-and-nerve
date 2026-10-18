@@ -1,11 +1,26 @@
 import type { Metadata, Viewport } from "next";
-import { Schibsted_Grotesk } from "next/font/google";
+import { Geist_Mono, Instrument_Serif, Inter_Tight } from "next/font/google";
 import "./globals.css";
 
-const schibsted = Schibsted_Grotesk({
+// Spindle's type system: a sans for everything, Instrument Serif for the one big line,
+// Geist Mono for figures and labels. Inter Tight stands in for Neue Montreal (licensed).
+const sans = Inter_Tight({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-schibsted",
+  weight: ["300", "400", "500", "600"],
+  variable: "--font-sans-family",
+  display: "swap",
+});
+const serif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-serif-family",
+  display: "swap",
+});
+const mono = Geist_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-mono-family",
   display: "swap",
 });
 
@@ -27,16 +42,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={schibsted.variable}>
-      <head>
-        <link
-          rel="preload"
-          href="/fonts/BubbledotICG-FinePos.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-      </head>
+    <html lang="en" className={`${sans.variable} ${serif.variable} ${mono.variable}`}>
       <body>{children}</body>
     </html>
   );

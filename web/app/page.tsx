@@ -74,7 +74,7 @@ function HeroTrace({ r }: { r: ContractInvestigation }) {
           <span className="trace-title">
             {line.ref}: {line.description}
           </span>
-          <span className="trace-meta num">
+          <span className="trace-meta">
             {line.counterparty}, bill {inr(line.record_amount_paise)}. Source:{" "}
             {line.source_ids.map((s) => cite.get(s)).join(", ")}
           </span>
@@ -171,7 +171,10 @@ export default async function Home() {
         <section className="section" id="how">
           <div className="wrap">
             <div className="section-head">
-              <h2 className="h2">Your records already describe the business. They just aren&rsquo;t connected.</h2>
+              <span className="label">How it works</span>
+              <h2 className="h2">
+                Your records already describe the business. <em>They just aren&rsquo;t connected.</em>
+              </h2>
               <p>
                 A purchase sits in one book, the payment in another, the job it was for in a third.
                 Node &amp; Nerve stores each record once and keeps how they relate, so a question can
@@ -207,7 +210,10 @@ export default async function Home() {
         <section className="section" id="integrations">
           <div className="wrap">
             <div className="section-head">
-              <h2 className="h2">Integrations</h2>
+              <span className="label">Integrations</span>
+              <h2 className="h2">
+                Connect what you <em>already use</em>
+              </h2>
               <p>
                 What works today, and what doesn&rsquo;t yet. A connection is only shown as working once
                 records from it have reached the graph.
@@ -228,7 +234,10 @@ export default async function Home() {
         <section className="section">
           <div className="wrap">
             <div className="section-head">
-              <h2 className="h2">Every finding says what kind of claim it is</h2>
+              <span className="label">Evidence</span>
+              <h2 className="h2">
+                Every finding says <em>what kind of claim it is</em>
+              </h2>
               <p>
                 Figures are computed by the engine from the graph, never by a language model. Each
                 finding is labelled, so you can tell a recorded fact from a gap.
@@ -254,7 +263,10 @@ export default async function Home() {
         <section className="section">
           <div className="wrap split">
             <div className="section-head">
-              <h2 className="h2">Answers in the chat you already use</h2>
+              <span className="label">Telegram</span>
+              <h2 className="h2">
+                Answers in the chat <em>you already use</em>
+              </h2>
               <p>
                 The Telegram bot answers the owner&rsquo;s questions from the same graph and links to the
                 evidence. It only replies to chats the owner has allowed, and it never messages
@@ -296,7 +308,10 @@ export default async function Home() {
         <section className="section">
           <div className="wrap">
             <div className="section-head">
-              <h2 className="h2">Try it on two fictional companies</h2>
+              <span className="label">Live demo</span>
+              <h2 className="h2">
+                Try it on <em>two fictional companies</em>
+              </h2>
               <p>The same engine, two very different businesses. Both run live against FalkorDB.</p>
             </div>
             <div className="scenarios">

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ScrollState } from "./ScrollState";
 
 const REPO = "https://github.com/harshedabdulla/node-and-nerve";
 
@@ -24,7 +25,7 @@ function Mark() {
 
 export function SiteHeader({ current }: { current: "home" | "demo" }) {
   return (
-    <header className="site-header">
+    <ScrollState>
       <div className="wrap">
         <Link href="/" className="brand" aria-label="Node & Nerve home">
           <span className="brand-mark">
@@ -33,6 +34,12 @@ export function SiteHeader({ current }: { current: "home" | "demo" }) {
           <span>Node &amp; Nerve</span>
         </Link>
         <nav className="nav" aria-label="Primary">
+          <Link href="/" className="nav-brand" aria-label="Node & Nerve home" tabIndex={-1}>
+            <span className="brand-mark small">
+              <Mark />
+            </span>
+            Node &amp; Nerve
+          </Link>
           <Link href="/#how" className="nav-optional">
             How it works
           </Link>
@@ -50,7 +57,7 @@ export function SiteHeader({ current }: { current: "home" | "demo" }) {
           </Link>
         </nav>
       </div>
-    </header>
+    </ScrollState>
   );
 }
 
