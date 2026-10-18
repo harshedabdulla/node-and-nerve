@@ -81,20 +81,38 @@ body {
 
 /* ---------------------------------------------------------------- header */
 
+/* The header lines up with the framed hero: logo at its inner left, nav at its inner
+   right, sitting inside the frame. Once scrolled it tucks up to the top edge. */
 .site-header {
   position: fixed;
   inset: 0 0 auto 0;
   z-index: 40;
-  padding-block: 14px;
+  padding-top: 40px;
   pointer-events: none;
+  transition: padding-top 240ms var(--ease-smooth);
+}
+
+.site-header.is-scrolled {
+  padding-top: 14px;
 }
 
 .site-header .wrap {
+  max-width: none;
+  padding-inline: calc(24px + clamp(16px, 2.6vw, 36px));
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
   pointer-events: auto;
+}
+
+@media (max-width: 720px) {
+  .site-header {
+    padding-top: 22px;
+  }
+  .site-header .wrap {
+    padding-inline: calc(10px + 14px);
+  }
 }
 
 .brand {
@@ -218,6 +236,7 @@ body {
 /* ---------------------------------------------------------------- hero */
 
 /* The hero is a framed card inset on black, the way Spindle frames its scenes. */
+/* The hero is a framed card inset on black, the way Spindle frames its scenes. */
 .hero {
   position: relative;
   isolation: isolate;
@@ -226,9 +245,22 @@ body {
   border-radius: 22px;
   display: flex;
   align-items: flex-end;
-  padding-block: 120px 64px;
+  padding: 120px clamp(16px, 2.6vw, 36px) 56px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hero > .wrap {
+  max-width: none;
+  padding-inline: 0;
+}
+
+@media (max-width: 720px) {
+  .hero {
+    margin: 10px;
+    border-radius: 18px;
+    padding: 96px 14px 36px;
+  }
 }
 
 @media (max-width: 720px) {
@@ -1385,7 +1417,7 @@ a.cite:hover {
 }
 
 .is-scrolled .wrap {
-  justify-content: center;
+  justify-content: flex-end;
 }
 
 .is-scrolled .nav-brand {
